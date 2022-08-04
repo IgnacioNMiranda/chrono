@@ -7,7 +7,7 @@ export const Header = () => {
 
   return (
     <header className="bg-primary h-12 z-20">
-      <div className="container mx-auto h-full flex justify-between font-medium text-white">
+      <div className="container mx-auto h-full flex justify-between font-medium text-white px-4">
         <ul className="flex items-center h-full">
           {!!user && (
             <li className="h-full px-2 hover:bg-primary-light">

@@ -1,6 +1,6 @@
 import { SVGProps } from 'react'
 
-export const CronIcon = ({ ...props }: SVGProps<SVGSVGElement>) => {
+export const CronIcon = (props: SVGProps<SVGSVGElement>) => {
   return (
     <svg viewBox="0 0 512 512" xmlSpace="preserve" xmlns="http://www.w3.org/2000/svg" {...props}>
       <path
