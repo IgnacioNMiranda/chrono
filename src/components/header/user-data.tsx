@@ -1,29 +1,23 @@
-import { UserProfile } from '@auth0/nextjs-auth0'
+import { UserProfile, useUser } from '@auth0/nextjs-auth0'
 import Image from 'next/image'
 import { useMemo, useRef, useState } from 'react'
 import { useClickOutside } from '../../hooks'
 import { Auth0GoogleUser } from '../../types'
 
-export type UserDataProps = {
-  user: UserProfile
+export type UserDataModalProps = {
+  picture: string
+  nickname?: string | null
+  name?: string
 }
 
-const UserDataModal = ({ user, userName, className }: UserDataProps & { userName: string; className?: string }) => {
+const UserDataModal = ({ picture, name, nickname, className }: UserDataModalProps & { className?: string }) => {
   return (
     <div className={`bg-white rounded-md shadow-lg border border-gray-300 pb-3 w-52 ${className}`}>
       <div className="flex items-center gap-x-2 px-4 pt-3">
-        {user.picture && (
-          <Image
-            width={40}
-            height={40}
-            className="rounded-3xl"
-            src={user.picture}
-            alt={user.nickname ?? 'user profile photo'}
-          />
-        )}
+        <Image width={40} height={40} className="rounded-3xl" src={picture} alt="user profile photo" />
         <div className="flex-col inline-flex gap-y-1 text-black">
-          <span className="block font-medium text-sm">{userName}</span>
-          <span className="block text-gray-400 text-xxs truncate">Nick: {user.nickname}</span>
+          <span className="block font-medium text-sm">{name}</span>
+          <span className="block text-gray-400 text-xxs truncate">Nick: {nickname}</span>
         </div>
       </div>
       <hr className="my-3 border-gray-300" />
@@ -34,9 +28,18 @@ const UserDataModal = ({ user, userName, className }: UserDataProps & { userName
   )
 }
 
-export const UserData = ({ user }: UserDataProps) => {
+export const UserData = () => {
+  const { user } = useUser()
+
   const [showUserModal, setShowUserModal] = useState(false)
-  const userName = useMemo(() => ('given_name' in user ? (user as Auth0GoogleUser).given_name : user.nickname!), [user])
+  const userData = useMemo(
+    () => ({
+      name: user && 'given_name' in user ? (user as Auth0GoogleUser).given_name : user?.nickname ?? 'none',
+      picture: user?.picture ?? '/images/no-image-available.avif',
+      nickname: user?.nickname,
+    }),
+    [user],
+  )
 
   const ref = useRef<HTMLDivElement>(null)
   useClickOutside(ref, () => setShowUserModal(false))
@@ -50,7 +53,7 @@ export const UserData = ({ user }: UserDataProps) => {
         className="flex justify-center gap-x-2 h-full items-center px-2"
         onClick={() => setShowUserModal(!showUserModal)}
       >
-        {user.picture && (
+        {user?.picture && (
           <Image
             width={28}
             height={28}
@@ -59,9 +62,9 @@ export const UserData = ({ user }: UserDataProps) => {
             alt={user.nickname ?? 'user profile photo'}
           />
         )}
-        <span className="block">{userName}</span>
+        <span className="block">{userData.name}</span>
       </button>
-      {!!showUserModal && <UserDataModal className="absolute top-14 right-0" user={user} userName={userName} />}
+      {!!showUserModal && <UserDataModal {...userData} className="absolute top-14 right-0" />}
     </div>
   )
 }

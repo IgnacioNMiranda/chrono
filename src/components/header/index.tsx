@@ -6,19 +6,18 @@ export const Header = () => {
   const { user } = useUser()
 
   return (
-    <header className="bg-primary h-12">
+    <header className="bg-primary h-12 z-20">
       <div className="container mx-auto h-full flex justify-between font-medium text-white">
         <ul className="flex items-center h-full">
-          <li className="h-full px-2 hover:bg-primary-light">
-            <Link href="/" className="">
-              <a className="h-full flex items-center">Home</a>
-            </Link>
-          </li>
+          {!!user && (
+            <li className="h-full px-2 hover:bg-primary-light">
+              <Link href="/" className="">
+                <a className="h-full flex items-center">Home</a>
+              </Link>
+            </li>
+          )}
         </ul>
-        <div>
-          {!user && <a href="/api/auth/login">Login</a>}
-          {!!user && <UserData user={user} />}
-        </div>
+        {!!user && <UserData />}
       </div>
     </header>
   )
