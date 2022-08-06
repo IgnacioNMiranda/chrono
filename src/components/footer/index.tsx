@@ -11,13 +11,21 @@ export const Footer = () => {
           <span>&copy; {currentYear} - Ignacio Miranda Figueroa</span>
         </div>
         <div className="flex gap-x-2 pb-4 sm:pb-0">
-          <a href="https://github.com/IgnacioNMiranda" target="_blank" rel="noreferrer">
-            <figure>
-              <GithubIcon width={30} height={30} />
-            </figure>
+          <a
+            href="https://github.com/IgnacioNMiranda"
+            target="_blank"
+            rel="noreferrer"
+            className="hover:text-primary transition-colors"
+          >
+            <GithubIcon width={30} height={30} color="currentColor" />
           </a>
-          <a href="https://www.linkedin.com/in/ignacio-miranda-figueroa/" target="_blank" rel="noreferrer">
-            <LinkedinIcon width={32} height={32} />
+          <a
+            href="https://www.linkedin.com/in/ignacio-miranda-figueroa/"
+            target="_blank"
+            rel="noreferrer"
+            className="hover:text-primary transition-colors"
+          >
+            <LinkedinIcon width={32} height={32} color="currentColor" />
           </a>
         </div>
       </div>
