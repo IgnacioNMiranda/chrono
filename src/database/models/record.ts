@@ -1,7 +1,8 @@
-import { Schema, model, models, Model } from 'mongoose'
-import { ITask, TaskSchema } from './task'
+import { Schema, model, models, Model, SchemaTypes } from 'mongoose'
+import { ITask } from './task'
+import { IUser } from './user'
 
-enum RecordStatus {
+export enum RecordStatus {
   IDLE = 'idle',
   RUNNING = 'running',
 }
@@ -12,6 +13,7 @@ export interface IRecord {
   month: number
   year: number
   tasks: ITask[]
+  user: IUser
   status: RecordStatus
 }
 
@@ -20,7 +22,20 @@ export const RecordSchema = new Schema<IRecord>({
   week: { type: Number, required: true },
   month: { type: Number, required: true },
   year: { type: Number, required: true },
-  tasks: { type: [TaskSchema], required: true },
+  tasks: {
+    type: [
+      {
+        type: SchemaTypes.ObjectId,
+        ref: 'Task',
+      },
+    ],
+    required: true,
+  },
+  user: {
+    type: SchemaTypes.ObjectId,
+    ref: 'User',
+    required: true,
+  },
   status: {
     type: String,
     enum: Object.values(RecordStatus),
@@ -28,5 +43,7 @@ export const RecordSchema = new Schema<IRecord>({
     required: true,
   },
 })
+
+RecordSchema.index({ day: 1, week: 1, month: 1, year: -1 })
 
 export const Record = (models.Record as Model<IRecord>) || model<IRecord>('Record', RecordSchema)

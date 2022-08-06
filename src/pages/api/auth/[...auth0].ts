@@ -12,7 +12,6 @@ const afterCallback: AfterCallback = async (req, res, session, state) => {
   const provider = session?.user.sub.split('|')[0]
 
   const user = await User.findOne({ email, provider }).exec()
-  console.log(user)
 
   if (!user) {
     const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
@@ -38,29 +37,3 @@ export default handleAuth({
     }
   },
 })
-
-/**
-  user: {
-    given_name: 'Ignacio',
-    family_name: 'Miranda Figueroa',
-    nickname: 'i.miranda.f99',
-    name: 'Ignacio Miranda Figueroa',
-    picture: 'https://lh3.googleusercontent.com/a/AItbvmlWOsbjkRTHbYs8uJ62m2vWGwPwitBDF4rW0kEq=s96-c',
-    locale: 'en',
-    updated_at: '2022-08-06T17:26:52.396Z',
-    email: 'i.miranda.f99@gmail.com',
-    email_verified: true,
-    sub: 'google-oauth2|115808732162191110709'
-  }
-
-
-   user: {
-    nickname: 'i.miranda.f99',
-    name: 'i.miranda.f99@gmail.com',
-    picture: 'https://s.gravatar.com/avatar/91961f0c7312870fa091b43b31ba4a73?s=480&r=pg&d=https%3A%2F%2Fcdn.auth0.com%2Favatars%2Fi.png',
-    updated_at: '2022-08-06T17:31:31.793Z',
-    email: 'i.miranda.f99@gmail.com',
-    email_verified: false,
-    sub: 'auth0|62e9ca16282570c0ea38676f'
-  },
- */
