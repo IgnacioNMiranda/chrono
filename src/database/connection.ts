@@ -9,6 +9,7 @@ export const connectToDatabase = async () => {
   }
 
   const client = await connect(environment.db.uri, {})
+
   cachedClient = client
 
   return { client }

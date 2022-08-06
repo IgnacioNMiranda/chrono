@@ -1,4 +1,4 @@
-import { Schema, model } from 'mongoose'
+import { Schema, model, models, Model } from 'mongoose'
 import { ITask, TaskSchema } from './task'
 
 enum RecordStatus {
@@ -29,4 +29,4 @@ export const RecordSchema = new Schema<IRecord>({
   },
 })
 
-export const Record = model<IRecord>('Record', RecordSchema)
+export const Record = (models.Record as Model<IRecord>) || model<IRecord>('Record', RecordSchema)

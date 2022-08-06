@@ -1,4 +1,4 @@
-import { Schema, model } from 'mongoose'
+import { Schema, model, models, Model } from 'mongoose'
 
 export interface ITask {
   title: string
@@ -14,4 +14,4 @@ export const TaskSchema = new Schema<ITask>({
   acc_time_secs: { type: Number, required: true },
 })
 
-export const Task = model<ITask>('Task', TaskSchema)
+export const Task = (models.Task as Model<ITask>) || model<ITask>('Task', TaskSchema)

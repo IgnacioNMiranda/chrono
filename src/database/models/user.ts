@@ -1,7 +1,7 @@
-import { Schema, model } from 'mongoose'
+import { Schema, model, models, Model } from 'mongoose'
 import { IRecord, RecordSchema } from './record'
 
-interface IUser {
+export interface IUser {
   email: string
   timezone: string
   provider: string
@@ -15,4 +15,4 @@ const UserSchema = new Schema<IUser>({
   records: { type: [RecordSchema], required: true },
 })
 
-export const User = model<IUser>('User', UserSchema)
+export const User = (models.User as Model<IUser>) || model<IUser>('User', UserSchema)
