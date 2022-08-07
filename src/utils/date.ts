@@ -1,4 +1,4 @@
-export const getDateData = (timeZone: string) => {
+export const getDateData = (timeZone?: string) => {
   const datetime_str = new Date().toLocaleString('en-US', { timeZone })
 
   // create new Date object
