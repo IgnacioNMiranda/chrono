@@ -3,9 +3,16 @@ import { isNumber } from '../../utils'
 
 export interface TimeInputProps extends InputHTMLAttributes<HTMLInputElement> {}
 
-export const TimeInput = ({ onFocus, onBlur, required, name, id, className }: TimeInputProps) => {
+export const TimeInput = ({
+  onFocus,
+  onBlur,
+  onChange,
+  required,
+  name,
+  id,
+  className,
+}: TimeInputProps) => {
   const handleBlur: FocusEventHandler<HTMLInputElement> = (e) => {
-    onBlur?.(e)
     const timeValues = e.target.value.split(':')
     if (timeValues.length === 1) {
       if (!timeValues[0]) return
@@ -31,6 +38,7 @@ export const TimeInput = ({ onFocus, onBlur, required, name, id, className }: Ti
       if (!isNumber(hour)) hour = '0'
       e.target.value = `${Number(hour) <= 24 ? hour : 24}:00`
     }
+    onBlur?.(e)
   }
 
   return (
@@ -38,7 +46,7 @@ export const TimeInput = ({ onFocus, onBlur, required, name, id, className }: Ti
       type="text"
       onFocus={onFocus}
       onBlur={handleBlur}
-      pattern="^([0-9]+(:[0-9]{2})?)$"
+      onChange={onChange}
       required={required}
       name={name}
       id={id}

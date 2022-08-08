@@ -1,4 +1,5 @@
-import { FormEventHandler } from 'react'
+import { ChangeEventHandler, FocusEventHandler, FormEventHandler, useState } from 'react'
+import { capitalizeFirstLetter } from '../../utils'
 import { Button, ButtonRound, ButtonVariant } from '../button'
 import { Input } from '../input'
 
@@ -6,19 +7,49 @@ export type TaskFormProps = {
   onClose: () => void
 }
 
+const getErrors = (
+  currentErrors: Record<string, boolean>,
+  e: { target: { id: string; value: string } },
+) => {
+  const newErrors: Record<string, boolean> = { ...currentErrors }
+  if (e.target.id === 'title') {
+    if (!e.target.value) newErrors.title = true
+    else delete newErrors.title
+  } else if (
+    e.target.id === 'time' &&
+    e.target.value !== '' &&
+    !/^[0-9]{1,2}:[0-9]{2}$/.test(e.target.value)
+  ) {
+    if (e.target.value !== '' && !/^[0-9]{1,2}:[0-9]{2}$/.test(e.target.value))
+      newErrors.time = true
+    else delete newErrors.time
+  }
+  return newErrors
+}
+
 export const TaskForm = ({ onClose }: TaskFormProps) => {
+  const [errors, setErrors] = useState<Record<string, boolean>>({})
+  const [titleVisited, setTitleVisited] = useState(false)
+  const [timeVisited, setTimeVisited] = useState(false)
+
+  const setProperties: FocusEventHandler<HTMLInputElement> = (e) => {
+    setErrors(getErrors(errors, e))
+    if (e.target.id === 'title' && !titleVisited) setTitleVisited(true)
+    else if (e.target.id === 'time' && !timeVisited) setTimeVisited(true)
+  }
+
   const onSubmit: FormEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault()
-    const formData = new FormData(e.target as HTMLFormElement)
+    const form = e.target as HTMLFormElement
+    const formData = new FormData(form)
+
     const values = Object.fromEntries(formData)
 
-    if (!values.title) {
-      alert('no title')
-    }
     // Considering no file uploads.
     const normValues = values as Record<string, string>
     alert(JSON.stringify(values, null, 2))
 
+    form.reset()
     // onSubmit(normValues)
   }
 
@@ -27,6 +58,8 @@ export const TaskForm = ({ onClose }: TaskFormProps) => {
       <Input
         placeholder="Title (*)"
         id="title"
+        onChange={setProperties}
+        onBlur={setProperties}
         submitOnEnter={false}
         name="title"
         required
@@ -37,14 +70,31 @@ export const TaskForm = ({ onClose }: TaskFormProps) => {
           type="textarea"
           submitOnEnter={false}
           placeholder="Notes (optional)"
+          onBlur={setProperties}
           id="notes"
           name="notes"
           className="h-13 w-full md:w-9/12"
         />
-        <Input isTimeInput id="time" name="time" required className="h-13 w-full md:w-3/12" />
+        <Input
+          isTimeInput
+          onBlur={setProperties}
+          id="time"
+          name="time"
+          className="h-13 w-full md:w-3/12"
+        />
       </div>
+      {!!Object.values(errors).length && (
+        <ul>
+          {Object.keys(errors).map((fieldKey, idx) => (
+            <li key={`${fieldKey}-${idx}`} className="text-red-400 list-disc list-inside">
+              {capitalizeFirstLetter(fieldKey)} is required
+            </li>
+          ))}
+        </ul>
+      )}
       <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 pt-2">
         <Button
+          disabled={(!timeVisited && !titleVisited) || !!Object.values(errors).length}
           round={ButtonRound.LG}
           className="px-4 py-1.5 w-full sm:w-auto"
           variant={ButtonVariant.PRIMARY}

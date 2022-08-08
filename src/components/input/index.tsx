@@ -1,4 +1,4 @@
-import { InputHTMLAttributes, useState } from 'react'
+import { ChangeEventHandler, FocusEventHandler, InputHTMLAttributes, useState } from 'react'
 import { TimeInput } from './time-input'
 
 export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
@@ -13,16 +13,24 @@ export const Input = ({
   placeholder,
   type = 'text',
   name,
-  visited = false,
   submitOnEnter = false,
   id,
+  onFocus,
+  onBlur,
+  onChange,
   required,
   isTimeInput = false,
   className,
 }: InputProps) => {
   const [isFocus, setIsFocus] = useState(false)
-  const onBlur = () => setIsFocus(false)
-  const onFocus = () => setIsFocus(true)
+  const handleBlur: FocusEventHandler<HTMLInputElement> = (e) => {
+    onBlur?.(e)
+    setIsFocus(false)
+  }
+  const handleFocus: FocusEventHandler<HTMLInputElement> = (e) => {
+    onFocus?.(e)
+    setIsFocus(true)
+  }
 
   const baseClassName = `rounded-base bg-white border border-gray-border text-gray-dark p-1.5 leading-5.6 text-15 w-full h-full hover:border-primary transition-colors focus:outline-none ${
     isFocus ? 'border-primary' : ''
@@ -37,8 +45,9 @@ export const Input = ({
         name={name}
         id={id}
         required={required}
-        onFocus={onFocus}
-        onBlur={onBlur}
+        onFocus={handleFocus}
+        onChange={onChange}
+        onBlur={handleBlur}
         className={baseClassName}
       />
     )
@@ -49,8 +58,9 @@ export const Input = ({
         <textarea
           placeholder={placeholder}
           name={name}
-          onFocus={onFocus}
-          onBlur={onBlur}
+          onChange={onChange as unknown as ChangeEventHandler<HTMLTextAreaElement>}
+          onFocus={handleFocus as unknown as FocusEventHandler<HTMLTextAreaElement>}
+          onBlur={handleBlur as unknown as FocusEventHandler<HTMLTextAreaElement>}
           id={id}
           className={`resize-none ${baseClassName}`}
         />
@@ -60,12 +70,13 @@ export const Input = ({
       return (
         <input
           type="text"
-          onFocus={onFocus}
+          onFocus={handleFocus}
           onKeyPress={(e) => {
             e.key === 'Enter' && !submitOnEnter && e.preventDefault()
           }}
-          onBlur={onBlur}
+          onBlur={handleBlur}
           required={required}
+          onChange={onChange}
           name={name}
           id={id}
           placeholder={placeholder}

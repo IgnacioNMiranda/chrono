@@ -27,6 +27,7 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 export const Button = ({
   onClick,
+  disabled,
   type,
   round,
   variant,
@@ -37,7 +38,10 @@ export const Button = ({
     <button
       onClick={onClick}
       type={type}
-      className={`${roundClasses[round]} ${variantClasses[variant]} transition-colors flex justify-center items-center ${className}`}
+      disabled={disabled}
+      className={`${roundClasses[round]} ${variantClasses[variant]} ${
+        disabled ? 'opacity-30 cursor-default pointer-events-none' : ''
+      } transition-colors flex justify-center items-center ${className}`}
     >
       {children}
     </button>
