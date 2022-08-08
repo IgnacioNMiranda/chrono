@@ -1,11 +1,14 @@
+import { QueryObserverBaseResult } from '@tanstack/react-query'
 import { createContext, Dispatch, ReactNode, useMemo, useReducer } from 'react'
+import { IUser } from '../database'
 
-const INITIAL_TASK_MODAL_STATE = { isOpen: false, timezone: '', user: '' }
+const INITIAL_TASK_MODAL_STATE = { isOpen: false, timezone: '', user: '', refetch: undefined }
 
 type ChronoState = {
   isOpen: boolean
   timezone: string
   user: string
+  refetch?: () => Promise<QueryObserverBaseResult<IUser & { _id: string }, unknown>>
 }
 
 /* Action */
@@ -13,10 +16,11 @@ export enum ChronoActionTypes {
   TOGGLE_MODAL = '@toggle-modal',
   SET_TIMEZONE = '@set-timezone',
   SET_USER = '@set-user',
+  SET_REFETCH_USER = '@set-refetch-user',
 }
 export interface ChronoAction {
   type: ChronoActionTypes
-  payload: boolean | string
+  payload: boolean | string | ChronoState['refetch']
 }
 
 /** Reducer */
@@ -41,6 +45,12 @@ const chronoReducer: (state: ChronoState, action: ChronoAction) => ChronoState =
       return {
         ...state,
         user: action.payload as string,
+      }
+    }
+    case ChronoActionTypes.SET_REFETCH_USER: {
+      return {
+        ...state,
+        refetch: action.payload as ChronoState['refetch'],
       }
     }
     default:

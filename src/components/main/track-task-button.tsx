@@ -1,21 +1,29 @@
 import { ButtonHTMLAttributes } from 'react'
 import { Button, ButtonRound, ButtonVariant } from '../button'
-import { PlusIcon } from '../icons'
 
-export interface TrackTaskButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {}
+export interface TrackTaskButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  buttonClassName?: string
+  buttonRound?: ButtonRound
+}
 
-export const TrackTaskButton = ({ onClick, className }: TrackTaskButtonProps) => {
+export const TrackTaskButton = ({
+  onClick,
+  className = '',
+  buttonRound = ButtonRound.XL,
+  buttonClassName = '',
+  children,
+}: TrackTaskButtonProps) => {
   return (
     <div className={className}>
       <Button
-        round={ButtonRound.XL}
-        className="w-16 h-16"
+        round={buttonRound}
+        className={buttonClassName}
         variant={ButtonVariant.PRIMARY}
         onClick={onClick}
       >
-        <PlusIcon color="white" width={48} height={48} className="font-bold" />
+        {children}
       </Button>
-      <span className="text-13 mt-2 block leading-5 font-normal">Track Task</span>
+      <span className="text-13 mt-2 leading-5 font-normal hidden sm:block">Track Task</span>
     </div>
   )
 }

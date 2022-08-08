@@ -47,6 +47,7 @@ export const TaskForm = ({ onClose }: TaskFormProps) => {
 
     try {
       await createNewTask({ title, notes, time, userId: state.user })
+      await state.refetch?.()
       setTimeVisited(false)
       setTitleVisited(false)
       form.reset()

@@ -12,11 +12,13 @@ const variantClasses: Record<ButtonVariant, string> = {
 
 export enum ButtonRound {
   LG = 'lg',
+  LGXL = 'lgxl',
   XL = 'xl',
 }
 
 const roundClasses: Record<ButtonRound, string> = {
   [ButtonRound.LG]: 'rounded-lg',
+  [ButtonRound.LGXL]: 'rounded-lgxl',
   [ButtonRound.XL]: 'rounded-xl',
 }
 

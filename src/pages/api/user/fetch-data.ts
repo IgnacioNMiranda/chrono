@@ -11,7 +11,13 @@ const fetchData = async (req: NextApiRequest, res: NextApiResponse) => {
 
   await connectToDatabase()
 
-  const dbUser = await User.findOne({ email, provider }).populate('records')
+  const dbUser = await User.findOne({ email, provider }).populate({
+    path: 'records',
+    populate: {
+      path: 'tasks',
+      model: 'Task',
+    },
+  })
   if (!dbUser) return res.status(404).end('Unexpected error. Please contact support')
 
   const { month, week, day, year } = getDateData(dbUser.timezone)

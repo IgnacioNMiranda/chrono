@@ -10,9 +10,9 @@ export const Header = () => {
       <div className="container mx-auto h-full flex justify-between font-medium text-white px-4">
         <ul className="flex items-center h-full">
           {!!user && (
-            <li className="h-full px-2 hover:bg-primary-light">
-              <Link href="/" className="">
-                <a className="h-full flex items-center">Home</a>
+            <li className="h-full  hover:bg-primary-light">
+              <Link href="/">
+                <a className="h-full flex items-center px-2">Home</a>
               </Link>
             </li>
           )}

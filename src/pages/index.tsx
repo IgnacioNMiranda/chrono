@@ -33,7 +33,7 @@ const Home: NextPage = () => {
           <link rel="icon" href="/favicon.ico" />
         </Head>
         <Header />
-        <main className="flex-1 z-10 relative bg-[#FFF8F1]">
+        <main className="flex-1 z-10 relative bg-secondary-light">
           {!isLoading && !user && (
             <>
               <MainNotLogin />

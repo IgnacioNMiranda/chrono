@@ -10,7 +10,7 @@ const createTask = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const body = JSON.parse(req.body)
 
-  if (!body.title || (body.time !== '' && !isValidTime(req.body.time)) || !body.userId) {
+  if (!body.title || (body.time !== '' && !isValidTime(body.time)) || !body.userId) {
     return res.status(400).end('Bad request. Some parameters are missing or bad formatted')
   }
 

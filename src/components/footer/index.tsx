@@ -7,7 +7,7 @@ export const Footer = () => {
     <footer className="bg-white h-28 border-t z-10">
       <div className="container mx-auto flex flex-col gap-y-3 sm:flex-row items-start sm:items-center justify-between h-full px-4">
         <span className="font-medium pt-4 sm:pt-0 flex items-center">
-          <ChronoLogoIcon width={32} height={32} />
+          <ChronoLogoIcon width={20} height={32} />
         </span>
         <div className="flex justify-center items-center">
           <span>&copy; {currentYear} - Ignacio Miranda Figueroa</span>
