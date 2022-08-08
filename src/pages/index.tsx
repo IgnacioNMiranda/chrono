@@ -5,11 +5,11 @@ import { useContext } from 'react'
 import { Header, Footer, AnimatedBackground } from '../components'
 import { MainLogin, MainNotLogin } from '../components'
 import { TaskModal } from '../components/main/task-modal'
-import { TaskModalActionTypes, TaskModalContext } from '../context'
+import { ChronoActionTypes, ChronoContext } from '../context'
 
 const Home: NextPage = () => {
   const { user, isLoading } = useUser()
-  const { state, dispatch } = useContext(TaskModalContext)
+  const { state, dispatch } = useContext(ChronoContext)
 
   return (
     <>
@@ -19,7 +19,7 @@ const Home: NextPage = () => {
           timezone={state.timezone}
           onClose={() =>
             dispatch({
-              type: TaskModalActionTypes.TOGGLE_MODAL,
+              type: ChronoActionTypes.TOGGLE_MODAL,
               payload: false,
             })
           }

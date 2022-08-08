@@ -1,5 +1,5 @@
 import { Schema, model, models, Model, SchemaTypes } from 'mongoose'
-import { IRecord, RecordSchema } from './record'
+import { IRecord } from './record'
 
 export interface IUser {
   email: string

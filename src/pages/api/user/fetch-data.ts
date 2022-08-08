@@ -16,14 +16,14 @@ const fetchData = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const { month, week, day, year } = getDateData(dbUser.timezone)
 
-  const todayRecord = await Record.findOne({
+  let todayRecord = await Record.findOne({
     user: dbUser._id,
     month,
     day,
     year,
   }).exec()
   if (!todayRecord) {
-    const newRecord = new Record({
+    todayRecord = new Record({
       day,
       week,
       month,
@@ -32,8 +32,8 @@ const fetchData = async (req: NextApiRequest, res: NextApiResponse) => {
       user: dbUser._id,
       status: RecordStatus.IDLE,
     })
-    dbUser.records.push(newRecord)
-    await newRecord.save()
+    dbUser.records.push(todayRecord)
+    await todayRecord.save()
     await dbUser.save()
   }
 

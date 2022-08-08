@@ -1,25 +1,28 @@
 import { useUser } from '@auth0/nextjs-auth0'
 import { useQuery } from '@tanstack/react-query'
 import { useContext, useEffect } from 'react'
-import { TaskModalActionTypes, TaskModalContext } from '../../context'
-import { IUser } from '../../database'
+import { ChronoActionTypes, ChronoContext } from '../../context'
 import { getUserData } from '../../services'
 import { Records } from './records'
 import { TrackTaskButton } from './track-task-button'
 
 export const MainLogin = () => {
   const { user } = useUser()
-  const { data } = useQuery<IUser>(['userData'], () => getUserData(user), {
+  const { data } = useQuery(['userData'], () => getUserData(user), {
     enabled: !!user,
   })
 
-  const { state, dispatch } = useContext(TaskModalContext)
+  const { dispatch } = useContext(ChronoContext)
 
   useEffect(() => {
     if (!!data) {
       dispatch({
-        type: TaskModalActionTypes.SET_TIMEZONE,
+        type: ChronoActionTypes.SET_TIMEZONE,
         payload: data?.timezone,
+      })
+      dispatch({
+        type: ChronoActionTypes.SET_USER,
+        payload: data?._id,
       })
     }
   }, [data, dispatch])
@@ -33,7 +36,7 @@ export const MainLogin = () => {
               className="mt-13"
               onClick={() => {
                 dispatch({
-                  type: TaskModalActionTypes.TOGGLE_MODAL,
+                  type: ChronoActionTypes.TOGGLE_MODAL,
                   payload: true,
                 })
               }}

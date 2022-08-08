@@ -1,6 +1,7 @@
 import { UserProfile } from '@auth0/nextjs-auth0'
+import { IUser } from '../database'
 
-export const getUserData = async (user?: UserProfile) => {
+export const getUserData = async (user?: UserProfile): Promise<IUser & { _id: string }> => {
   const invalidDataError = new Error('Invalid Data')
 
   if (!user) throw invalidDataError
@@ -17,4 +18,5 @@ export const getUserData = async (user?: UserProfile) => {
     const json = await response.json()
     return json
   }
+  throw new Error('User data could not be retrieved. Try again later')
 }

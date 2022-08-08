@@ -1,5 +1,7 @@
-import { ChangeEventHandler, FocusEventHandler, FormEventHandler, useState } from 'react'
-import { capitalizeFirstLetter } from '../../utils'
+import { FocusEventHandler, FormEventHandler, useContext, useState } from 'react'
+import { ChronoContext } from '../../context'
+import { createNewTask } from '../../services/task'
+import { capitalizeFirstLetter, isValidTime } from '../../utils'
 import { Button, ButtonRound, ButtonVariant } from '../button'
 import { Input } from '../input'
 
@@ -15,13 +17,8 @@ const getErrors = (
   if (e.target.id === 'title') {
     if (!e.target.value) newErrors.title = true
     else delete newErrors.title
-  } else if (
-    e.target.id === 'time' &&
-    e.target.value !== '' &&
-    !/^[0-9]{1,2}:[0-9]{2}$/.test(e.target.value)
-  ) {
-    if (e.target.value !== '' && !/^[0-9]{1,2}:[0-9]{2}$/.test(e.target.value))
-      newErrors.time = true
+  } else if (e.target.id === 'time') {
+    if (e.target.value !== '' && !isValidTime(e.target.value)) newErrors.time = true
     else delete newErrors.time
   }
   return newErrors
@@ -31,6 +28,9 @@ export const TaskForm = ({ onClose }: TaskFormProps) => {
   const [errors, setErrors] = useState<Record<string, boolean>>({})
   const [titleVisited, setTitleVisited] = useState(false)
   const [timeVisited, setTimeVisited] = useState(false)
+  const [submitError, setSubmitError] = useState('')
+
+  const { state } = useContext(ChronoContext)
 
   const setProperties: FocusEventHandler<HTMLInputElement> = (e) => {
     setErrors(getErrors(errors, e))
@@ -38,19 +38,27 @@ export const TaskForm = ({ onClose }: TaskFormProps) => {
     else if (e.target.id === 'time' && !timeVisited) setTimeVisited(true)
   }
 
-  const onSubmit: FormEventHandler<HTMLFormElement> = (e) => {
+  const onSubmit: FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault()
     const form = e.target as HTMLFormElement
     const formData = new FormData(form)
-
     const values = Object.fromEntries(formData)
+    const { title, notes, time } = values as Record<string, string>
 
-    // Considering no file uploads.
-    const normValues = values as Record<string, string>
-    alert(JSON.stringify(values, null, 2))
+    try {
+      await createNewTask({ title, notes, time, userId: state.user })
+      setTimeVisited(false)
+      setTitleVisited(false)
+      form.reset()
+      onClose()
+    } catch (error: any) {
+      console.log({ error })
 
-    form.reset()
-    // onSubmit(normValues)
+      setSubmitError(error.message)
+      setTimeout(() => {
+        setSubmitError('')
+      }, 2500)
+    }
   }
 
   return (
@@ -92,6 +100,7 @@ export const TaskForm = ({ onClose }: TaskFormProps) => {
           ))}
         </ul>
       )}
+      {!!submitError && <span className="text-red-400">{submitError}</span>}
       <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 pt-2">
         <Button
           disabled={(!timeVisited && !titleVisited) || !!Object.values(errors).length}
