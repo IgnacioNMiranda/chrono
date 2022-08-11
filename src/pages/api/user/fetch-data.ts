@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { connectToDatabase, User } from '../../../database'
-import { Record, RecordStatus } from '../../../database'
+import { User, Record } from '../../../database/models'
+import { connectToDatabase } from '../../../database/connection'
 import { getDateData } from '../../../utils'
 
 const fetchData = async (req: NextApiRequest, res: NextApiResponse) => {
@@ -26,6 +26,7 @@ const fetchData = async (req: NextApiRequest, res: NextApiResponse) => {
     user: dbUser._id,
     month,
     day,
+    week,
     year,
   }).exec()
   if (!todayRecord) {
@@ -36,11 +37,9 @@ const fetchData = async (req: NextApiRequest, res: NextApiResponse) => {
       year,
       tasks: [],
       user: dbUser._id,
-      status: RecordStatus.IDLE,
     })
-    dbUser.records.push(todayRecord)
+    await dbUser.updateOne({ $push: { records: todayRecord._id } }).exec()
     await todayRecord.save()
-    await dbUser.save()
   }
 
   return res.status(200).json(dbUser)

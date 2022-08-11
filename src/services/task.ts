@@ -1,4 +1,4 @@
-import { NewTaskDto } from '../database/dtos'
+import { NewTaskDto, ToggleTaskStatusDto } from '../database/dtos'
 
 export const createNewTask = async ({ title, notes, time, userId }: NewTaskDto) => {
   const uri = `/api/tasks/create`
@@ -18,4 +18,28 @@ export const createNewTask = async ({ title, notes, time, userId }: NewTaskDto) 
     return json
   }
   throw new Error('Task could not be created. Try again')
+}
+
+export const toggleTaskStatus = async ({
+  taskId,
+  userId,
+  timezone,
+  isRunning,
+}: ToggleTaskStatusDto) => {
+  const uri = isRunning ? `/api/tasks/stop` : '/api/tasks/start'
+
+  const response = await fetch(uri, {
+    body: JSON.stringify({
+      taskId,
+      userId,
+      timezone,
+    }),
+    method: 'PUT',
+  })
+
+  if (response.ok) {
+    const json = await response.json()
+    return json
+  }
+  throw new Error('Task could not be updated. Try again')
 }

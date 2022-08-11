@@ -1,9 +1,9 @@
 import { useUser } from '@auth0/nextjs-auth0'
 import { useQuery } from '@tanstack/react-query'
 import { useContext, useEffect } from 'react'
-import { ChronoActionTypes, ChronoContext } from '../../context'
-import { getUserData } from '../../services'
-import { PlusIcon } from '../icons'
+import { ChronoActionTypes, ChronoContext } from '../../../context'
+import { getUserData } from '../../../services'
+import { PlusIcon } from '../../icons'
 import { Records } from './records'
 import { TrackTaskButton } from './track-task-button'
 
@@ -19,7 +19,7 @@ export const MainLogin = () => {
     if (!!data) {
       dispatch({
         type: ChronoActionTypes.SET_TIMEZONE,
-        payload: data?.timezone,
+        payload: data.timezone,
       })
       dispatch({
         type: ChronoActionTypes.SET_USER,
@@ -49,7 +49,7 @@ export const MainLogin = () => {
             >
               <PlusIcon color="white" width={48} height={48} className="font-bold" />
             </TrackTaskButton>
-            <Records timezone={data.timezone} records={data.records} />
+            <Records timezone={data.timezone} records={data.records} userData={data} />
           </>
         )}
       </div>

@@ -1,20 +1,15 @@
-import { Schema, model, models, Model, SchemaTypes } from 'mongoose'
+import { Schema, model, models, Model, SchemaTypes, HydratedDocument } from 'mongoose'
 import { ITask } from './task'
 import { IUser } from './user'
-
-export enum RecordStatus {
-  IDLE = 'idle',
-  RUNNING = 'running',
-}
 
 export interface IRecord {
   day: number
   week: number
   month: number
   year: number
-  tasks: ITask[]
-  user: IUser
-  status: RecordStatus
+  tasks: HydratedDocument<ITask>[]
+  user: HydratedDocument<IUser>
+  hasTaskRunning: boolean
 }
 
 export const RecordSchema = new Schema<IRecord>({
@@ -30,18 +25,14 @@ export const RecordSchema = new Schema<IRecord>({
       },
     ],
     required: true,
+    default: [],
   },
   user: {
     type: SchemaTypes.ObjectId,
     ref: 'User',
     required: true,
   },
-  status: {
-    type: String,
-    enum: Object.values(RecordStatus),
-    default: RecordStatus.IDLE,
-    required: true,
-  },
+  hasTaskRunning: { type: Boolean, required: true, default: false },
 })
 
 RecordSchema.index({ day: 1, week: 1, month: 1, year: -1 })

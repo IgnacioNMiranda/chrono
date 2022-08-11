@@ -1,5 +1,6 @@
 import { handleAuth, handleCallback, AfterCallback } from '@auth0/nextjs-auth0'
-import { connectToDatabase, User } from '../../../database'
+import { connectToDatabase } from '../../../database/connection'
+import { User } from '../../../database/models'
 
 const afterCallback: AfterCallback = async (req, res, session, state) => {
   if (!session) {

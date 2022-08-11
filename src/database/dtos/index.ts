@@ -1,1 +1,1 @@
-export * from './new-task.dto'
+export * from './tasks'

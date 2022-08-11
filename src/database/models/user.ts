@@ -1,11 +1,11 @@
-import { Schema, model, models, Model, SchemaTypes } from 'mongoose'
+import { Schema, model, models, Model, SchemaTypes, HydratedDocument } from 'mongoose'
 import { IRecord } from './record'
 
 export interface IUser {
   email: string
   timezone: string
   provider: string
-  records: IRecord[]
+  records: HydratedDocument<IRecord>[]
 }
 
 const UserSchema = new Schema<IUser>({

@@ -17,5 +17,15 @@ export const getDateData = (timeZone?: string) => {
   const day = ('0' + date.getDate()).slice(-2)
   const dayName = date.toLocaleString('default', { weekday: 'long' })
 
-  return { year, month, monthName, week, day, dayName }
+  return { year, month, monthName, week, day, dayName, date }
+}
+
+export const getSecondsDiff = (date: Date, prevDate?: Date | string) => {
+  if (typeof prevDate === 'string')
+    return (date.getTime() - (new Date(prevDate)?.getTime() ?? 0)) / 1000
+  return (date.getTime() - ((prevDate as Date)?.getTime() ?? 0)) / 1000
+}
+
+export const getHoursFromSecs = (accTimeSecs: number) => {
+  return new Date(accTimeSecs * 1000).toISOString().substring(11, 11 + 5)
 }

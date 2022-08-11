@@ -1,9 +1,9 @@
 import { FocusEventHandler, FormEventHandler, useContext, useState } from 'react'
-import { ChronoContext } from '../../context'
-import { createNewTask } from '../../services/task'
-import { capitalizeFirstLetter, isValidTime } from '../../utils'
-import { Button, ButtonRound, ButtonVariant } from '../button'
-import { Input } from '../input'
+import { ChronoContext } from '../../../context'
+import { createNewTask } from '../../../services/task'
+import { capitalizeFirstLetter, isValidTime } from '../../../utils'
+import { Button, ButtonRound, ButtonVariant } from '../../button'
+import { Input } from '../../input'
 
 export type TaskFormProps = {
   onClose: () => void
@@ -46,7 +46,7 @@ export const TaskForm = ({ onClose }: TaskFormProps) => {
     const { title, notes, time } = values as Record<string, string>
 
     try {
-      await createNewTask({ title, notes, time, userId: state.user })
+      await createNewTask({ title, notes, time, userId: state.user! })
       await state.refetch?.()
       setTimeVisited(false)
       setTitleVisited(false)

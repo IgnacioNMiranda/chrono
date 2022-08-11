@@ -1,6 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { connectToDatabase, Task, User } from '../../../database'
-import { Record } from '../../../database'
+import { connectToDatabase } from '../../../database/connection'
+import { Task, User } from '../../../database/models'
+import { TaskStatus } from '../../../database/enums'
+import { Record } from '../../../database/models'
 import { getDateData, isValidTime } from '../../../utils'
 
 const createTask = async (req: NextApiRequest, res: NextApiResponse) => {
@@ -16,7 +18,15 @@ const createTask = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const { title, time, notes, userId } = body
 
-  const user = await User.findById(userId).populate('records')
+  const user = await User.findById(userId)
+    .populate({
+      path: 'records',
+      populate: {
+        path: 'tasks',
+        model: 'Task',
+      },
+    })
+    .exec()
   if (!user) return res.status(401).end('Forbidden. You have no credentials to perform this action')
 
   const { month, week, day, year } = getDateData(user.timezone)
@@ -35,18 +45,23 @@ const createTask = async (req: NextApiRequest, res: NextApiResponse) => {
   const [hours, minutes] = normTime.split(':')
   const accTimeSecs = Number(hours) * 60 * 60 + Number(minutes) * 60
 
+  const taskAlreadyRunning = user.records
+    .find((record) => record.hasTaskRunning)
+    ?.tasks.find((task) => task.status === TaskStatus.RUNNING)
+
   const newTask = new Task({
     title,
     notes: notes ?? '',
-    lastRun: new Date(),
+    lastRun: taskAlreadyRunning ? undefined : new Date(),
     accTimeSecs,
-    record: todayRecord,
+    record: todayRecord._id,
+    status: taskAlreadyRunning ? TaskStatus.IDLE : TaskStatus.RUNNING,
   })
-  console.log(newTask)
 
-  todayRecord.tasks.push(newTask)
+  const hasTaskRunningQuery = taskAlreadyRunning ? {} : { $set: { hasTaskRunning: true } }
+
+  await todayRecord.updateOne({ ...hasTaskRunningQuery, $push: { tasks: newTask._id } }).exec()
   await newTask.save()
-  await todayRecord.save()
 
   return res.status(200).json(newTask)
 }

@@ -1,7 +1,8 @@
 import { UserProfile } from '@auth0/nextjs-auth0'
-import { IUser } from '../database'
+import { HydratedDocument } from 'mongoose'
+import { IUser } from '../database/models'
 
-export const getUserData = async (user?: UserProfile): Promise<IUser & { _id: string }> => {
+export const getUserData = async (user?: UserProfile): Promise<HydratedDocument<IUser>> => {
   const invalidDataError = new Error('Invalid Data')
 
   if (!user) throw invalidDataError

@@ -1,2 +1,2 @@
-export * from './main-login'
+export * from './login'
 export * from './main-not-login'

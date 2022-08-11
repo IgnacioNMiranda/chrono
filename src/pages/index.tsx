@@ -4,12 +4,15 @@ import Head from 'next/head'
 import { useContext } from 'react'
 import { Header, Footer, AnimatedBackground } from '../components'
 import { MainLogin, MainNotLogin } from '../components'
-import { TaskModal } from '../components/main/task-modal'
+import { TaskModal } from '../components/main'
 import { ChronoActionTypes, ChronoContext } from '../context'
 
 const Home: NextPage = () => {
   const { user, isLoading } = useUser()
   const { state, dispatch } = useContext(ChronoContext)
+
+  const isLoggedIn = !isLoading && !!user
+  const isNotLoggedIn = !isLoading && !user
 
   return (
     <>
@@ -33,14 +36,14 @@ const Home: NextPage = () => {
           <link rel="icon" href="/favicon.ico" />
         </Head>
         <Header />
-        <main className="flex-1 z-10 relative bg-secondary-light">
-          {!isLoading && !user && (
+        <main className={`${isNotLoggedIn ? 'flex' : ''} flex-1 z-10 relative bg-secondary-light`}>
+          {isNotLoggedIn && (
             <>
               <MainNotLogin />
               <AnimatedBackground />
             </>
           )}
-          {!isLoading && !!user && <MainLogin />}
+          {isLoggedIn && <MainLogin />}
         </main>
         <Footer />
       </div>

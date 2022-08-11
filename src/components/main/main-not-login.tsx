@@ -2,7 +2,7 @@ import { CronIcon } from '../icons'
 
 export const MainNotLogin = () => {
   return (
-    <section className="container mx-auto flex justify-center h-full items-center py-3 px-4 relative z-10">
+    <section className="container mx-auto my-auto flex justify-center items-center px-4 relative z-10">
       <div className="blob-shape flex flex-col items-center justify-center">
         <h1 className="text-white font-bold text-6xl md:text-gargantuar text-center">
           <span className="block">⏱️</span> Chrono
