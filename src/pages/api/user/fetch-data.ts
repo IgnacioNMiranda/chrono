@@ -9,7 +9,11 @@ const fetchData = async (req: NextApiRequest, res: NextApiResponse) => {
   const { email, provider } = req.query
   if (!email || !provider) return res.status(400).end('Bad request. Missing parameters')
 
-  await connectToDatabase()
+  try {
+    await connectToDatabase()
+  } catch (error) {
+    return res.status(504).end('Server is not responding...')
+  }
 
   const dbUser = await User.findOne({ email, provider }).populate({
     path: 'records',

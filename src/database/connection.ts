@@ -8,7 +8,7 @@ export const connectToDatabase = async () => {
     return { client: cachedClient }
   }
 
-  const client = await connect(environment.db.uri, {})
+  const client = await connect(environment.db.uri, { serverSelectionTimeoutMS: 4000 })
 
   cachedClient = client
 

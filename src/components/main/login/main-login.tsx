@@ -1,16 +1,26 @@
 import { useUser } from '@auth0/nextjs-auth0'
 import { useQuery } from '@tanstack/react-query'
-import { useContext, useEffect } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { ChronoActionTypes, ChronoContext } from '../../../context'
 import { getUserData } from '../../../services'
-import { PlusIcon } from '../../icons'
+import { PlusIcon, SpinnerIcon } from '../../icons'
 import { Records } from './records'
 import { TrackTaskButton } from './track-task-button'
 
 export const MainLogin = () => {
+  const [serverError, setServerError] = useState(false)
   const { user } = useUser()
   const { data, refetch } = useQuery(['userData'], () => getUserData(user), {
     enabled: !!user,
+    onError: (err) => {
+      if (err instanceof Error) {
+        if (['404'].includes(err.message)) {
+          window.location.href = '/api/auth/logout'
+        } else if (['500', '504'].includes(err.message)) {
+          setServerError(true)
+        }
+      }
+    },
   })
 
   const { dispatch } = useContext(ChronoContext)
@@ -52,7 +62,17 @@ export const MainLogin = () => {
             <Records timezone={data.timezone} records={data.records} userData={data} />
           </>
         )}
+        {!!serverError && (
+          <p className="font-bold text-center sm:text-left">
+            It occured an unexpected error 😥 Please try logging in again.
+          </p>
+        )}
       </div>
+      {(!user || !data) && !serverError && (
+        <div className="flex justify-center items-center w-full">
+          <SpinnerIcon width={120} height={120} color="#9f5fd4" />
+        </div>
+      )}
     </section>
   )
 }

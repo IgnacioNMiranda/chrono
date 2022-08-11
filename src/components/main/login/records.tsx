@@ -65,7 +65,6 @@ export const Records = ({ timezone, records, userData }: RecordsProps) => {
         if (!intervalId) {
           const intervalId = setInterval(() => {
             setRunningTaskAccTimeSecs((acc) => acc + 60)
-            console.log('interval on effect')
           }, 1000 * 60)
           setIntervalId(intervalId)
         }

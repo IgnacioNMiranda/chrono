@@ -53,8 +53,6 @@ export const TaskForm = ({ onClose }: TaskFormProps) => {
       form.reset()
       onClose()
     } catch (error: any) {
-      console.log({ error })
-
       setSubmitError(error.message)
       setTimeout(() => {
         setSubmitError('')

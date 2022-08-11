@@ -19,5 +19,5 @@ export const getUserData = async (user?: UserProfile): Promise<HydratedDocument<
     const json = await response.json()
     return json
   }
-  throw new Error('User data could not be retrieved. Try again later')
+  throw new Error('' + response.status)
 }
