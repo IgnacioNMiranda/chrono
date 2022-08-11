@@ -41,7 +41,7 @@ const stopTask = async (req: NextApiRequest, res: NextApiResponse) => {
 
   if (!todayRecord) return res.status(400).end('Bad request. Could not find today record')
 
-  const task = await Task.findOne({ taskId }).exec()
+  const task = await Task.findById(taskId).exec()
   if (!task) return res.status(400).end('Bad request. Cannot find task')
   if (!task.lastRun) return res.status(400).end('Bad request. Task were not running')
 

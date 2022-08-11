@@ -21,9 +21,13 @@ export const getDateData = (timeZone?: string) => {
 }
 
 export const getSecondsDiff = (date: Date, prevDate?: Date | string) => {
+  let secondsDiff = 0
   if (typeof prevDate === 'string')
-    return (date.getTime() - (new Date(prevDate)?.getTime() ?? 0)) / 1000
-  return (date.getTime() - ((prevDate as Date)?.getTime() ?? 0)) / 1000
+    secondsDiff = (date.getTime() - (new Date(prevDate)?.getTime() ?? 0)) / 1000
+  else secondsDiff = (date.getTime() - ((prevDate as Date)?.getTime() ?? 0)) / 1000
+
+  // Check for Date discrepancies that provoques negative seconds
+  return secondsDiff >= 0 ? secondsDiff : 0
 }
 
 export const getHoursFromSecs = (accTimeSecs: number) => {

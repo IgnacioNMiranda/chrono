@@ -9,6 +9,7 @@ import { TrackTaskButton } from './track-task-button'
 import { toggleTaskStatus } from '../../../services'
 import { HydratedDocument, Types } from 'mongoose'
 import { useOnMount } from '../../../hooks'
+import { isArray } from 'util'
 
 export type RecordsProps = {
   timezone: string
@@ -21,16 +22,12 @@ export const Records = ({ timezone, records, userData }: RecordsProps) => {
 
   const { state, dispatch } = useContext(ChronoContext)
 
-  const todayRecord = useMemo(
-    () =>
-      records.find(
-        (record) =>
-          record.day === Number(dateData.day) &&
-          record.month === Number(dateData.month) &&
-          record.year === Number(dateData.year) &&
-          record.week === Number(dateData.week),
-      ),
-    [dateData, records],
+  const todayRecord = records.find(
+    (record) =>
+      record.day === Number(dateData.day) &&
+      record.month === Number(dateData.month) &&
+      record.year === Number(dateData.year) &&
+      record.week === Number(dateData.week),
   )
 
   const [runningTaskAccTimeSecs, setRunningTaskAccTimeSecs] = useState(0)
@@ -48,8 +45,7 @@ export const Records = ({ timezone, records, userData }: RecordsProps) => {
     await state.refetch?.()
     if (!isRunning) {
       const intervalId = setInterval(() => {
-        setRunningTaskAccTimeSecs((prev) => prev + 60)
-        console.log('inteval in toggle')
+        setRunningTaskAccTimeSecs((acc) => acc + 60)
       }, 1000 * 60)
       setIntervalId(intervalId)
       setRunningTaskAccTimeSecs(task.accTimeSecs)
@@ -64,22 +60,16 @@ export const Records = ({ timezone, records, userData }: RecordsProps) => {
   useEffect(() => {
     if (isMounted) {
       const runningTask = todayRecord?.tasks.find((task) => task.status === TaskStatus.RUNNING)
-      if (runningTask) {
-        const datetime_str = new Date().toLocaleString('en-US', { timeZone: timezone })
-        console.log('intervalId', intervalId)
 
+      if (runningTask) {
         if (!intervalId) {
           const intervalId = setInterval(() => {
-            setRunningTaskAccTimeSecs((prev) => prev + 60)
+            setRunningTaskAccTimeSecs((acc) => acc + 60)
             console.log('interval on effect')
           }, 1000 * 60)
           setIntervalId(intervalId)
         }
-        console.log(runningTask)
-        console.log(
-          runningTask.accTimeSecs + getSecondsDiff(new Date(datetime_str), runningTask.lastRun),
-        )
-
+        const datetime_str = new Date().toLocaleString('en-US', { timeZone: timezone })
         setRunningTaskAccTimeSecs(
           runningTask.accTimeSecs + getSecondsDiff(new Date(datetime_str), runningTask.lastRun),
         )
@@ -87,7 +77,7 @@ export const Records = ({ timezone, records, userData }: RecordsProps) => {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isMounted])
+  }, [isMounted, todayRecord])
 
   return (
     <div className="flex flex-col sm:space-y-4 w-full">
@@ -166,19 +156,21 @@ export const Records = ({ timezone, records, userData }: RecordsProps) => {
             </div>
             <span className="w-auto p-4 flex justify-center items-center text-17 font-medium ">
               {getHoursFromSecs(
-                todayRecord?.tasks.reduce(
-                  (prev, next) =>
-                    typeof prev === 'number'
-                      ? prev +
-                        (runningTaskId && next._id === runningTaskId
-                          ? runningTaskAccTimeSecs
-                          : next.accTimeSecs)
-                      : (prev as ITask).accTimeSecs +
-                        (runningTaskId && next._id === runningTaskId
-                          ? runningTaskAccTimeSecs
-                          : next.accTimeSecs),
-                  0,
-                ),
+                (() => {
+                  const [hours, minutes] = todayRecord?.tasks.reduce(
+                    (acc, cur) => {
+                      const hoursFromSecs =
+                        runningTaskId && cur._id === runningTaskId
+                          ? getHoursFromSecs(runningTaskAccTimeSecs)
+                          : getHoursFromSecs(cur.accTimeSecs)
+                      acc[0] = acc[0] + Number(hoursFromSecs.split(':')[0])
+                      acc[1] = acc[1] + Number(hoursFromSecs.split(':')[1])
+                      return acc
+                    },
+                    [0, 0],
+                  )
+                  return hours * 3600 + minutes * 60
+                })(),
               )}
             </span>
             <div className="w-auto sm:w-4/12 lg:w-3/12 xl:w-2/12 py-4 pr-4" />
