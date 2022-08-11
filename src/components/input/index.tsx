@@ -17,12 +17,15 @@ export const Input = ({
   id,
   onFocus,
   onBlur,
+  disabled,
   onChange,
   required,
+  defaultValue,
   isTimeInput = false,
   className,
 }: InputProps) => {
   const [isFocus, setIsFocus] = useState(false)
+
   const handleBlur: FocusEventHandler<HTMLInputElement> = (e) => {
     onBlur?.(e)
     setIsFocus(false)
@@ -43,6 +46,8 @@ export const Input = ({
           e.key === 'Enter' && !submitOnEnter && e.preventDefault()
         }}
         name={name}
+        disabled={disabled}
+        defaultValue={defaultValue}
         id={id}
         required={required}
         onFocus={handleFocus}
@@ -58,10 +63,12 @@ export const Input = ({
         <textarea
           placeholder={placeholder}
           name={name}
+          disabled={disabled}
           onChange={onChange as unknown as ChangeEventHandler<HTMLTextAreaElement>}
           onFocus={handleFocus as unknown as FocusEventHandler<HTMLTextAreaElement>}
           onBlur={handleBlur as unknown as FocusEventHandler<HTMLTextAreaElement>}
           id={id}
+          defaultValue={defaultValue}
           className={`resize-none ${baseClassName}`}
         />
       )
@@ -74,9 +81,11 @@ export const Input = ({
           onKeyPress={(e) => {
             e.key === 'Enter' && !submitOnEnter && e.preventDefault()
           }}
+          defaultValue={defaultValue}
           onBlur={handleBlur}
           required={required}
           onChange={onChange}
+          disabled={disabled}
           name={name}
           id={id}
           placeholder={placeholder}

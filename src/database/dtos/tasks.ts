@@ -7,6 +7,14 @@ export type NewTaskDto = {
   userId: Types.ObjectId
 }
 
+export type EditTaskDto = {
+  title: string
+  notes?: string
+  time: string
+  userId: Types.ObjectId
+  taskId: Types.ObjectId
+}
+
 export type ToggleTaskStatusDto = {
   taskId: Types.ObjectId
   timezone?: string

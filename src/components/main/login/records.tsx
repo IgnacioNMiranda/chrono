@@ -9,7 +9,6 @@ import { TrackTaskButton } from './track-task-button'
 import { toggleTaskStatus } from '../../../services'
 import { HydratedDocument, Types } from 'mongoose'
 import { useOnMount } from '../../../hooks'
-import { isArray } from 'util'
 
 export type RecordsProps = {
   timezone: string
@@ -46,15 +45,35 @@ export const Records = ({ timezone, records, userData }: RecordsProps) => {
     if (!isRunning) {
       const intervalId = setInterval(() => {
         setRunningTaskAccTimeSecs((acc) => acc + 60)
+        console.log('toggle interval')
       }, 1000 * 60)
       setIntervalId(intervalId)
       setRunningTaskAccTimeSecs(task.accTimeSecs)
+      dispatch({
+        type: ChronoActionTypes.SET_DYNAMIC_ACC_TIME_SECS,
+        payload: task.accTimeSecs,
+      })
       setRunningTaskId(task._id)
     } else {
       clearInterval(intervalId)
       setIntervalId(undefined)
       setRunningTaskId(undefined)
+      dispatch({
+        type: ChronoActionTypes.SET_DYNAMIC_ACC_TIME_SECS,
+        payload: undefined,
+      })
     }
+  }
+
+  const onEditTask = (task: HydratedDocument<ITask>) => {
+    dispatch({
+      type: ChronoActionTypes.SET_EDITED_TASK,
+      payload: task,
+    })
+    dispatch({
+      type: ChronoActionTypes.TOGGLE_MODAL,
+      payload: true,
+    })
   }
 
   useEffect(() => {
@@ -64,19 +83,32 @@ export const Records = ({ timezone, records, userData }: RecordsProps) => {
       if (runningTask) {
         if (!intervalId) {
           const intervalId = setInterval(() => {
+            console.log('effect interval')
+
             setRunningTaskAccTimeSecs((acc) => acc + 60)
           }, 1000 * 60)
           setIntervalId(intervalId)
         }
         const datetime_str = new Date().toLocaleString('en-US', { timeZone: timezone })
-        setRunningTaskAccTimeSecs(
-          runningTask.accTimeSecs + getSecondsDiff(new Date(datetime_str), runningTask.lastRun),
-        )
+        const dynamicAccTimeSecs =
+          runningTask.accTimeSecs + getSecondsDiff(new Date(datetime_str), runningTask.lastRun)
+        setRunningTaskAccTimeSecs(dynamicAccTimeSecs)
+        dispatch({
+          type: ChronoActionTypes.SET_DYNAMIC_ACC_TIME_SECS,
+          payload: dynamicAccTimeSecs,
+        })
         setRunningTaskId(runningTask._id)
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isMounted, todayRecord])
+  }, [isMounted])
+
+  useEffect(() => {
+    dispatch({
+      type: ChronoActionTypes.SET_DYNAMIC_ACC_TIME_SECS,
+      payload: runningTaskAccTimeSecs,
+    })
+  }, [runningTaskAccTimeSecs, dispatch])
 
   return (
     <div className="flex flex-col sm:space-y-4 w-full">
@@ -141,6 +173,7 @@ export const Records = ({ timezone, records, userData }: RecordsProps) => {
                   <Button
                     variant={ButtonVariant.WHITE}
                     round={ButtonRound.LG}
+                    onClick={() => onEditTask(task)}
                     className="px-2 w-full sm:w-auto"
                   >
                     <span className="text-13 text-gray-dark leading-7 font-normal">Edit</span>
@@ -157,7 +190,7 @@ export const Records = ({ timezone, records, userData }: RecordsProps) => {
               {getHoursFromSecs(
                 (() => {
                   const [hours, minutes] = todayRecord?.tasks.reduce(
-                    (acc, cur) => {
+                    (acc, cur, idx) => {
                       const hoursFromSecs =
                         runningTaskId && cur._id === runningTaskId
                           ? getHoursFromSecs(runningTaskAccTimeSecs)

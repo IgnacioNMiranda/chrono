@@ -10,6 +10,8 @@ export const TimeInput = ({
   required,
   name,
   id,
+  defaultValue,
+  disabled,
   className,
 }: TimeInputProps) => {
   const handleBlur: FocusEventHandler<HTMLInputElement> = (e) => {
@@ -45,13 +47,17 @@ export const TimeInput = ({
     <input
       type="text"
       onFocus={onFocus}
+      defaultValue={defaultValue}
       onBlur={handleBlur}
       onChange={onChange}
+      disabled={disabled}
       required={required}
       name={name}
       id={id}
       placeholder="0:00"
-      className={`text-2.5xl text-right leading-8 ${className}`}
+      className={`text-2.5xl text-right leading-8 ${
+        disabled ? 'pointer-events-none bg-gray-light text-gray-dark-opacity' : ''
+      } ${className}`}
     />
   )
 }

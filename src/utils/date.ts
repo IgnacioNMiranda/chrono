@@ -31,5 +31,10 @@ export const getSecondsDiff = (date: Date, prevDate?: Date | string) => {
 }
 
 export const getHoursFromSecs = (accTimeSecs: number) => {
-  return new Date(accTimeSecs * 1000).toISOString().substring(11, 11 + 5)
+  const minutes = Math.floor(accTimeSecs / 60) % 60
+  const hours = Math.floor(accTimeSecs / 3600)
+
+  return `${hours.toString().length < 2 ? '0' : ''}${hours}:${
+    minutes.toString().length < 2 ? '0' : ''
+  }${minutes}`
 }

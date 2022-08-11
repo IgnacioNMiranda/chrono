@@ -20,12 +20,16 @@ const Home: NextPage = () => {
         <TaskModal
           className={state.isOpen ? 'visible opacity-100' : 'invisible opacity-0'}
           timezone={state.timezone}
-          onClose={() =>
+          onClose={() => {
             dispatch({
               type: ChronoActionTypes.TOGGLE_MODAL,
               payload: false,
             })
-          }
+            dispatch({
+              type: ChronoActionTypes.SET_EDITED_TASK,
+              payload: undefined,
+            })
+          }}
         />
       )}
 

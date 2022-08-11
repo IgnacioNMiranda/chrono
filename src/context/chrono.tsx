@@ -1,11 +1,13 @@
 import { QueryObserverBaseResult } from '@tanstack/react-query'
-import { Types } from 'mongoose'
+import { HydratedDocument, Types } from 'mongoose'
 import { createContext, Dispatch, ReactNode, useMemo, useReducer } from 'react'
+import { ITask } from '../database/models'
 
-const INITIAL_TASK_MODAL_STATE = {
+const INITIAL_TASK_MODAL_STATE: ChronoState = {
   isOpen: false,
   timezone: '',
   user: undefined,
+  editedTask: undefined,
   refetch: undefined,
 }
 
@@ -13,6 +15,8 @@ type ChronoState = {
   isOpen: boolean
   timezone: string
   user?: Types.ObjectId
+  editedTask?: HydratedDocument<ITask>
+  dynamicAccTimeSecs?: number
   refetch?: () => Promise<QueryObserverBaseResult>
 }
 
@@ -22,10 +26,18 @@ export enum ChronoActionTypes {
   SET_TIMEZONE = '@set-timezone',
   SET_USER = '@set-user',
   SET_REFETCH_USER = '@set-refetch-user',
+  SET_EDITED_TASK = '@set-edited-task',
+  SET_DYNAMIC_ACC_TIME_SECS = '@set-dynamic-acc-time-secs',
 }
 export interface ChronoAction {
   type: ChronoActionTypes
-  payload: boolean | string | Types.ObjectId | ChronoState['refetch']
+  payload:
+    | boolean
+    | number
+    | string
+    | HydratedDocument<ITask>
+    | Types.ObjectId
+    | ChronoState['refetch']
 }
 
 /** Reducer */
@@ -35,9 +47,11 @@ const chronoReducer: (state: ChronoState, action: ChronoAction) => ChronoState =
 ): ChronoState => {
   switch (action.type) {
     case ChronoActionTypes.TOGGLE_MODAL: {
+      const isOpen = action.payload as boolean
       return {
         ...state,
-        isOpen: action.payload as boolean,
+        isOpen,
+        editedTask: !isOpen ? undefined : state.editedTask,
       }
     }
     case ChronoActionTypes.SET_TIMEZONE: {
@@ -56,6 +70,18 @@ const chronoReducer: (state: ChronoState, action: ChronoAction) => ChronoState =
       return {
         ...state,
         refetch: action.payload as ChronoState['refetch'],
+      }
+    }
+    case ChronoActionTypes.SET_EDITED_TASK: {
+      return {
+        ...state,
+        editedTask: action.payload as HydratedDocument<ITask>,
+      }
+    }
+    case ChronoActionTypes.SET_DYNAMIC_ACC_TIME_SECS: {
+      return {
+        ...state,
+        dynamicAccTimeSecs: action.payload as number,
       }
     }
     default:

@@ -1,7 +1,8 @@
-import { FocusEventHandler, FormEventHandler, useContext, useState } from 'react'
+import { FocusEventHandler, FormEventHandler, useContext, useEffect, useState } from 'react'
 import { ChronoContext } from '../../../context'
-import { createNewTask } from '../../../services/task'
-import { capitalizeFirstLetter, isValidTime } from '../../../utils'
+import { TaskStatus } from '../../../database/enums'
+import { createNewTask, editTask } from '../../../services/task'
+import { capitalizeFirstLetter, getHoursFromSecs, isValidTime } from '../../../utils'
 import { Button, ButtonRound, ButtonVariant } from '../../button'
 import { Input } from '../../input'
 
@@ -46,7 +47,20 @@ export const TaskForm = ({ onClose }: TaskFormProps) => {
     const { title, notes, time } = values as Record<string, string>
 
     try {
-      await createNewTask({ title, notes, time, userId: state.user! })
+      if (state.editedTask) {
+        await editTask({
+          title,
+          notes,
+          time:
+            state.editedTask.status === TaskStatus.RUNNING
+              ? getHoursFromSecs(state.editedTask.accTimeSecs)
+              : time,
+          userId: state.user!,
+          taskId: state.editedTask._id,
+        })
+      } else {
+        await createNewTask({ title, notes, time, userId: state.user! })
+      }
       await state.refetch?.()
       setTimeVisited(false)
       setTitleVisited(false)
@@ -60,6 +74,13 @@ export const TaskForm = ({ onClose }: TaskFormProps) => {
     }
   }
 
+  useEffect(() => {
+    if (state.editedTask) {
+      setTimeVisited(true)
+      setTitleVisited(true)
+    }
+  }, [state.editedTask])
+
   return (
     <form className="flex space-y-2 flex-col" onSubmit={onSubmit}>
       <Input
@@ -67,6 +88,7 @@ export const TaskForm = ({ onClose }: TaskFormProps) => {
         id="title"
         onChange={setProperties}
         onBlur={setProperties}
+        defaultValue={state.editedTask ? state.editedTask.title : ''}
         submitOnEnter={false}
         name="title"
         required
@@ -77,6 +99,7 @@ export const TaskForm = ({ onClose }: TaskFormProps) => {
           type="textarea"
           submitOnEnter={false}
           placeholder="Notes (optional)"
+          defaultValue={state.editedTask ? state.editedTask.notes : ''}
           onBlur={setProperties}
           id="notes"
           name="notes"
@@ -84,7 +107,15 @@ export const TaskForm = ({ onClose }: TaskFormProps) => {
         />
         <Input
           isTimeInput
+          disabled={state.editedTask?.status === TaskStatus.RUNNING}
           onBlur={setProperties}
+          defaultValue={
+            state.editedTask?.status === TaskStatus.RUNNING && state.dynamicAccTimeSecs
+              ? getHoursFromSecs(state.dynamicAccTimeSecs)
+              : state.editedTask && !state.dynamicAccTimeSecs
+              ? getHoursFromSecs(state.editedTask?.accTimeSecs)
+              : ''
+          }
           id="time"
           name="time"
           className="h-13 w-full md:w-3/12"
@@ -108,7 +139,9 @@ export const TaskForm = ({ onClose }: TaskFormProps) => {
           variant={ButtonVariant.PRIMARY}
           type="submit"
         >
-          <span className="text-white font-medium text-15">Start timer</span>
+          <span className="text-white font-medium text-15">
+            {state.editedTask ? 'Update entry' : 'Start timer'}
+          </span>
         </Button>
         <Button
           round={ButtonRound.LG}
