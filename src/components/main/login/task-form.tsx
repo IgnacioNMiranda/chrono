@@ -1,4 +1,4 @@
-import { FocusEventHandler, FormEventHandler, useContext, useEffect, useState } from 'react'
+import { FocusEventHandler, FormEventHandler, useContext, useEffect, useRef, useState } from 'react'
 import { ChronoContext } from '../../../context'
 import { TaskStatus } from '../../../database/enums'
 import { createNewTask, deleteTask, editTask } from '../../../services/task'
@@ -34,6 +34,8 @@ export const TaskForm = ({ onClose }: TaskFormProps) => {
   const [waitingDeleteTaskConfirmation, setWaitingDeleteConfirmation] = useState(false)
 
   const { state } = useContext(ChronoContext)
+
+  const formRef = useRef<HTMLFormElement>(null)
 
   const setProperties: FocusEventHandler<HTMLInputElement> = (e) => {
     setErrors(getErrors(errors, e))
@@ -99,16 +101,25 @@ export const TaskForm = ({ onClose }: TaskFormProps) => {
   }
 
   useEffect(() => {
+    // If we're editing a task these 2 fields has been already visited
     if (state.editedTask) {
       setTimeVisited(true)
       setTitleVisited(true)
     }
 
-    return () => setWaitingDeleteConfirmation(false)
+    const effectRef = formRef.current
+
+    return () => {
+      // When modal is closed
+      setWaitingDeleteConfirmation(false)
+      setTimeVisited(false)
+      setTitleVisited(false)
+      effectRef?.reset()
+    }
   }, [state.editedTask])
 
   return (
-    <form className="flex space-y-2 flex-col" onSubmit={onSubmit}>
+    <form className="flex space-y-2 flex-col" ref={formRef} onSubmit={onSubmit}>
       <Input
         placeholder="Title (*)"
         id="title"

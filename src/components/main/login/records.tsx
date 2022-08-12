@@ -18,7 +18,6 @@ export type RecordsProps = {
 
 export const Records = ({ timezone, records, userData }: RecordsProps) => {
   const dateData = useMemo(() => getDateData(timezone), [timezone])
-  console.log(records)
 
   const { state, dispatch } = useContext(ChronoContext)
 
@@ -111,6 +110,23 @@ export const Records = ({ timezone, records, userData }: RecordsProps) => {
     })
   }, [runningTaskAccTimeSecs, dispatch])
 
+  useEffect(() => {
+    const runningTask = todayRecord?.tasks.find((task) => task.status === TaskStatus.RUNNING)
+    if (runningTask && !intervalId && !runningTaskAccTimeSecs) {
+      const intervalId = setInterval(() => {
+        setRunningTaskAccTimeSecs((acc) => acc + 60)
+        console.log('toggle interval')
+      }, 1000 * 60)
+      setIntervalId(intervalId)
+      setRunningTaskAccTimeSecs(runningTask.accTimeSecs)
+      dispatch({
+        type: ChronoActionTypes.SET_DYNAMIC_ACC_TIME_SECS,
+        payload: runningTask.accTimeSecs,
+      })
+      setRunningTaskId(runningTask._id)
+    }
+  }, [todayRecord, dispatch, intervalId, runningTaskAccTimeSecs])
+
   return (
     <div className="flex flex-col sm:space-y-4 w-full">
       <section>
@@ -140,6 +156,7 @@ export const Records = ({ timezone, records, userData }: RecordsProps) => {
           {todayRecord?.tasks.map((task, idx) => {
             const timeHours = getHoursFromSecs(task.accTimeSecs)
             const isRunning = task._id === runningTaskId
+            console.log(isRunning, task)
 
             return (
               <div

@@ -5,7 +5,6 @@ import { Task, User } from '../../../database/models'
 
 const editTask = async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method !== 'POST') return res.status(400).end('Bad request')
-  console.log(req)
 
   await connectToDatabase()
 
