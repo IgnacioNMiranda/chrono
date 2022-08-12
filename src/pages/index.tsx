@@ -18,6 +18,7 @@ const Home: NextPage = () => {
     <>
       {state && state.timezone && (
         <TaskModal
+          isCreatingEntry={!state.editedTask}
           className={state.isOpen ? 'visible opacity-100' : 'invisible opacity-0'}
           timezone={state.timezone}
           onClose={() => {

@@ -8,6 +8,7 @@ import { Input } from '../../input'
 
 export type TaskFormProps = {
   onClose: () => void
+  isCreatingEntry?: boolean
 }
 
 const getErrors = (
@@ -25,7 +26,7 @@ const getErrors = (
   return newErrors
 }
 
-export const TaskForm = ({ onClose }: TaskFormProps) => {
+export const TaskForm = ({ isCreatingEntry = false, onClose }: TaskFormProps) => {
   const [errors, setErrors] = useState<Record<string, boolean>>({})
   const [titleVisited, setTitleVisited] = useState(false)
   const [timeVisited, setTimeVisited] = useState(false)
@@ -193,7 +194,7 @@ export const TaskForm = ({ onClose }: TaskFormProps) => {
             </Button>
           </div>
         )}
-        {!waitingDeleteTaskConfirmation && (
+        {!waitingDeleteTaskConfirmation && !isCreatingEntry && (
           <button
             onClick={() => setWaitingDeleteConfirmation(true)}
             type="button"
