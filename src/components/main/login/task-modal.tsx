@@ -29,7 +29,7 @@ export const TaskModal = ({ timezone, onClose, className = '' }: TaskModalProps)
             New time entry for {dateData.dayName}, {dateData.day} {dateData.monthName}
           </p>
         </div>
-        <div className="p-6">
+        <div className="p-4 sm:p-6">
           <p className="font-medium text-gray-dark text-15 leading-5.6 mb-2">Project / Task</p>
           <TaskForm onClose={onClose} />
         </div>

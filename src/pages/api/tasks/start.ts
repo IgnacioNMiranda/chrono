@@ -2,7 +2,6 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import { connectToDatabase } from '../../../database/connection'
 import { Task, User } from '../../../database/models'
 import { TaskStatus } from '../../../database/enums'
-import { Record } from '../../../database/models'
 import { getDateData, getSecondsDiff } from '../../../utils'
 
 const stopTask = async (req: NextApiRequest, res: NextApiResponse) => {
@@ -31,13 +30,13 @@ const stopTask = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const { month, week, day, year, date } = getDateData(user.timezone)
 
-  const todayRecord = await Record.findOne({
-    month,
-    week,
-    day,
-    year,
-    user: userId,
-  }).exec()
+  const todayRecord = user.records.find(
+    (record) =>
+      record.month === Number(month) &&
+      record.day === Number(day) &&
+      record.week === Number(week) &&
+      record.year === Number(year),
+  )
 
   if (!todayRecord) return res.status(400).end('Bad request. Could not find today record')
 

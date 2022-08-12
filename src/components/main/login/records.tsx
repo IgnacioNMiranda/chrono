@@ -18,6 +18,7 @@ export type RecordsProps = {
 
 export const Records = ({ timezone, records, userData }: RecordsProps) => {
   const dateData = useMemo(() => getDateData(timezone), [timezone])
+  console.log(records)
 
   const { state, dispatch } = useContext(ChronoContext)
 
@@ -190,7 +191,7 @@ export const Records = ({ timezone, records, userData }: RecordsProps) => {
               {getHoursFromSecs(
                 (() => {
                   const [hours, minutes] = todayRecord?.tasks.reduce(
-                    (acc, cur, idx) => {
+                    (acc, cur) => {
                       const hoursFromSecs =
                         runningTaskId && cur._id === runningTaskId
                           ? getHoursFromSecs(runningTaskAccTimeSecs)

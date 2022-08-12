@@ -1,7 +1,7 @@
 import { FocusEventHandler, FormEventHandler, useContext, useEffect, useState } from 'react'
 import { ChronoContext } from '../../../context'
 import { TaskStatus } from '../../../database/enums'
-import { createNewTask, editTask } from '../../../services/task'
+import { createNewTask, deleteTask, editTask } from '../../../services/task'
 import { capitalizeFirstLetter, getHoursFromSecs, isValidTime } from '../../../utils'
 import { Button, ButtonRound, ButtonVariant } from '../../button'
 import { Input } from '../../input'
@@ -31,12 +31,32 @@ export const TaskForm = ({ onClose }: TaskFormProps) => {
   const [timeVisited, setTimeVisited] = useState(false)
   const [submitError, setSubmitError] = useState('')
 
+  const [waitingDeleteTaskConfirmation, setWaitingDeleteConfirmation] = useState(false)
+
   const { state } = useContext(ChronoContext)
 
   const setProperties: FocusEventHandler<HTMLInputElement> = (e) => {
     setErrors(getErrors(errors, e))
     if (e.target.id === 'title' && !titleVisited) setTitleVisited(true)
     else if (e.target.id === 'time' && !timeVisited) setTimeVisited(true)
+  }
+
+  const handleClose = () => {
+    onClose?.()
+    setWaitingDeleteConfirmation(false)
+  }
+
+  const handleDeleteEntry = async () => {
+    if (state.editedTask) {
+      await deleteTask({
+        userId: state.user!,
+        taskId: state.editedTask._id,
+      })
+    }
+    await state.refetch?.()
+    setTimeVisited(false)
+    setTitleVisited(false)
+    handleClose()
   }
 
   const onSubmit: FormEventHandler<HTMLFormElement> = async (e) => {
@@ -48,16 +68,20 @@ export const TaskForm = ({ onClose }: TaskFormProps) => {
 
     try {
       if (state.editedTask) {
-        await editTask({
-          title,
-          notes,
-          time:
-            state.editedTask.status === TaskStatus.RUNNING
-              ? getHoursFromSecs(state.editedTask.accTimeSecs)
-              : time,
-          userId: state.user!,
-          taskId: state.editedTask._id,
-        })
+        try {
+          await editTask({
+            title,
+            notes,
+            time:
+              state.editedTask.status === TaskStatus.RUNNING
+                ? getHoursFromSecs(state.editedTask.accTimeSecs)
+                : time,
+            userId: state.user!,
+            taskId: state.editedTask._id,
+          })
+        } catch (error) {
+          console.log(error)
+        }
       } else {
         await createNewTask({ title, notes, time, userId: state.user! })
       }
@@ -65,7 +89,7 @@ export const TaskForm = ({ onClose }: TaskFormProps) => {
       setTimeVisited(false)
       setTitleVisited(false)
       form.reset()
-      onClose()
+      handleClose()
     } catch (error: any) {
       setSubmitError(error.message)
       setTimeout(() => {
@@ -79,6 +103,8 @@ export const TaskForm = ({ onClose }: TaskFormProps) => {
       setTimeVisited(true)
       setTitleVisited(true)
     }
+
+    return () => setWaitingDeleteConfirmation(false)
   }, [state.editedTask])
 
   return (
@@ -131,28 +157,66 @@ export const TaskForm = ({ onClose }: TaskFormProps) => {
         </ul>
       )}
       {!!submitError && <span className="text-red-400">{submitError}</span>}
-      <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 pt-2">
-        <Button
-          disabled={(!timeVisited && !titleVisited) || !!Object.values(errors).length}
-          round={ButtonRound.LG}
-          className="px-4 py-1.5 w-full sm:w-auto"
-          variant={ButtonVariant.PRIMARY}
-          type="submit"
-        >
-          <span className="text-white font-medium text-15">
-            {state.editedTask ? 'Update entry' : 'Start timer'}
-          </span>
-        </Button>
-        <Button
-          round={ButtonRound.LG}
-          className="px-4 py-1.5 w-full sm:w-auto"
-          variant={ButtonVariant.WHITE}
-          onClick={onClose}
-          type="button"
-        >
-          <span className="font-normal text-15">Cancel</span>
-        </Button>
+      <div className="flex flex-col sm:flex-row justify-between items-center">
+        {!waitingDeleteTaskConfirmation && (
+          <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 pt-2 w-full">
+            <Button
+              disabled={(!timeVisited && !titleVisited) || !!Object.values(errors).length}
+              round={ButtonRound.LG}
+              className="px-4 py-1.5 w-full sm:w-auto"
+              variant={ButtonVariant.PRIMARY}
+              type="submit"
+            >
+              <span className="text-white font-medium text-15">
+                {state.editedTask ? 'Update entry' : 'Start timer'}
+              </span>
+            </Button>
+            <Button
+              round={ButtonRound.LG}
+              className="px-4 py-1.5 w-full sm:w-auto"
+              variant={ButtonVariant.WHITE}
+              onClick={handleClose}
+              type="button"
+            >
+              <span className="font-normal text-15">Cancel</span>
+            </Button>
+          </div>
+        )}
+        {!waitingDeleteTaskConfirmation && (
+          <button
+            onClick={() => setWaitingDeleteConfirmation(true)}
+            type="button"
+            className="self-end sm:self-center mt-4 sm:mt-0 cursor-pointer underline text-warning h-fit"
+          >
+            Delete
+          </button>
+        )}
       </div>
+      {!!waitingDeleteTaskConfirmation && (
+        <div className="flex flex-col sm:flex-row justify-end items-center space-x-0 sm:space-x-2 space-y-1 sm:space-y-0 pt-1.5 pb-1">
+          <p className="text-right w-full sm:w-auto text-13 leading-5.6 text-gray-dark font-normal">
+            Permanently delete this time entry?
+          </p>
+          <Button
+            round={ButtonRound.LG}
+            className="px-2 py-1 w-full sm:w-auto"
+            variant={ButtonVariant.WARNING}
+            type="button"
+            onClick={handleDeleteEntry}
+          >
+            <span className="text-white font-medium text-13">Delete time entry</span>
+          </Button>
+          <Button
+            round={ButtonRound.LG}
+            className="px-2 py-0.5 sm:py-1 w-full sm:w-auto"
+            variant={ButtonVariant.WHITE}
+            onClick={() => setWaitingDeleteConfirmation(false)}
+            type="button"
+          >
+            <span className="font-normal text-13">Cancel</span>
+          </Button>
+        </div>
+      )}
     </form>
   )
 }

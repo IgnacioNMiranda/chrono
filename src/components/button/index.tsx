@@ -4,12 +4,14 @@ export enum ButtonVariant {
   PRIMARY = 'primary',
   WHITE = 'white',
   GRAY_DARK = 'gray-dark',
+  WARNING = 'warning',
 }
 
 const variantClasses: Record<ButtonVariant, string> = {
   [ButtonVariant.PRIMARY]: 'bg-primary hover:bg-primary-dark',
   [ButtonVariant.WHITE]: 'bg-white border border-gray-border text-gray hover:border-gray-dark',
   [ButtonVariant.GRAY_DARK]: 'bg-gray-dark border border-gray-border text-white hover:border-gray',
+  [ButtonVariant.WARNING]: 'bg-warning hover:bg-warning-dark text-white',
 }
 
 export enum ButtonRound {

@@ -6,6 +6,10 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        warning: {
+          DEFAULT: '#d92f2f',
+          dark: '#be2923',
+        },
         primary: '#9f5fd4',
         primary: {
           DEFAULT: '#9f5fd4',

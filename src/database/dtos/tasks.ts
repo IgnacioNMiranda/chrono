@@ -15,6 +15,11 @@ export type EditTaskDto = {
   taskId: Types.ObjectId
 }
 
+export type DeleteTaskDto = {
+  userId: Types.ObjectId
+  taskId: Types.ObjectId
+}
+
 export type ToggleTaskStatusDto = {
   taskId: Types.ObjectId
   timezone?: string
