@@ -2,7 +2,7 @@ import { useContext, useEffect, useMemo, useState } from 'react'
 import { ChronoActionTypes, ChronoContext } from '../../../context'
 import { IRecord, ITask, IUser } from '../../../database/models'
 import { TaskStatus } from '../../../database/enums'
-import { getDateData, getSecondsDiff, getHoursFromSecs } from '../../../utils'
+import { getDateData, getHoursFromSecs } from '../../../utils'
 import { Button, ButtonRound, ButtonVariant } from '../../button'
 import { ClockAnimated, ClockIcon, PlusIcon } from '../../icons'
 import { TrackTaskButton } from './track-task-button'
@@ -37,6 +37,29 @@ export const Records = ({ timezone, records, userData }: RecordsProps) => {
   const [runningTaskId, setRunningTaskId] = useState<Types.ObjectId>()
   const { isMounted } = useOnMount()
 
+  const createInterval = (
+    runningTaskAccTimeSecs: number,
+    dynamicAccTimeSecs: number,
+    runningTaskId: Types.ObjectId,
+  ) => {
+    // Apply interval each minute
+    const interval = setInterval(() => {
+      setRunningTaskAccTimeSecs((acc) => acc + 60)
+    }, 1000 * 60)
+    setIntervalId(interval)
+    setRunningTaskAccTimeSecs(runningTaskAccTimeSecs)
+    dispatch({
+      type: ChronoActionTypes.SET_DYNAMIC_ACC_TIME_SECS,
+      payload: dynamicAccTimeSecs,
+    })
+    setRunningTaskId(runningTaskId)
+  }
+
+  const handleClearInterval = () => {
+    clearInterval(intervalId)
+    setIntervalId(undefined)
+  }
+
   const onToggleTaskStatus = async (isRunning: boolean, task: HydratedDocument<ITask>) => {
     await toggleTaskStatus({
       isRunning,
@@ -46,20 +69,15 @@ export const Records = ({ timezone, records, userData }: RecordsProps) => {
       locale: locale ?? 'en',
     })
     await state.refetch?.()
+
+    if (intervalId && runningTaskId) {
+      // When a task has been started and another one is already running
+      handleClearInterval()
+    }
     if (!isRunning) {
-      const intervalId = setInterval(() => {
-        setRunningTaskAccTimeSecs((acc) => acc + 60)
-      }, 1000 * 60)
-      setIntervalId(intervalId)
-      setRunningTaskAccTimeSecs(task.accTimeSecs)
-      dispatch({
-        type: ChronoActionTypes.SET_DYNAMIC_ACC_TIME_SECS,
-        payload: task.accTimeSecs,
-      })
-      setRunningTaskId(task._id)
+      createInterval(task.accTimeSecs, task.accTimeSecs, task._id)
     } else {
-      clearInterval(intervalId)
-      setIntervalId(undefined)
+      handleClearInterval()
       setRunningTaskId(undefined)
       dispatch({
         type: ChronoActionTypes.SET_DYNAMIC_ACC_TIME_SECS,
@@ -80,53 +98,33 @@ export const Records = ({ timezone, records, userData }: RecordsProps) => {
   }
 
   useEffect(() => {
-    if (isMounted) {
-      const runningTask = todayRecord?.tasks.find((task) => task.status === TaskStatus.RUNNING)
-
-      if (runningTask) {
-        if (!intervalId) {
-          const intervalId = setInterval(() => {
-            setRunningTaskAccTimeSecs((acc) => acc + 60)
-          }, 1000 * 60)
-          setIntervalId(intervalId)
-        }
-        const datetime_str = new Date().toLocaleString(locale, { timeZone: timezone })
-
-        const dynamicAccTimeSecs =
-          runningTask.accTimeSecs + getSecondsDiff(new Date(datetime_str), runningTask.lastRun)
-        setRunningTaskAccTimeSecs(dynamicAccTimeSecs)
-        dispatch({
-          type: ChronoActionTypes.SET_DYNAMIC_ACC_TIME_SECS,
-          payload: dynamicAccTimeSecs,
-        })
-        setRunningTaskId(runningTask._id)
-      }
+    // Clear interval when task that was running has been deleted
+    if (!state.editedTask && !records.find((record) => record.hasTaskRunning)) {
+      handleClearInterval()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isMounted])
+  }, [state.editedTask])
 
   useEffect(() => {
-    dispatch({
-      type: ChronoActionTypes.SET_DYNAMIC_ACC_TIME_SECS,
-      payload: runningTaskAccTimeSecs,
-    })
-  }, [runningTaskAccTimeSecs, dispatch])
-
-  useEffect(() => {
-    const runningTask = todayRecord?.tasks.find((task) => task.status === TaskStatus.RUNNING)
-    if (runningTask && !intervalId && !runningTaskAccTimeSecs) {
-      const intervalId = setInterval(() => {
-        setRunningTaskAccTimeSecs((acc) => acc + 60)
-      }, 1000 * 60)
-      setIntervalId(intervalId)
-      setRunningTaskAccTimeSecs(runningTask.accTimeSecs)
-      dispatch({
-        type: ChronoActionTypes.SET_DYNAMIC_ACC_TIME_SECS,
-        payload: runningTask.accTimeSecs,
-      })
-      setRunningTaskId(runningTask._id)
+    // Set interval if the modal has been closed, there is no task running on client
+    // but a new task has been created and is running on server
+    if (!state.isOpen && todayRecord?.hasTaskRunning && !runningTaskId && isMounted) {
+      const newRunningTask = todayRecord.tasks.find((task) => task.status === TaskStatus.RUNNING)
+      createInterval(0, newRunningTask?.accTimeSecs!, newRunningTask?._id!)
     }
-  }, [todayRecord, dispatch, intervalId, runningTaskAccTimeSecs])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.isOpen])
+
+  useEffect(() => {
+    // Set interval when page has been refreshed and some task is running
+    const runningTask = todayRecord?.tasks.find((task) => task.status === TaskStatus.RUNNING)
+    if (runningTask && !intervalId && !runningTaskAccTimeSecs && isMounted) {
+      createInterval(runningTask.accTimeSecs, runningTask.accTimeSecs, runningTask._id)
+    }
+
+    return handleClearInterval
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isMounted])
 
   const { t } = useTranslation('main')
   const { t: commonT } = useTranslation('common')
@@ -163,18 +161,20 @@ export const Records = ({ timezone, records, userData }: RecordsProps) => {
 
             return (
               <div
-                className="bg-secondary-light border-b border-b-gray-task-border flex"
+                className="bg-secondary-light border-b border-b-gray-task-border flex justify-between sm:justify-"
                 key={`${task.title}-${idx}`}
               >
-                <div className="w-8/12 xl:w-9/12 p-4">
-                  <p className="font-semibold text-gray-dark text-15 leading-5.6">{task.title}</p>
+                <div className="w-7/12 xl:w-9/12 p-4">
+                  <p className="font-semibold text-gray-dark text-15 leading-5.6 break-words">
+                    {task.title}
+                  </p>
                   {!!task.notes && (
                     <p className="text-gray-dark-opacity text-13 leading-5 font-normal">
                       {task.notes}
                     </p>
                   )}
                 </div>
-                <span className="w-auto p-4 flex justify-center items-center text-17 font-medium">
+                <span className="w-auto xl:w-1/12 p-4 flex justify-center items-center text-17 font-medium">
                   {isRunning ? getHoursFromSecs(runningTaskAccTimeSecs) : timeHours}
                 </span>
                 <div className="w-auto sm:w-4/12 lg:w-3/12 xl:w-2/12 py-4 pr-4 flex flex-col sm:flex-row space-y-2 sm:space-y-0 justify-center items-center space-x-0 sm:space-x-2">
@@ -208,12 +208,12 @@ export const Records = ({ timezone, records, userData }: RecordsProps) => {
             )
           })}
           <div className="bg-secondary-light flex mx-auto sm:mx-0 w-fit sm:w-full">
-            <div className="w-8/12 xl:w-9/12 p-4 flex justify-end">
+            <div className="w-7/12 xl:w-9/12 p-4 flex justify-end">
               <span className="font-normal text-17 text-gray-dark leading-5.6">
                 {t('login.records.totalLabel')}:
               </span>
             </div>
-            <span className="w-auto p-4 flex justify-center items-center text-17 font-medium ">
+            <span className="w-1/12 lg:w-2/12 xl:w-1/12 p-4 flex justify-center items-center text-17 font-medium ">
               {getHoursFromSecs(
                 (() => {
                   const [hours, minutes] = todayRecord?.tasks.reduce(
