@@ -1,3 +1,4 @@
+import { useTranslation } from 'next-i18next'
 import { FocusEventHandler, FormEventHandler, useContext, useEffect, useRef, useState } from 'react'
 import { ChronoContext } from '../../../context'
 import { TaskStatus } from '../../../database/enums'
@@ -119,10 +120,12 @@ export const TaskForm = ({ isCreatingEntry = false, onClose }: TaskFormProps) =>
     }
   }, [state.editedTask])
 
+  const { t } = useTranslation('task-form')
+
   return (
     <form className="flex space-y-2 flex-col" ref={formRef} onSubmit={onSubmit}>
       <Input
-        placeholder="Title (*)"
+        placeholder={t('titleInputPlaceholder')}
         id="title"
         onChange={setProperties}
         onBlur={setProperties}
@@ -136,7 +139,7 @@ export const TaskForm = ({ isCreatingEntry = false, onClose }: TaskFormProps) =>
         <Input
           type="textarea"
           submitOnEnter={false}
-          placeholder="Notes (optional)"
+          placeholder={t('notesInputPlaceholder')}
           defaultValue={state.editedTask ? state.editedTask.notes : ''}
           onBlur={setProperties}
           id="notes"
@@ -163,7 +166,7 @@ export const TaskForm = ({ isCreatingEntry = false, onClose }: TaskFormProps) =>
         <ul>
           {Object.keys(errors).map((fieldKey, idx) => (
             <li key={`${fieldKey}-${idx}`} className="text-red-400 list-disc list-inside">
-              {capitalizeFirstLetter(fieldKey)} is required
+              {capitalizeFirstLetter(fieldKey)} {t('errors.required')}
             </li>
           ))}
         </ul>
@@ -180,7 +183,7 @@ export const TaskForm = ({ isCreatingEntry = false, onClose }: TaskFormProps) =>
               type="submit"
             >
               <span className="text-white font-medium text-15">
-                {state.editedTask ? 'Update entry' : 'Start timer'}
+                {state.editedTask ? t('updateEntryButtonLabel') : t('startTimerButtonLabel')}
               </span>
             </Button>
             <Button
@@ -190,7 +193,7 @@ export const TaskForm = ({ isCreatingEntry = false, onClose }: TaskFormProps) =>
               onClick={handleClose}
               type="button"
             >
-              <span className="font-normal text-15">Cancel</span>
+              <span className="font-normal text-15">{t('cancelButtonLabel')}</span>
             </Button>
           </div>
         )}
@@ -200,14 +203,14 @@ export const TaskForm = ({ isCreatingEntry = false, onClose }: TaskFormProps) =>
             type="button"
             className="self-end sm:self-center mt-4 sm:mt-0 cursor-pointer underline text-warning h-fit"
           >
-            Delete
+            {t('deleteButtonLabel')}
           </button>
         )}
       </div>
       {!!waitingDeleteTaskConfirmation && (
         <div className="flex flex-col sm:flex-row justify-end items-center space-x-0 sm:space-x-2 space-y-1 sm:space-y-0 pt-1.5 pb-1">
           <p className="text-right w-full sm:w-auto text-13 leading-5.6 text-gray-dark font-normal">
-            Permanently delete this time entry?
+            {t('deleteConfirmationMessage')}
           </p>
           <Button
             round={ButtonRound.LG}
@@ -216,7 +219,9 @@ export const TaskForm = ({ isCreatingEntry = false, onClose }: TaskFormProps) =>
             type="button"
             onClick={handleDeleteEntry}
           >
-            <span className="text-white font-medium text-13">Delete time entry</span>
+            <span className="text-white font-medium text-13">
+              {t('deleteTimeEntryButtonLabel')}
+            </span>
           </Button>
           <Button
             round={ButtonRound.LG}
@@ -225,7 +230,7 @@ export const TaskForm = ({ isCreatingEntry = false, onClose }: TaskFormProps) =>
             onClick={() => setWaitingDeleteConfirmation(false)}
             type="button"
           >
-            <span className="font-normal text-13">Cancel</span>
+            <span className="font-normal text-13">{t('cancelButtonLabel')}</span>
           </Button>
         </div>
       )}

@@ -1,3 +1,4 @@
+import { useTranslation } from 'next-i18next'
 import { useMemo } from 'react'
 import { getDateData } from '../../../utils'
 import { TaskForm } from './task-form'
@@ -16,6 +17,7 @@ export const TaskModal = ({
   className = '',
 }: TaskModalProps) => {
   const dateData = useMemo(() => getDateData(timezone), [timezone])
+  const { t } = useTranslation('task-modal')
 
   return (
     <div
@@ -32,11 +34,13 @@ export const TaskModal = ({
             className="text-center py-2 font-medium text-gray-dark text-15 leading-5.6"
             style={{ lineHeight: 1.4 }}
           >
-            New time entry for {dateData.dayName}, {dateData.day} {dateData.monthName}
+            {t('newTimeEntryLabel')} {dateData.dayName}, {dateData.day} {dateData.monthName}
           </p>
         </div>
         <div className="p-4 sm:p-6">
-          <p className="font-medium text-gray-dark text-15 leading-5.6 mb-2">Project / Task</p>
+          <p className="font-medium text-gray-dark text-15 leading-5.6 mb-2">
+            {t('headerMessage')}
+          </p>
           <TaskForm isCreatingEntry={isCreatingEntry} onClose={onClose} />
         </div>
       </div>

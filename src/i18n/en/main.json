@@ -1,0 +1,23 @@
+{
+  "notLogin": {
+    "title": "Chrono",
+    "footer": "Because your time is valuable",
+    "link": "Start managing your life!"
+  },
+  "login": {
+    "errorMessage": "It occured an unexpected error 😥 Please try logging in again.",
+    "records": {
+      "todayLabel": "Today",
+
+      "startButtonLabel": "Start",
+      "stopButtonLabel": "Stop",
+
+      "editButtonLabel": "Edit",
+
+      "totalLabel": "Total",
+
+      "baseQuote": "Time is as valuable as you (:",
+      "baseQuoteAuthor": "Anonymous"
+    }
+  }
+}

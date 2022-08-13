@@ -3,6 +3,7 @@ import type { AppProps } from 'next/app'
 import { UserProvider } from '@auth0/nextjs-auth0'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ChronoProvider } from '../context'
+import { appWithTranslation } from 'next-i18next'
 
 // React Query client
 const queryClient = new QueryClient({
@@ -15,7 +16,7 @@ const queryClient = new QueryClient({
   },
 })
 
-function MyApp({ Component, pageProps }: AppProps) {
+const MyApp = ({ Component, pageProps }: AppProps) => {
   return (
     <QueryClientProvider client={queryClient}>
       <ChronoProvider>
@@ -27,4 +28,4 @@ function MyApp({ Component, pageProps }: AppProps) {
   )
 }
 
-export default MyApp
+export default appWithTranslation(MyApp)

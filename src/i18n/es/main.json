@@ -1,0 +1,23 @@
+{
+  "notLogin": {
+    "title": "Chrono",
+    "footer": "Del tiempo nos encargamos nosotros",
+    "link": "¡Comienza a gestionar!"
+  },
+  "login": {
+    "errorMessage": "Ocurrió un error inesperado 😥 Por favor intenta iniciar sesión nuevamente.",
+    "records": {
+      "todayLabel": "Hoy",
+
+      "startButtonLabel": "Iniciar",
+      "stopButtonLabel": "Detener",
+
+      "editButtonLabel": "Editar",
+
+      "totalLabel": "Total",
+
+      "baseQuote": "El tiempo es tan valioso como tú (:",
+      "baseQuoteAuthor": "Anónimo"
+    }
+  }
+}

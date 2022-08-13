@@ -9,6 +9,7 @@ import { TrackTaskButton } from './track-task-button'
 import { toggleTaskStatus } from '../../../services'
 import { HydratedDocument, Types } from 'mongoose'
 import { useOnMount } from '../../../hooks'
+import { useTranslation } from 'next-i18next'
 
 export type RecordsProps = {
   timezone: string
@@ -45,7 +46,6 @@ export const Records = ({ timezone, records, userData }: RecordsProps) => {
     if (!isRunning) {
       const intervalId = setInterval(() => {
         setRunningTaskAccTimeSecs((acc) => acc + 60)
-        console.log('toggle interval')
       }, 1000 * 60)
       setIntervalId(intervalId)
       setRunningTaskAccTimeSecs(task.accTimeSecs)
@@ -83,8 +83,6 @@ export const Records = ({ timezone, records, userData }: RecordsProps) => {
       if (runningTask) {
         if (!intervalId) {
           const intervalId = setInterval(() => {
-            console.log('effect interval')
-
             setRunningTaskAccTimeSecs((acc) => acc + 60)
           }, 1000 * 60)
           setIntervalId(intervalId)
@@ -115,7 +113,6 @@ export const Records = ({ timezone, records, userData }: RecordsProps) => {
     if (runningTask && !intervalId && !runningTaskAccTimeSecs) {
       const intervalId = setInterval(() => {
         setRunningTaskAccTimeSecs((acc) => acc + 60)
-        console.log('toggle interval')
       }, 1000 * 60)
       setIntervalId(intervalId)
       setRunningTaskAccTimeSecs(runningTask.accTimeSecs)
@@ -127,11 +124,14 @@ export const Records = ({ timezone, records, userData }: RecordsProps) => {
     }
   }, [todayRecord, dispatch, intervalId, runningTaskAccTimeSecs])
 
+  const { t } = useTranslation('main')
+  const { t: commonT } = useTranslation('common')
+
   return (
     <div className="flex flex-col sm:space-y-4 w-full">
       <section>
         <h1 className="font-medium text-3xl">
-          Today:{' '}
+          {t('login.records.todayLabel')}:{' '}
           <span className="font-normal">
             {dateData.dayName}, {dateData.day} {dateData.monthName}
           </span>
@@ -149,14 +149,13 @@ export const Records = ({ timezone, records, userData }: RecordsProps) => {
         }}
       >
         <PlusIcon color="white" width={16} height={16} className="font-bold" />
-        <span className="text-white font-medium text-15">Track time</span>
+        <span className="text-white font-medium text-15">{commonT('trackTaskButton.label')}</span>
       </TrackTaskButton>
       {!!todayRecord?.tasks.length && (
         <section className="w-full">
           {todayRecord?.tasks.map((task, idx) => {
             const timeHours = getHoursFromSecs(task.accTimeSecs)
             const isRunning = task._id === runningTaskId
-            console.log(isRunning, task)
 
             return (
               <div
@@ -184,7 +183,9 @@ export const Records = ({ timezone, records, userData }: RecordsProps) => {
                     <div className="flex space-x-0 md:space-x-3 items-center">
                       {isRunning ? <ClockAnimated /> : <ClockIcon />}
                       <span className="hidden md:block text-17 text-gra font-normal">
-                        {isRunning ? 'Stop' : 'Start'}
+                        {isRunning
+                          ? t('login.records.stopButtonLabel')
+                          : t('login.records.startButtonLabel')}
                       </span>
                     </div>
                   </Button>
@@ -194,7 +195,9 @@ export const Records = ({ timezone, records, userData }: RecordsProps) => {
                     onClick={() => onEditTask(task)}
                     className="px-2 w-full sm:w-auto"
                   >
-                    <span className="text-13 text-gray-dark leading-7 font-normal">Edit</span>
+                    <span className="text-13 text-gray-dark leading-7 font-normal">
+                      {t('login.records.editButtonLabel')}
+                    </span>
                   </Button>
                 </div>
               </div>
@@ -202,7 +205,9 @@ export const Records = ({ timezone, records, userData }: RecordsProps) => {
           })}
           <div className="bg-secondary-light flex mx-auto sm:mx-0 w-fit sm:w-full">
             <div className="w-8/12 xl:w-9/12 p-4 flex justify-end">
-              <span className="font-normal text-17 text-gray-dark leading-5.6">Total:</span>
+              <span className="font-normal text-17 text-gray-dark leading-5.6">
+                {t('login.records.totalLabel')}:
+              </span>
             </div>
             <span className="w-auto p-4 flex justify-center items-center text-17 font-medium ">
               {getHoursFromSecs(
@@ -230,7 +235,7 @@ export const Records = ({ timezone, records, userData }: RecordsProps) => {
       {!todayRecord?.tasks.length && (
         <section className="bg-gray-light w-full h-72 flex justify-center px-2">
           <p className="text-center text-gray-dark font-medium text-base self-center justify-self-center ">
-            Time is as valuable as you (: <br /> - Anonymous
+            {t('login.records.baseQuote')} <br /> - {t('login.records.baseQuoteAuthor')}
           </p>
         </section>
       )}

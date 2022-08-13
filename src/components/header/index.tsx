@@ -1,9 +1,13 @@
 import Link from 'next/link'
 import { useUser } from '@auth0/nextjs-auth0'
 import { UserData } from './user-data'
+import { useRouter } from 'next/router'
+import { useTranslation } from 'next-i18next'
 
 export const Header = () => {
   const { user } = useUser()
+  const { locale } = useRouter()
+  const { t } = useTranslation('header')
 
   return (
     <header className="bg-primary h-12 z-20">
@@ -11,8 +15,8 @@ export const Header = () => {
         <ul className="flex items-center h-full">
           {!!user && (
             <li className="h-full  hover:bg-primary-light">
-              <Link href="/">
-                <a className="h-full flex items-center px-2">Home</a>
+              <Link href="/" locale={locale}>
+                <a className="h-full flex items-center px-2">{t('homeLink')}</a>
               </Link>
             </li>
           )}

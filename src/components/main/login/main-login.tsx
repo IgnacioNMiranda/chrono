@@ -1,5 +1,6 @@
 import { useUser } from '@auth0/nextjs-auth0'
 import { useQuery } from '@tanstack/react-query'
+import { useTranslation } from 'next-i18next'
 import { useContext, useEffect, useState } from 'react'
 import { ChronoActionTypes, ChronoContext } from '../../../context'
 import { getUserData } from '../../../services'
@@ -24,6 +25,8 @@ export const MainLogin = () => {
   })
 
   const { dispatch } = useContext(ChronoContext)
+
+  const { t } = useTranslation('main')
 
   useEffect(() => {
     if (!!data) {
@@ -63,9 +66,7 @@ export const MainLogin = () => {
           </>
         )}
         {!!serverError && (
-          <p className="font-bold text-center sm:text-left">
-            It occured an unexpected error 😥 Please try logging in again.
-          </p>
+          <p className="font-bold text-center sm:text-left">{t('login.errorMessage')}</p>
         )}
       </div>
       {(!user || !data) && !serverError && (

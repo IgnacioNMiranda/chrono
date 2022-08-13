@@ -48,6 +48,9 @@ const chronoReducer: (state: ChronoState, action: ChronoAction) => ChronoState =
   switch (action.type) {
     case ChronoActionTypes.TOGGLE_MODAL: {
       const isOpen = action.payload as boolean
+      if (isOpen) document.body.style.overflow = 'hidden'
+      else document.body.style.overflow = 'auto'
+
       return {
         ...state,
         isOpen,

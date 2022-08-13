@@ -1,0 +1,16 @@
+{
+  "titleInputPlaceholder": "Title (*)",
+  "notesInputPlaceholder": "Notes (optional)",
+
+  "startTimerButtonLabel": "Start timer",
+  "updateEntryButtonLabel": "Update entry",
+  "cancelButtonLabel": "Cancel",
+  "deleteButtonLabel": "Delete",
+
+  "deleteConfirmationMessage": "Permanently delete this time entry?",
+  "deleteTimeEntryButtonLabel": "Delete time entry",
+
+  "errors": {
+    "required": "is required"
+  }
+}

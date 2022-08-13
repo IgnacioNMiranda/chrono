@@ -1,0 +1,16 @@
+{
+  "titleInputPlaceholder": "Título (*)",
+  "notesInputPlaceholder": "Notas (opcional)",
+
+  "startTimerButtonLabel": "Iniciar timer",
+  "updateEntryButtonLabel": "Actualizar entrada",
+  "cancelButtonLabel": "Cancelar",
+  "deleteButtonLabel": "Borrar",
+
+  "deleteConfirmationMessage": "¿Borrar permanentemente esta entrada?",
+  "deleteTimeEntryButtonLabel": "Borrar entrada",
+
+  "errors": {
+    "required": "es requerido"
+  }
+}

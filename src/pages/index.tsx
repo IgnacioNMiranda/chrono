@@ -1,11 +1,27 @@
 import { useUser } from '@auth0/nextjs-auth0'
-import type { NextPage } from 'next'
+import type { GetStaticPropsContext, NextPage } from 'next'
 import Head from 'next/head'
 import { useContext } from 'react'
 import { Header, Footer, AnimatedBackground } from '../components'
 import { MainLogin, MainNotLogin } from '../components'
 import { TaskModal } from '../components/main'
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { ChronoActionTypes, ChronoContext } from '../context'
+
+export async function getStaticProps({ locale }: GetStaticPropsContext) {
+  return {
+    props: {
+      ...(await serverSideTranslations(locale ?? 'en', [
+        'common',
+        'task-modal',
+        'task-form',
+        'main',
+        'header',
+      ])),
+      // Will be passed to the page component as props
+    },
+  }
+}
 
 const Home: NextPage = () => {
   const { user, isLoading } = useUser()

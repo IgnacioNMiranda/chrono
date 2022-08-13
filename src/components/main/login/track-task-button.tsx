@@ -1,3 +1,4 @@
+import { useTranslation } from 'next-i18next'
 import { ButtonHTMLAttributes } from 'react'
 import { Button, ButtonRound, ButtonVariant } from '../../button'
 
@@ -13,6 +14,7 @@ export const TrackTaskButton = ({
   buttonClassName = '',
   children,
 }: TrackTaskButtonProps) => {
+  const { t } = useTranslation('common')
   return (
     <div className={className}>
       <Button
@@ -23,7 +25,9 @@ export const TrackTaskButton = ({
       >
         {children}
       </Button>
-      <span className="text-13 mt-2 leading-5 font-normal hidden sm:block">Track Task</span>
+      <span className="text-13 mt-2 leading-5 font-normal hidden sm:block">
+        {t('trackTaskButton.label')}
+      </span>
     </div>
   )
 }
