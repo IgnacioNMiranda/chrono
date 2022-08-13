@@ -10,6 +10,7 @@ import { toggleTaskStatus } from '../../../services'
 import { HydratedDocument, Types } from 'mongoose'
 import { useOnMount } from '../../../hooks'
 import { useTranslation } from 'next-i18next'
+import { useRouter } from 'next/router'
 
 export type RecordsProps = {
   timezone: string
@@ -18,7 +19,8 @@ export type RecordsProps = {
 }
 
 export const Records = ({ timezone, records, userData }: RecordsProps) => {
-  const dateData = useMemo(() => getDateData(timezone), [timezone])
+  const { locale } = useRouter()
+  const dateData = useMemo(() => getDateData(locale ?? 'en', timezone), [locale, timezone])
 
   const { state, dispatch } = useContext(ChronoContext)
 
@@ -41,6 +43,7 @@ export const Records = ({ timezone, records, userData }: RecordsProps) => {
       userId: userData._id,
       taskId: task._id,
       timezone,
+      locale: locale ?? 'en',
     })
     await state.refetch?.()
     if (!isRunning) {
@@ -87,7 +90,8 @@ export const Records = ({ timezone, records, userData }: RecordsProps) => {
           }, 1000 * 60)
           setIntervalId(intervalId)
         }
-        const datetime_str = new Date().toLocaleString('en-US', { timeZone: timezone })
+        const datetime_str = new Date().toLocaleString(locale, { timeZone: timezone })
+
         const dynamicAccTimeSecs =
           runningTask.accTimeSecs + getSecondsDiff(new Date(datetime_str), runningTask.lastRun)
         setRunningTaskAccTimeSecs(dynamicAccTimeSecs)

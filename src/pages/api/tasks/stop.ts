@@ -11,11 +11,11 @@ const stopTask = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const body = JSON.parse(req.body)
 
-  if (!body.taskId || !body.userId) {
+  if (!body.taskId || !body.userId || !body.locale) {
     return res.status(400).end('Bad request. Some parameters are missing or bad formatted')
   }
 
-  const { taskId, userId } = body
+  const { taskId, userId, locale } = body
 
   const user = await User.findById(userId)
     .populate({
@@ -28,7 +28,7 @@ const stopTask = async (req: NextApiRequest, res: NextApiResponse) => {
     .exec()
   if (!user) return res.status(401).end('Forbidden. You have no credentials to perform this action')
 
-  const { month, week, day, year, date } = getDateData(user.timezone)
+  const { month, week, day, year, date } = getDateData(locale, user.timezone)
 
   const todayRecord = user.records.find(
     (record) =>

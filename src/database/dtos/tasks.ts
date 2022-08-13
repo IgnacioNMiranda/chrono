@@ -5,6 +5,7 @@ export type NewTaskDto = {
   notes?: string
   time: string
   userId: Types.ObjectId
+  locale: string
 }
 
 export type EditTaskDto = {
@@ -25,4 +26,5 @@ export type ToggleTaskStatusDto = {
   timezone?: string
   userId: Types.ObjectId
   isRunning: boolean
+  locale: string
 }

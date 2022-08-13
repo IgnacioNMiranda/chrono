@@ -1,6 +1,6 @@
 import { DeleteTaskDto, EditTaskDto, NewTaskDto, ToggleTaskStatusDto } from '../database/dtos'
 
-export const createNewTask = async ({ title, notes, time, userId }: NewTaskDto) => {
+export const createNewTask = async ({ title, notes, time, userId, locale }: NewTaskDto) => {
   const uri = `/api/tasks/create`
 
   const response = await fetch(uri, {
@@ -9,6 +9,7 @@ export const createNewTask = async ({ title, notes, time, userId }: NewTaskDto) 
       notes,
       time,
       userId,
+      locale,
     }),
     method: 'POST',
   })
@@ -63,6 +64,7 @@ export const toggleTaskStatus = async ({
   userId,
   timezone,
   isRunning,
+  locale,
 }: ToggleTaskStatusDto) => {
   const uri = isRunning ? `/api/tasks/stop` : '/api/tasks/start'
 
@@ -71,6 +73,7 @@ export const toggleTaskStatus = async ({
       taskId,
       userId,
       timezone,
+      locale,
     }),
     method: 'PUT',
   })

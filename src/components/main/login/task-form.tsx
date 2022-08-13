@@ -1,4 +1,5 @@
 import { useTranslation } from 'next-i18next'
+import { useRouter } from 'next/router'
 import { FocusEventHandler, FormEventHandler, useContext, useEffect, useRef, useState } from 'react'
 import { ChronoContext } from '../../../context'
 import { TaskStatus } from '../../../database/enums'
@@ -36,6 +37,9 @@ export const TaskForm = ({ isCreatingEntry = false, onClose }: TaskFormProps) =>
   const [waitingDeleteTaskConfirmation, setWaitingDeleteConfirmation] = useState(false)
 
   const { state } = useContext(ChronoContext)
+
+  const { t } = useTranslation('task-form')
+  const { locale } = useRouter()
 
   const formRef = useRef<HTMLFormElement>(null)
 
@@ -87,7 +91,7 @@ export const TaskForm = ({ isCreatingEntry = false, onClose }: TaskFormProps) =>
           console.log(error)
         }
       } else {
-        await createNewTask({ title, notes, time, userId: state.user! })
+        await createNewTask({ title, notes, time, userId: state.user!, locale: locale ?? 'en' })
       }
       await state.refetch?.()
       setTimeVisited(false)
@@ -119,8 +123,6 @@ export const TaskForm = ({ isCreatingEntry = false, onClose }: TaskFormProps) =>
       effectRef?.reset()
     }
   }, [state.editedTask])
-
-  const { t } = useTranslation('task-form')
 
   return (
     <form className="flex space-y-2 flex-col" ref={formRef} onSubmit={onSubmit}>

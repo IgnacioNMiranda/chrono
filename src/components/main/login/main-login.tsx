@@ -1,6 +1,7 @@
 import { useUser } from '@auth0/nextjs-auth0'
 import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'next-i18next'
+import { useRouter } from 'next/router'
 import { useContext, useEffect, useState } from 'react'
 import { ChronoActionTypes, ChronoContext } from '../../../context'
 import { getUserData } from '../../../services'
@@ -10,8 +11,9 @@ import { TrackTaskButton } from './track-task-button'
 
 export const MainLogin = () => {
   const [serverError, setServerError] = useState(false)
+  const { locale } = useRouter()
   const { user } = useUser()
-  const { data, refetch } = useQuery(['userData'], () => getUserData(user), {
+  const { data, refetch } = useQuery(['userData'], () => getUserData(user, locale), {
     enabled: !!user,
     onError: (err) => {
       if (err instanceof Error) {

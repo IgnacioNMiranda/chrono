@@ -12,11 +12,16 @@ const createTask = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const body = JSON.parse(req.body)
 
-  if (!body.title || (body.time !== '' && !isValidTime(body.time)) || !body.userId) {
+  if (
+    !body.title ||
+    (body.time !== '' && !isValidTime(body.time)) ||
+    !body.userId ||
+    !body.locale
+  ) {
     return res.status(400).end('Bad request. Some parameters are missing or bad formatted')
   }
 
-  const { title, time, notes, userId } = body
+  const { title, time, notes, userId, locale } = body
 
   const user = await User.findById(userId)
     .populate({
@@ -29,7 +34,7 @@ const createTask = async (req: NextApiRequest, res: NextApiResponse) => {
     .exec()
   if (!user) return res.status(401).end('Forbidden. You have no credentials to perform this action')
 
-  const { month, week, day, year } = getDateData(user.timezone)
+  const { month, week, day, year } = getDateData(locale, user.timezone)
 
   const todayRecord = await Record.findOne({
     month,
@@ -52,7 +57,9 @@ const createTask = async (req: NextApiRequest, res: NextApiResponse) => {
   const newTask = new Task({
     title,
     notes: notes ?? '',
-    lastRun: taskAlreadyRunning ? undefined : new Date(),
+    lastRun: taskAlreadyRunning
+      ? undefined
+      : new Date(new Date().toLocaleString(locale, { timeZone: user.timezone })),
     accTimeSecs,
     record: todayRecord._id,
     status: taskAlreadyRunning ? TaskStatus.IDLE : TaskStatus.RUNNING,

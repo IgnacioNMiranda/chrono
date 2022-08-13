@@ -1,4 +1,5 @@
 import { useTranslation } from 'next-i18next'
+import { useRouter } from 'next/router'
 import { useMemo } from 'react'
 import { getDateData } from '../../../utils'
 import { TaskForm } from './task-form'
@@ -16,7 +17,8 @@ export const TaskModal = ({
   onClose,
   className = '',
 }: TaskModalProps) => {
-  const dateData = useMemo(() => getDateData(timezone), [timezone])
+  const { locale } = useRouter()
+  const dateData = useMemo(() => getDateData(locale ?? 'en', timezone), [locale, timezone])
   const { t } = useTranslation('task-modal')
 
   return (

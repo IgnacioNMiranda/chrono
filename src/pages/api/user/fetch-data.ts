@@ -6,8 +6,9 @@ import { getDateData } from '../../../utils'
 const fetchData = async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method !== 'GET') return res.status(400).end('Bad request')
 
-  const { email, provider } = req.query
-  if (!email || !provider) return res.status(400).end('Bad request. Missing parameters')
+  if (!req.query.email || !req.query.provider || !req.query.locale)
+    return res.status(400).end('Bad request. Missing parameters')
+  const { email, provider, locale } = req.query
 
   try {
     await connectToDatabase()
@@ -24,7 +25,7 @@ const fetchData = async (req: NextApiRequest, res: NextApiResponse) => {
   })
   if (!dbUser) return res.status(404).end('Unexpected error. Please contact support')
 
-  const { month, week, day, year } = getDateData(dbUser.timezone)
+  const { month, week, day, year } = getDateData((locale as string) ?? 'en', dbUser.timezone)
 
   let todayRecord = await Record.findOne({
     user: dbUser._id,
