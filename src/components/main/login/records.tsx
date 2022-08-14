@@ -1,16 +1,13 @@
-import { useContext, useEffect, useMemo, useState } from 'react'
+import { useContext } from 'react'
 import { ChronoActionTypes, ChronoContext } from '../../../context'
-import { IRecord, ITask, IUser } from '../../../database/models'
-import { TaskStatus } from '../../../database/enums'
-import { getDateData, getHoursFromSecs, getSecondsDiff } from '../../../utils'
+import { IRecord, IUser } from '../../../database/models'
+import { getHoursFromSecs } from '../../../utils'
 import { Button, ButtonRound, ButtonVariant } from '../../button'
 import { ClockAnimated, ClockIcon, PlusIcon, SpinnerIcon } from '../../icons'
 import { TrackTaskButton } from './track-task-button'
-import { toggleTaskStatus } from '../../../services'
-import { HydratedDocument, Types } from 'mongoose'
-import { useOnMount } from '../../../hooks'
+import { HydratedDocument } from 'mongoose'
 import { useTranslation } from 'next-i18next'
-import { useRouter } from 'next/router'
+import { useTaskManager } from '../../../hooks'
 
 export type RecordsProps = {
   timezone: string
@@ -19,123 +16,17 @@ export type RecordsProps = {
 }
 
 export const Records = ({ timezone, records, userData }: RecordsProps) => {
-  const { locale } = useRouter()
-  const dateData = useMemo(() => getDateData(locale ?? 'en', timezone), [locale, timezone])
+  const { dispatch } = useContext(ChronoContext)
 
-  const { state, dispatch } = useContext(ChronoContext)
-
-  const todayRecord = records.find(
-    (record) =>
-      record.day === Number(dateData.day) &&
-      record.month === Number(dateData.month) &&
-      record.year === Number(dateData.year) &&
-      record.week === Number(dateData.week),
-  )
-
-  const [runningTaskAccTimeSecs, setRunningTaskAccTimeSecs] = useState(0)
-  const [intervalId, setIntervalId] = useState<NodeJS.Timer>()
-  const [runningTaskId, setRunningTaskId] = useState<Types.ObjectId>()
-  const { isMounted } = useOnMount()
-  const [toggledTaskId, setToggledTaskId] = useState<Types.ObjectId>()
-
-  const createInterval = (runningTaskAccTimeSecs: number, runningTaskId: Types.ObjectId) => {
-    // Apply interval each minute
-    const interval = setInterval(() => {
-      setRunningTaskAccTimeSecs((acc) => acc + 60)
-    }, 1000 * 60)
-    setIntervalId(interval)
-
-    setRunningTaskAccTimeSecs(runningTaskAccTimeSecs)
-    dispatch({
-      type: ChronoActionTypes.SET_DYNAMIC_ACC_TIME_SECS,
-      payload: runningTaskAccTimeSecs,
-    })
-    setRunningTaskId(runningTaskId)
-  }
-
-  const handleClearInterval = () => {
-    clearInterval(intervalId)
-    setIntervalId(undefined)
-  }
-
-  const onToggleTaskStatus = async (isRunning: boolean, task: HydratedDocument<ITask>) => {
-    setToggledTaskId(task._id)
-    await toggleTaskStatus({
-      isRunning,
-      userId: userData._id,
-      taskId: task._id,
-      timezone,
-      locale: locale ?? 'en',
-    })
-    await state.refetch?.()
-    setToggledTaskId(undefined)
-    if (intervalId && runningTaskId) {
-      // When a task has been started and another one is already running
-      handleClearInterval()
-    }
-    if (!isRunning) {
-      createInterval(task.accTimeSecs, task._id)
-    } else {
-      handleClearInterval()
-      setRunningTaskId(undefined)
-      dispatch({
-        type: ChronoActionTypes.SET_DYNAMIC_ACC_TIME_SECS,
-        payload: undefined,
-      })
-    }
-  }
-
-  const onEditTask = (task: HydratedDocument<ITask>) => {
-    dispatch({
-      type: ChronoActionTypes.SET_EDITED_TASK,
-      payload: task,
-    })
-    dispatch({
-      type: ChronoActionTypes.TOGGLE_MODAL,
-      payload: true,
-    })
-  }
-
-  useEffect(() => {
-    // Clear interval when task that was running has been deleted
-    if (!state.editedTask && !records.find((record) => record.hasTaskRunning)) {
-      handleClearInterval()
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state.editedTask])
-
-  useEffect(() => {
-    // Set interval if the modal has been closed, there is no task running on client
-    // but a new task has been created and is running on server
-    if (!state.isOpen && todayRecord?.hasTaskRunning && !runningTaskId && isMounted) {
-      const newRunningTask = todayRecord.tasks.find((task) => task.status === TaskStatus.RUNNING)
-      createInterval(newRunningTask?.accTimeSecs!, newRunningTask?._id!)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state.isOpen])
-
-  useEffect(() => {
-    // Set interval when page has been refreshed and some task is running
-    const runningTask = todayRecord?.tasks.find((task) => task.status === TaskStatus.RUNNING)
-    if (runningTask && !intervalId && !runningTaskAccTimeSecs && isMounted) {
-      createInterval(
-        runningTask.accTimeSecs + getSecondsDiff(dateData.date, runningTask.lastRun),
-        runningTask._id,
-      )
-    }
-
-    return handleClearInterval
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isMounted])
-
-  useEffect(() => {
-    // Update dynamic seconds when runningTaskAccTimeSecs has been updated
-    // runningTaskAccTimeSecs get updated every 1 minute
-    dispatch({
-      type: ChronoActionTypes.SET_DYNAMIC_ACC_TIME_SECS,
-      payload: runningTaskAccTimeSecs,
-    })
-  }, [runningTaskAccTimeSecs, dispatch])
+  const {
+    onEditTask,
+    onToggleTaskStatus,
+    toggledTaskId,
+    dateData,
+    todayRecord,
+    runningTaskId,
+    runningTaskAccTimeSecs,
+  } = useTaskManager({ userData, records, timezone })
 
   const { t } = useTranslation('main')
   const { t: commonT } = useTranslation('common')

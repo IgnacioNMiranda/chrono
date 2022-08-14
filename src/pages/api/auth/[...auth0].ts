@@ -3,7 +3,7 @@ import { connectToDatabase } from '../../../database/connection'
 import { User } from '../../../database/models'
 import { currentLocale } from './_util'
 
-const afterCallback: AfterCallback = async (req, res, session, state) => {
+const afterCallback: AfterCallback = async (req, _res, session) => {
   if (!session) {
     throw new Error('Unexpected error. Try again later')
   }
@@ -17,12 +17,14 @@ const afterCallback: AfterCallback = async (req, res, session, state) => {
 
   const locale = currentLocale(req)
   if (!user) {
+    // TODO: get this from form
+    // eslint-disable-next-line no-unused-vars
     const timezone = Intl.DateTimeFormat(locale).resolvedOptions().timeZone
 
     const newUser = new User({
       email,
       provider,
-      timezone,
+      timezone: 'America/Santiago',
       records: [],
     })
     await newUser.save()
