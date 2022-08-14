@@ -2,6 +2,7 @@
   "homeLink": "Home",
   "userData": {
     "logoutLink": "Logout",
-    "nickLabel": "Nick"
+    "nickLabel": "Nick",
+    "timezone": "Zone"
   }
 }

@@ -1,7 +1,8 @@
-import { UserProfile, useUser } from '@auth0/nextjs-auth0'
+import { useUser } from '@auth0/nextjs-auth0'
 import { useTranslation } from 'next-i18next'
 import Image from 'next/image'
-import { useMemo, useRef, useState } from 'react'
+import { useContext, useMemo, useRef, useState } from 'react'
+import { ChronoContext } from '../../context'
 import { useClickOutside } from '../../hooks'
 import { Auth0GoogleUser } from '../../types'
 
@@ -9,12 +10,14 @@ export type UserDataModalProps = {
   picture: string
   nickname?: string | null
   name?: string
+  timezone: string
 }
 
 const UserDataModal = ({
   picture,
   name,
   nickname,
+  timezone,
   className,
 }: UserDataModalProps & { className?: string }) => {
   const { t } = useTranslation('header')
@@ -34,6 +37,9 @@ const UserDataModal = ({
           <span className="block text-gray-400 text-xxs truncate">
             {t('userData.nickLabel')}: {nickname}
           </span>
+          <span className="block text-gray-400 text-xxs truncate">
+            {t('userData.timezone')}: {timezone}
+          </span>
         </div>
       </div>
       <hr className="my-3 border-gray-300" />
@@ -51,6 +57,7 @@ export const UserData = () => {
   const { user } = useUser()
 
   const [showUserModal, setShowUserModal] = useState(false)
+  const { state } = useContext(ChronoContext)
   const userData = useMemo(
     () => ({
       name:
@@ -59,8 +66,9 @@ export const UserData = () => {
           : user?.nickname ?? 'none',
       picture: user?.picture ?? '/images/no-image-available.avif',
       nickname: user?.nickname,
+      timezone: state.timezone,
     }),
-    [user],
+    [user, state.timezone],
   )
 
   const ref = useRef<HTMLDivElement>(null)

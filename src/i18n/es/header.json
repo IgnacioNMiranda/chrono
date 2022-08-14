@@ -2,6 +2,7 @@
   "homeLink": "Inicio",
   "userData": {
     "logoutLink": "Cerrar sesión",
-    "nickLabel": "Apodo"
+    "nickLabel": "Apodo",
+    "timezone": "Zona"
   }
 }
