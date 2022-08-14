@@ -6,6 +6,7 @@ import { TaskStatus } from '../../../database/enums'
 import { createNewTask, deleteTask, editTask } from '../../../services/task'
 import { capitalizeFirstLetter, getHoursFromSecs, isValidTime } from '../../../utils'
 import { Button, ButtonRound, ButtonVariant } from '../../button'
+import { SpinnerIcon } from '../../icons'
 import { Input } from '../../input'
 
 export type TaskFormProps = {
@@ -36,6 +37,8 @@ export const TaskForm = ({ isCreatingEntry = false, onClose }: TaskFormProps) =>
 
   const [waitingDeleteTaskConfirmation, setWaitingDeleteConfirmation] = useState(false)
 
+  const [isSubmittingAction, setIsSubmittingAction] = useState(false)
+
   const { state } = useContext(ChronoContext)
 
   const { t } = useTranslation('task-form')
@@ -56,15 +59,17 @@ export const TaskForm = ({ isCreatingEntry = false, onClose }: TaskFormProps) =>
 
   const handleDeleteEntry = async () => {
     if (state.editedTask) {
+      setIsSubmittingAction(true)
       await deleteTask({
         userId: state.user!,
         taskId: state.editedTask._id,
       })
+      await state.refetch?.()
+      setIsSubmittingAction(false)
+      setTimeVisited(false)
+      setTitleVisited(false)
+      handleClose()
     }
-    await state.refetch?.()
-    setTimeVisited(false)
-    setTitleVisited(false)
-    handleClose()
   }
 
   const onSubmit: FormEventHandler<HTMLFormElement> = async (e) => {
@@ -75,25 +80,23 @@ export const TaskForm = ({ isCreatingEntry = false, onClose }: TaskFormProps) =>
     const { title, notes, time } = values as Record<string, string>
 
     try {
+      setIsSubmittingAction(true)
       if (state.editedTask) {
-        try {
-          await editTask({
-            title,
-            notes,
-            time:
-              state.editedTask.status === TaskStatus.RUNNING
-                ? getHoursFromSecs(state.editedTask.accTimeSecs)
-                : time,
-            userId: state.user!,
-            taskId: state.editedTask._id,
-          })
-        } catch (error) {
-          console.log(error)
-        }
+        await editTask({
+          title,
+          notes,
+          time:
+            state.editedTask.status === TaskStatus.RUNNING
+              ? getHoursFromSecs(state.editedTask.accTimeSecs)
+              : time,
+          userId: state.user!,
+          taskId: state.editedTask._id,
+        })
       } else {
         await createNewTask({ title, notes, time, userId: state.user!, locale: locale ?? 'en' })
       }
       await state.refetch?.()
+      setIsSubmittingAction(false)
       setTimeVisited(false)
       setTitleVisited(false)
       form.reset()
@@ -178,15 +181,22 @@ export const TaskForm = ({ isCreatingEntry = false, onClose }: TaskFormProps) =>
         {!waitingDeleteTaskConfirmation && (
           <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 pt-2 w-full">
             <Button
-              disabled={(!timeVisited && !titleVisited) || !!Object.values(errors).length}
+              disabled={
+                (!timeVisited && !titleVisited) ||
+                !!Object.values(errors).length ||
+                isSubmittingAction
+              }
               round={ButtonRound.LG}
               className="px-4 py-1.5 w-full sm:w-auto"
               variant={ButtonVariant.PRIMARY}
               type="submit"
             >
-              <span className="text-white font-medium text-15">
-                {state.editedTask ? t('updateEntryButtonLabel') : t('startTimerButtonLabel')}
-              </span>
+              <div className="text-white flex space-x-0 md:space-x-3 items-center">
+                {isSubmittingAction && <SpinnerIcon width={20} height={20} color="currentColor" />}
+                <span className="font-medium text-15">
+                  {state.editedTask ? t('updateEntryButtonLabel') : t('startTimerButtonLabel')}
+                </span>
+              </div>
             </Button>
             <Button
               round={ButtonRound.LG}
@@ -220,10 +230,12 @@ export const TaskForm = ({ isCreatingEntry = false, onClose }: TaskFormProps) =>
             variant={ButtonVariant.WARNING}
             type="button"
             onClick={handleDeleteEntry}
+            disabled={isSubmittingAction}
           >
-            <span className="text-white font-medium text-13">
-              {t('deleteTimeEntryButtonLabel')}
-            </span>
+            <div className="text-white flex space-x-0 md:space-x-3 items-center">
+              {isSubmittingAction && <SpinnerIcon width={20} height={20} color="currentColor" />}
+              <span className="font-medium text-13">{t('deleteTimeEntryButtonLabel')}</span>
+            </div>
           </Button>
           <Button
             round={ButtonRound.LG}

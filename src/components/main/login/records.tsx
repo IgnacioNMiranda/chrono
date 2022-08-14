@@ -4,7 +4,7 @@ import { IRecord, ITask, IUser } from '../../../database/models'
 import { TaskStatus } from '../../../database/enums'
 import { getDateData, getHoursFromSecs } from '../../../utils'
 import { Button, ButtonRound, ButtonVariant } from '../../button'
-import { ClockAnimated, ClockIcon, PlusIcon } from '../../icons'
+import { ClockAnimated, ClockIcon, PlusIcon, SpinnerIcon } from '../../icons'
 import { TrackTaskButton } from './track-task-button'
 import { toggleTaskStatus } from '../../../services'
 import { HydratedDocument, Types } from 'mongoose'
@@ -36,6 +36,7 @@ export const Records = ({ timezone, records, userData }: RecordsProps) => {
   const [intervalId, setIntervalId] = useState<NodeJS.Timer>()
   const [runningTaskId, setRunningTaskId] = useState<Types.ObjectId>()
   const { isMounted } = useOnMount()
+  const [toggledTaskId, setToggledTaskId] = useState<Types.ObjectId>()
 
   const createInterval = (
     runningTaskAccTimeSecs: number,
@@ -61,6 +62,7 @@ export const Records = ({ timezone, records, userData }: RecordsProps) => {
   }
 
   const onToggleTaskStatus = async (isRunning: boolean, task: HydratedDocument<ITask>) => {
+    setToggledTaskId(task._id)
     await toggleTaskStatus({
       isRunning,
       userId: userData._id,
@@ -69,7 +71,7 @@ export const Records = ({ timezone, records, userData }: RecordsProps) => {
       locale: locale ?? 'en',
     })
     await state.refetch?.()
-
+    setToggledTaskId(undefined)
     if (intervalId && runningTaskId) {
       // When a task has been started and another one is already running
       handleClearInterval()
@@ -159,6 +161,8 @@ export const Records = ({ timezone, records, userData }: RecordsProps) => {
             const timeHours = getHoursFromSecs(task.accTimeSecs)
             const isRunning = task._id === runningTaskId
 
+            const taskIsToggling = toggledTaskId === task._id
+
             return (
               <div
                 className="bg-secondary-light border-b border-b-gray-task-border flex justify-between sm:justify-"
@@ -182,10 +186,15 @@ export const Records = ({ timezone, records, userData }: RecordsProps) => {
                     variant={isRunning ? ButtonVariant.GRAY_DARK : ButtonVariant.WHITE}
                     onClick={() => onToggleTaskStatus(isRunning, task)}
                     round={ButtonRound.LGXL}
+                    disabled={!!toggledTaskId}
                     className="px-2 md:px-4 w-full sm:w-auto py-2 md:py-1"
                   >
                     <div className="flex space-x-0 md:space-x-3 items-center">
-                      {isRunning ? <ClockAnimated /> : <ClockIcon />}
+                      {taskIsToggling && (
+                        <SpinnerIcon width={20} height={20} color="currentColor" />
+                      )}
+                      {!!isRunning && !taskIsToggling && <ClockAnimated />}
+                      {!isRunning && !taskIsToggling && <ClockIcon />}
                       <span className="hidden md:block text-17 text-gra font-normal">
                         {isRunning
                           ? t('login.records.stopButtonLabel')

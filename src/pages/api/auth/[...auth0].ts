@@ -1,6 +1,7 @@
 import { handleAuth, handleCallback, AfterCallback } from '@auth0/nextjs-auth0'
 import { connectToDatabase } from '../../../database/connection'
 import { User } from '../../../database/models'
+import { currentLocale } from './_util'
 
 const afterCallback: AfterCallback = async (req, res, session, state) => {
   if (!session) {
@@ -14,8 +15,9 @@ const afterCallback: AfterCallback = async (req, res, session, state) => {
 
   const user = await User.findOne({ email, provider }).exec()
 
+  const locale = currentLocale(req)
   if (!user) {
-    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
+    const timezone = Intl.DateTimeFormat(locale).resolvedOptions().timeZone
 
     const newUser = new User({
       email,
