@@ -102,6 +102,7 @@ export const TaskForm = ({ isCreatingEntry = false, onClose }: TaskFormProps) =>
       form.reset()
       handleClose()
     } catch (error: any) {
+      setIsSubmittingAction(false)
       setSubmitError(error.message)
       setTimeout(() => {
         setSubmitError('')

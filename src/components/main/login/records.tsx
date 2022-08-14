@@ -2,7 +2,7 @@ import { useContext, useEffect, useMemo, useState } from 'react'
 import { ChronoActionTypes, ChronoContext } from '../../../context'
 import { IRecord, ITask, IUser } from '../../../database/models'
 import { TaskStatus } from '../../../database/enums'
-import { getDateData, getHoursFromSecs } from '../../../utils'
+import { getDateData, getHoursFromSecs, getSecondsDiff } from '../../../utils'
 import { Button, ButtonRound, ButtonVariant } from '../../button'
 import { ClockAnimated, ClockIcon, PlusIcon, SpinnerIcon } from '../../icons'
 import { TrackTaskButton } from './track-task-button'
@@ -38,20 +38,17 @@ export const Records = ({ timezone, records, userData }: RecordsProps) => {
   const { isMounted } = useOnMount()
   const [toggledTaskId, setToggledTaskId] = useState<Types.ObjectId>()
 
-  const createInterval = (
-    runningTaskAccTimeSecs: number,
-    dynamicAccTimeSecs: number,
-    runningTaskId: Types.ObjectId,
-  ) => {
+  const createInterval = (runningTaskAccTimeSecs: number, runningTaskId: Types.ObjectId) => {
     // Apply interval each minute
     const interval = setInterval(() => {
       setRunningTaskAccTimeSecs((acc) => acc + 60)
     }, 1000 * 60)
     setIntervalId(interval)
+
     setRunningTaskAccTimeSecs(runningTaskAccTimeSecs)
     dispatch({
       type: ChronoActionTypes.SET_DYNAMIC_ACC_TIME_SECS,
-      payload: dynamicAccTimeSecs,
+      payload: runningTaskAccTimeSecs,
     })
     setRunningTaskId(runningTaskId)
   }
@@ -77,7 +74,7 @@ export const Records = ({ timezone, records, userData }: RecordsProps) => {
       handleClearInterval()
     }
     if (!isRunning) {
-      createInterval(task.accTimeSecs, task.accTimeSecs, task._id)
+      createInterval(task.accTimeSecs, task._id)
     } else {
       handleClearInterval()
       setRunningTaskId(undefined)
@@ -112,7 +109,7 @@ export const Records = ({ timezone, records, userData }: RecordsProps) => {
     // but a new task has been created and is running on server
     if (!state.isOpen && todayRecord?.hasTaskRunning && !runningTaskId && isMounted) {
       const newRunningTask = todayRecord.tasks.find((task) => task.status === TaskStatus.RUNNING)
-      createInterval(0, newRunningTask?.accTimeSecs!, newRunningTask?._id!)
+      createInterval(newRunningTask?.accTimeSecs!, newRunningTask?._id!)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.isOpen])
@@ -121,12 +118,24 @@ export const Records = ({ timezone, records, userData }: RecordsProps) => {
     // Set interval when page has been refreshed and some task is running
     const runningTask = todayRecord?.tasks.find((task) => task.status === TaskStatus.RUNNING)
     if (runningTask && !intervalId && !runningTaskAccTimeSecs && isMounted) {
-      createInterval(runningTask.accTimeSecs, runningTask.accTimeSecs, runningTask._id)
+      createInterval(
+        runningTask.accTimeSecs + getSecondsDiff(dateData.date, runningTask.lastRun),
+        runningTask._id,
+      )
     }
 
     return handleClearInterval
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isMounted])
+
+  useEffect(() => {
+    // Update dynamic seconds when runningTaskAccTimeSecs has been updated
+    // runningTaskAccTimeSecs get updated every 1 minute
+    dispatch({
+      type: ChronoActionTypes.SET_DYNAMIC_ACC_TIME_SECS,
+      payload: runningTaskAccTimeSecs,
+    })
+  }, [runningTaskAccTimeSecs, dispatch])
 
   const { t } = useTranslation('main')
   const { t: commonT } = useTranslation('common')

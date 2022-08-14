@@ -57,9 +57,7 @@ const stopTask = async (req: NextApiRequest, res: NextApiResponse) => {
 
   task.status = TaskStatus.RUNNING
 
-  const datetime_str = new Date().toLocaleString(locale, { timeZone: body.timezone })
-
-  task.lastRun = new Date(datetime_str)
+  task.lastRun = date
 
   todayRecord.hasTaskRunning = true
 
