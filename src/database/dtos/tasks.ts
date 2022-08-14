@@ -23,7 +23,6 @@ export type DeleteTaskDto = {
 
 export type ToggleTaskStatusDto = {
   taskId: Types.ObjectId
-  timezone?: string
   userId: Types.ObjectId
   isRunning: boolean
   locale: string

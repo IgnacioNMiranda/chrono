@@ -28,7 +28,8 @@ const stopTask = async (req: NextApiRequest, res: NextApiResponse) => {
     .exec()
   if (!user) return res.status(401).end('Forbidden. You have no credentials to perform this action')
 
-  const { month, week, day, year, date } = getDateData(locale, user.timezone)
+  const serverTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone
+  const { month, week, day, year, date } = getDateData(locale, serverTimezone)
 
   const todayRecord = user.records.find(
     (record) =>

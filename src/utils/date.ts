@@ -33,10 +33,11 @@ export const getDateData = (locale: string, timeZone?: string) => {
 }
 
 export const getSecondsDiff = (date: Date, prevDate?: Date | string) => {
-  let secondsDiff = 0
-  if (typeof prevDate === 'string')
-    secondsDiff = (date.getTime() - (new Date(prevDate)?.getTime() ?? 0)) / 1000
-  else secondsDiff = (date.getTime() - ((prevDate as Date)?.getTime() ?? 0)) / 1000
+  const dateTime = date.getTime()
+  const prevDateTime =
+    (typeof prevDate === 'string' ? new Date(prevDate) : (prevDate as Date))?.getTime() ?? 0
+
+  const secondsDiff = (dateTime - prevDateTime) / 1000
 
   // Check for Date discrepancies that provoques negative seconds
   return secondsDiff >= 0 ? secondsDiff : 0

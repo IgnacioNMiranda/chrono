@@ -1,12 +1,14 @@
 import { Types, HydratedDocument } from 'mongoose'
 import { useRouter } from 'next/router'
-import { useState, useEffect, useContext, useMemo } from 'react'
+import { useState, useEffect, useContext } from 'react'
 import { ChronoActionTypes, ChronoContext } from '../context'
 import { TaskStatus } from '../database/enums'
 import { IRecord, ITask, IUser } from '../database/models'
 import { toggleTaskStatus } from '../services'
 import { getDateData, getSecondsDiff } from '../utils'
 import { useOnMount } from './use-on-mount'
+
+const INTERVAL_SECONDS = 60
 
 export const useTaskManager = ({
   userData,
@@ -19,7 +21,7 @@ export const useTaskManager = ({
 }) => {
   const { locale } = useRouter()
 
-  const dateData = useMemo(() => getDateData(locale ?? 'en', timezone), [locale, timezone])
+  const dateData = getDateData(locale ?? 'en', timezone)
 
   const [runningTaskAccTimeSecs, setRunningTaskAccTimeSecs] = useState(0)
   const [intervalId, setIntervalId] = useState<NodeJS.Timer>()
@@ -38,17 +40,11 @@ export const useTaskManager = ({
   const { state, dispatch } = useContext(ChronoContext)
 
   const createInterval = (runningTaskAccTimeSecs: number, runningTaskId: Types.ObjectId) => {
-    // Apply interval each minute
     const interval = setInterval(() => {
-      setRunningTaskAccTimeSecs((acc) => acc + 60)
-    }, 1000 * 60)
+      setRunningTaskAccTimeSecs((acc) => acc + INTERVAL_SECONDS)
+    }, 1000 * INTERVAL_SECONDS)
     setIntervalId(interval)
-
     setRunningTaskAccTimeSecs(runningTaskAccTimeSecs)
-    dispatch({
-      type: ChronoActionTypes.SET_DYNAMIC_ACC_TIME_SECS,
-      payload: runningTaskAccTimeSecs,
-    })
     setRunningTaskId(runningTaskId)
   }
 
@@ -63,7 +59,6 @@ export const useTaskManager = ({
       isRunning,
       userId: userData._id,
       taskId: task._id,
-      timezone,
       locale: locale ?? 'en',
     })
     await state.refetch?.()
@@ -77,10 +72,6 @@ export const useTaskManager = ({
     } else {
       handleClearInterval()
       setRunningTaskId(undefined)
-      dispatch({
-        type: ChronoActionTypes.SET_DYNAMIC_ACC_TIME_SECS,
-        payload: undefined,
-      })
     }
   }
 
@@ -139,7 +130,7 @@ export const useTaskManager = ({
   /**
    * 4. Effect
    * Update dynamic seconds when runningTaskAccTimeSecs has been updated
-   * runningTaskAccTimeSecs get updated every 1 minute
+   * on each interval execution
    */
   useEffect(() => {
     dispatch({

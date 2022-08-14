@@ -62,7 +62,6 @@ export const deleteTask = async ({ taskId, userId }: DeleteTaskDto) => {
 export const toggleTaskStatus = async ({
   taskId,
   userId,
-  timezone,
   isRunning,
   locale,
 }: ToggleTaskStatusDto) => {
@@ -72,7 +71,6 @@ export const toggleTaskStatus = async ({
     body: JSON.stringify({
       taskId,
       userId,
-      timezone,
       locale,
     }),
     method: 'PUT',
