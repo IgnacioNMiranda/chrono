@@ -18,7 +18,7 @@ const afterCallback: AfterCallback = async (req, _res, session) => {
   const locale = currentLocale(req)
   if (!user) {
     // TODO: get this from form
-    // eslint-disable-next-line no-unused-vars
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const timezone = Intl.DateTimeFormat(locale).resolvedOptions().timeZone
 
     const newUser = new User({
