@@ -1,7 +1,7 @@
 import { useTranslation } from 'next-i18next'
 import { useRouter } from 'next/router'
 import { FocusEventHandler, FormEventHandler, useContext, useEffect, useRef, useState } from 'react'
-import { ChronoContext } from 'context'
+import { ChronoUserContext, TaskContext } from 'context'
 import { TaskStatus } from 'database/enums'
 import { createNewTask, deleteTask, editTask } from 'services'
 import { capitalizeFirstLetter, getHoursFromSecs, isValidTime } from 'utils'
@@ -37,10 +37,11 @@ export const TaskForm = ({ isCreatingEntry = false, onClose }: TaskFormProps) =>
 
   const [isSubmittingAction, setIsSubmittingAction] = useState(false)
 
-  const { state } = useContext(ChronoContext)
+  const { state } = useContext(TaskContext)
+  const { locale } = useRouter()
+  const chronoUser = useContext(ChronoUserContext)
 
   const { t } = useTranslation('task-form')
-  const { locale } = useRouter()
 
   const formRef = useRef<HTMLFormElement>(null)
 
@@ -59,10 +60,10 @@ export const TaskForm = ({ isCreatingEntry = false, onClose }: TaskFormProps) =>
     if (state.editedTask) {
       setIsSubmittingAction(true)
       await deleteTask({
-        userId: state.user!,
+        userId: chronoUser?.databaseData?._id!,
         taskId: state.editedTask._id,
       })
-      await state.refetch?.()
+      await chronoUser?.refetch?.()
       setIsSubmittingAction(false)
       setTimeVisited(false)
       setTitleVisited(false)
@@ -87,13 +88,19 @@ export const TaskForm = ({ isCreatingEntry = false, onClose }: TaskFormProps) =>
             state.editedTask.status === TaskStatus.RUNNING
               ? getHoursFromSecs(state.editedTask.accTimeSecs)
               : time,
-          userId: state.user!,
+          userId: chronoUser?.databaseData?._id!,
           taskId: state.editedTask._id,
         })
       } else {
-        await createNewTask({ title, notes, time, userId: state.user!, locale: locale ?? 'en' })
+        await createNewTask({
+          title,
+          notes,
+          time,
+          userId: chronoUser?.databaseData?._id!,
+          locale: locale ?? 'en',
+        })
       }
-      await state.refetch?.()
+      await chronoUser?.refetch?.()
       setIsSubmittingAction(false)
       setTimeVisited(false)
       setTitleVisited(false)

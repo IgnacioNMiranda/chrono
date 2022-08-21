@@ -1,4 +1,3 @@
-import { useUser } from '@auth0/nextjs-auth0'
 import type { GetStaticPropsContext, NextPage } from 'next'
 import { useContext } from 'react'
 import {
@@ -8,9 +7,10 @@ import {
   TaskModal,
   HomeLoginPage,
   HomeNotLoginPage,
-} from '../components'
+} from 'components'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
-import { ChronoActionTypes, ChronoContext } from '../context'
+import { TaskActionTypes, TaskContext } from 'context'
+import { ChronoUserContext } from '../context/chrono-user'
 
 export async function getStaticProps({ locale }: GetStaticPropsContext) {
   return {
@@ -28,26 +28,23 @@ export async function getStaticProps({ locale }: GetStaticPropsContext) {
 }
 
 const Home: NextPage = () => {
-  const { user, isLoading } = useUser()
-  const { state, dispatch } = useContext(ChronoContext)
-
-  const isLoggedIn = !isLoading && !!user
-  const isNotLoggedIn = !isLoading && !user
+  const chronoUser = useContext(ChronoUserContext)
+  const { state, dispatch } = useContext(TaskContext)
 
   return (
     <>
-      {state && state.timezone && (
+      {chronoUser && chronoUser.databaseData?.timezone && (
         <TaskModal
           isCreatingEntry={!state.editedTask}
           className={state.isOpen ? 'visible opacity-100' : 'invisible opacity-0'}
-          timezone={state.timezone}
+          timezone={chronoUser.databaseData.timezone}
           onClose={() => {
             dispatch({
-              type: ChronoActionTypes.TOGGLE_MODAL,
+              type: TaskActionTypes.TOGGLE_MODAL,
               payload: false,
             })
             dispatch({
-              type: ChronoActionTypes.SET_EDITED_TASK,
+              type: TaskActionTypes.SET_EDITED_TASK,
               payload: undefined,
             })
           }}
@@ -56,14 +53,18 @@ const Home: NextPage = () => {
 
       <div className="bg-white flex flex-col min-h-screen">
         <Header />
-        <main className={`${isNotLoggedIn ? 'flex' : ''} flex-1 z-10 relative bg-secondary-light`}>
-          {isNotLoggedIn && (
+        <main
+          className={`${
+            chronoUser?.isNotLoggedIn ? 'flex' : ''
+          } flex-1 z-10 relative bg-secondary-light`}
+        >
+          {chronoUser?.isNotLoggedIn && (
             <>
               <HomeNotLoginPage />
               <AnimatedBackground />
             </>
           )}
-          {isLoggedIn && <HomeLoginPage />}
+          {chronoUser?.isLoggedIn && <HomeLoginPage />}
         </main>
         <Footer />
       </div>

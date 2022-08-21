@@ -1,6 +1,5 @@
 import { useContext } from 'react'
-import { ChronoActionTypes, ChronoContext } from 'context'
-import { IRecord, IUser } from 'database/models'
+import { ChronoUser, TaskActionTypes, TaskContext } from 'context'
 import { getHoursFromSecs } from 'utils'
 import {
   TrackTaskButton,
@@ -12,18 +11,15 @@ import {
   ButtonRound,
   ButtonVariant,
 } from '../../..'
-import { HydratedDocument } from 'mongoose'
 import { useTranslation } from 'next-i18next'
 import { useTaskManager } from 'hooks'
 
 export type RecordsProps = {
-  timezone: string
-  records: IRecord[]
-  userData: HydratedDocument<IUser>
+  chronoUser: ChronoUser
 }
 
-export const Records = ({ timezone, records, userData }: RecordsProps) => {
-  const { dispatch } = useContext(ChronoContext)
+export const Records = ({ chronoUser }: RecordsProps) => {
+  const { dispatch } = useContext(TaskContext)
 
   const {
     onEditTask,
@@ -33,7 +29,7 @@ export const Records = ({ timezone, records, userData }: RecordsProps) => {
     todayRecord,
     runningTaskId,
     runningTaskAccTimeSecs,
-  } = useTaskManager({ userData, records, timezone })
+  } = useTaskManager(chronoUser)
 
   const { t } = useTranslation('main')
   const { t: commonT } = useTranslation('common')
@@ -54,7 +50,7 @@ export const Records = ({ timezone, records, userData }: RecordsProps) => {
         className="mt-13 sm:hidden"
         onClick={() => {
           dispatch({
-            type: ChronoActionTypes.TOGGLE_MODAL,
+            type: TaskActionTypes.TOGGLE_MODAL,
             payload: true,
           })
         }}

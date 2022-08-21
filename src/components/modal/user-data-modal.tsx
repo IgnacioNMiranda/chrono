@@ -5,7 +5,7 @@ export type UserDataModalProps = {
   picture: string
   nickname?: string | null
   name?: string
-  timezone: string
+  timezone?: string
 }
 
 export const UserDataModal = ({

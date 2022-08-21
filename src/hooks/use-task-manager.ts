@@ -1,27 +1,20 @@
 import { Types, HydratedDocument } from 'mongoose'
 import { useRouter } from 'next/router'
-import { useState, useEffect, useContext } from 'react'
-import { ChronoActionTypes, ChronoContext } from '../context'
+import { useState, useEffect, useContext, useMemo } from 'react'
+import { TaskActionTypes, TaskContext } from '../context'
 import { TaskStatus } from '../database/enums'
-import { IRecord, ITask, IUser } from '../database/models'
+import { ITask } from '../database/models'
 import { toggleTaskStatus } from '../services'
 import { getDateData, getSecondsDiff } from '../utils'
+import { ChronoUser } from '../context/chrono-user'
 import { useOnMount } from './use-on-mount'
 
-const INTERVAL_SECONDS = 60
+const INTERVAL_SECONDS = 1
 
-export const useTaskManager = ({
-  userData,
-  timezone,
-  records,
-}: {
-  records: IRecord[]
-  userData: HydratedDocument<IUser>
-  timezone: string
-}) => {
+export const useTaskManager = (chronoUser: ChronoUser) => {
   const { locale } = useRouter()
 
-  const dateData = getDateData(locale ?? 'en', timezone)
+  const dateData = getDateData(locale ?? 'en', chronoUser.databaseData?.timezone)
 
   const [runningTaskAccTimeSecs, setRunningTaskAccTimeSecs] = useState(0)
   const [intervalId, setIntervalId] = useState<NodeJS.Timer>()
@@ -29,15 +22,20 @@ export const useTaskManager = ({
   const { isMounted } = useOnMount()
   const [toggledTaskId, setToggledTaskId] = useState<Types.ObjectId>()
 
-  const todayRecord = records.find(
-    (record) =>
-      record.day === Number(dateData.day) &&
-      record.month === Number(dateData.month) &&
-      record.year === Number(dateData.year) &&
-      record.week === Number(dateData.week),
+  const todayRecord = useMemo(
+    () =>
+      chronoUser.databaseData?.records.find(
+        (record) =>
+          record.day === Number(dateData.day) &&
+          record.month === Number(dateData.month) &&
+          record.year === Number(dateData.year) &&
+          record.week === Number(dateData.week),
+      ),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [chronoUser],
   )
 
-  const { state, dispatch } = useContext(ChronoContext)
+  const { state, dispatch } = useContext(TaskContext)
 
   const createInterval = (runningTaskAccTimeSecs: number, runningTaskId: Types.ObjectId) => {
     const interval = setInterval(() => {
@@ -57,11 +55,12 @@ export const useTaskManager = ({
     setToggledTaskId(task._id)
     await toggleTaskStatus({
       isRunning,
-      userId: userData._id,
+      userId: chronoUser.databaseData?._id!,
       taskId: task._id,
       locale: locale ?? 'en',
     })
-    await state.refetch?.()
+
+    await chronoUser.refetch?.()
     setToggledTaskId(undefined)
     if (intervalId && runningTaskId) {
       // When a task has been started and another one is already running
@@ -77,11 +76,11 @@ export const useTaskManager = ({
 
   const onEditTask = (task: HydratedDocument<ITask>) => {
     dispatch({
-      type: ChronoActionTypes.SET_EDITED_TASK,
+      type: TaskActionTypes.SET_EDITED_TASK,
       payload: task,
     })
     dispatch({
-      type: ChronoActionTypes.TOGGLE_MODAL,
+      type: TaskActionTypes.TOGGLE_MODAL,
       payload: true,
     })
   }
@@ -91,7 +90,10 @@ export const useTaskManager = ({
    * Clear interval when task that was running has been deleted
    */
   useEffect(() => {
-    if (!state.editedTask && !records.find((record) => record.hasTaskRunning)) {
+    if (
+      !state.editedTask &&
+      !chronoUser.databaseData?.records.find((record) => record.hasTaskRunning)
+    ) {
       handleClearInterval()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -134,7 +136,7 @@ export const useTaskManager = ({
    */
   useEffect(() => {
     dispatch({
-      type: ChronoActionTypes.SET_DYNAMIC_ACC_TIME_SECS,
+      type: TaskActionTypes.SET_DYNAMIC_ACC_TIME_SECS,
       payload: runningTaskAccTimeSecs,
     })
   }, [runningTaskAccTimeSecs, dispatch])
