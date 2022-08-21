@@ -44,14 +44,12 @@ export const ChronoUserProvider = ({ children }: { children: ReactNode }) => {
   const [chronoUser, setChronoUser] = useState<ChronoUser>()
 
   useEffect(() => {
-    if (user) {
-      setChronoUser((prevUser) => ({
-        ...prevUser,
-        isLoggedIn: !isLoading && !!user,
-        isNotLoggedIn: !isLoading && !user,
-        providerData: user,
-      }))
-    }
+    setChronoUser((prevUser) => ({
+      ...prevUser,
+      isLoggedIn: !isLoading && !!user,
+      isNotLoggedIn: !isLoading && !user,
+      providerData: user,
+    }))
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, isLoading])
 

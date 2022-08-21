@@ -1,16 +1,10 @@
 import type { GetStaticPropsContext, NextPage } from 'next'
 import { useContext } from 'react'
-import {
-  Header,
-  Footer,
-  AnimatedBackground,
-  TaskModal,
-  HomeLoginPage,
-  HomeNotLoginPage,
-} from 'components'
+import { AnimatedBackground, TaskModal, HomeLoginPage, HomeNotLoginPage } from 'components'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { TaskActionTypes, TaskContext } from 'context'
 import { ChronoUserContext } from '../context/chrono-user'
+import { Layout } from '../components/layout'
 
 export async function getStaticProps({ locale }: GetStaticPropsContext) {
   return {
@@ -51,23 +45,15 @@ const Home: NextPage = () => {
         />
       )}
 
-      <div className="bg-white flex flex-col min-h-screen">
-        <Header />
-        <main
-          className={`${
-            chronoUser?.isNotLoggedIn ? 'flex' : ''
-          } flex-1 z-10 relative bg-secondary-light`}
-        >
-          {chronoUser?.isNotLoggedIn && (
-            <>
-              <HomeNotLoginPage />
-              <AnimatedBackground />
-            </>
-          )}
-          {chronoUser?.isLoggedIn && <HomeLoginPage />}
-        </main>
-        <Footer />
-      </div>
+      <Layout mainClassName={`${chronoUser?.isNotLoggedIn ? 'flex' : ''} z-10`}>
+        {chronoUser?.isNotLoggedIn && (
+          <>
+            <HomeNotLoginPage />
+            <AnimatedBackground />
+          </>
+        )}
+        {chronoUser?.isLoggedIn && <HomeLoginPage />}
+      </Layout>
     </>
   )
 }
