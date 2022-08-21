@@ -1,13 +1,11 @@
 import { useTranslation } from 'next-i18next'
 import { useRouter } from 'next/router'
 import { FocusEventHandler, FormEventHandler, useContext, useEffect, useRef, useState } from 'react'
-import { ChronoContext } from '../../../context'
-import { TaskStatus } from '../../../database/enums'
-import { createNewTask, deleteTask, editTask } from '../../../services/task'
-import { capitalizeFirstLetter, getHoursFromSecs, isValidTime } from '../../../utils'
-import { Button, ButtonRound, ButtonVariant } from '../../button'
-import { SpinnerIcon } from '../../icons'
-import { Input } from '../../input'
+import { ChronoContext } from 'context'
+import { TaskStatus } from 'database/enums'
+import { createNewTask, deleteTask, editTask } from 'services'
+import { capitalizeFirstLetter, getHoursFromSecs, isValidTime } from 'utils'
+import { Button, ButtonRound, ButtonVariant, SpinnerIcon, Input } from '..'
 
 export type TaskFormProps = {
   onClose: () => void

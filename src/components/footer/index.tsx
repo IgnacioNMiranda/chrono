@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { ChronoLogoIcon, GithubIcon, LinkedinIcon } from '../icons'
+import { ChronoLogoIcon, GithubIcon, LinkedinIcon } from '..'
 
 export const Footer = () => {
   const currentYear = useMemo(() => new Date().getFullYear(), [])

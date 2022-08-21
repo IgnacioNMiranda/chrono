@@ -1,5 +1,5 @@
 import { FocusEventHandler, InputHTMLAttributes } from 'react'
-import { isNumber } from '../../utils'
+import { isNumber } from 'utils'
 
 export interface TimeInputProps extends InputHTMLAttributes<HTMLInputElement> {}
 

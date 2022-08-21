@@ -1,13 +1,20 @@
 import { useContext } from 'react'
-import { ChronoActionTypes, ChronoContext } from '../../../context'
-import { IRecord, IUser } from '../../../database/models'
-import { getHoursFromSecs } from '../../../utils'
-import { Button, ButtonRound, ButtonVariant } from '../../button'
-import { ClockAnimated, ClockIcon, PlusIcon, SpinnerIcon } from '../../icons'
-import { TrackTaskButton } from './track-task-button'
+import { ChronoActionTypes, ChronoContext } from 'context'
+import { IRecord, IUser } from 'database/models'
+import { getHoursFromSecs } from 'utils'
+import {
+  TrackTaskButton,
+  ClockAnimated,
+  ClockIcon,
+  PlusIcon,
+  SpinnerIcon,
+  Button,
+  ButtonRound,
+  ButtonVariant,
+} from '../../..'
 import { HydratedDocument } from 'mongoose'
 import { useTranslation } from 'next-i18next'
-import { useTaskManager } from '../../../hooks'
+import { useTaskManager } from 'hooks'
 
 export type RecordsProps = {
   timezone: string

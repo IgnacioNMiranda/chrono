@@ -1,7 +1,7 @@
 import { useTranslation } from 'next-i18next'
-import { CronIcon } from '../icons'
+import { CronIcon } from '../..'
 
-export const MainNotLogin = () => {
+export const HomeNotLoginPage = () => {
   const { t } = useTranslation('main')
 
   return (

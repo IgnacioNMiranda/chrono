@@ -3,13 +3,12 @@ import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'next-i18next'
 import { useRouter } from 'next/router'
 import { useContext, useEffect, useState } from 'react'
-import { ChronoActionTypes, ChronoContext } from '../../../context'
-import { getUserData } from '../../../services'
-import { PlusIcon, SpinnerIcon } from '../../icons'
+import { ChronoActionTypes, ChronoContext } from 'context'
+import { getUserData } from 'services'
 import { Records } from './records'
-import { TrackTaskButton } from './track-task-button'
+import { TrackTaskButton, PlusIcon, SpinnerIcon } from '../../..'
 
-export const MainLogin = () => {
+export const HomeLoginPage = () => {
   const [serverError, setServerError] = useState(false)
   const { locale } = useRouter()
   const { user } = useUser()

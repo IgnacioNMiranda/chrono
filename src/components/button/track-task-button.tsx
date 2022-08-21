@@ -1,6 +1,6 @@
 import { useTranslation } from 'next-i18next'
 import { ButtonHTMLAttributes } from 'react'
-import { Button, ButtonRound, ButtonVariant } from '../../button'
+import { Button, ButtonRound, ButtonVariant } from '.'
 
 export interface TrackTaskButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   buttonClassName?: string

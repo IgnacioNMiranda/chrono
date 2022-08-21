@@ -1,9 +1,14 @@
 import { useUser } from '@auth0/nextjs-auth0'
 import type { GetStaticPropsContext, NextPage } from 'next'
 import { useContext } from 'react'
-import { Header, Footer, AnimatedBackground } from '../components'
-import { MainLogin, MainNotLogin } from '../components'
-import { TaskModal } from '../components/main'
+import {
+  Header,
+  Footer,
+  AnimatedBackground,
+  TaskModal,
+  HomeLoginPage,
+  HomeNotLoginPage,
+} from '../components'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { ChronoActionTypes, ChronoContext } from '../context'
 
@@ -54,11 +59,11 @@ const Home: NextPage = () => {
         <main className={`${isNotLoggedIn ? 'flex' : ''} flex-1 z-10 relative bg-secondary-light`}>
           {isNotLoggedIn && (
             <>
-              <MainNotLogin />
+              <HomeNotLoginPage />
               <AnimatedBackground />
             </>
           )}
-          {isLoggedIn && <MainLogin />}
+          {isLoggedIn && <HomeLoginPage />}
         </main>
         <Footer />
       </div>

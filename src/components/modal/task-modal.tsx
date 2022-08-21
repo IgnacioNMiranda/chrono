@@ -1,8 +1,8 @@
 import { useTranslation } from 'next-i18next'
 import { useRouter } from 'next/router'
 import { useMemo } from 'react'
-import { getDateData } from '../../../utils'
-import { TaskForm } from './task-form'
+import { getDateData } from 'utils'
+import { TaskForm } from '../form'
 
 export type TaskModalProps = {
   timezone: string
