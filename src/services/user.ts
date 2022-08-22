@@ -1,5 +1,6 @@
 import { UserProfile } from '@auth0/nextjs-auth0'
 import { HydratedDocument } from 'mongoose'
+import { UpdateUserDto } from '../database/dtos'
 import { IUser } from '../database/models'
 
 export const getUserData = async (
@@ -28,14 +29,12 @@ export const getUserData = async (
 export const updateUserData = async ({
   name,
   nick,
+  email,
   backgroundImage,
   thumbnailImage,
-}: {
-  name: string
-  nick: string
-  backgroundImage: string
-  thumbnailImage: string
-}) => {
+  provider,
+  id,
+}: UpdateUserDto) => {
   const uri = '/api/user/update'
 
   const response = await fetch(uri, {
@@ -43,8 +42,11 @@ export const updateUserData = async ({
     body: JSON.stringify({
       name,
       nick,
+      email,
+      provider,
       backgroundImage,
       thumbnailImage,
+      id,
     }),
   })
 

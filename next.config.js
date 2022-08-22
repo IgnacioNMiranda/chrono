@@ -6,6 +6,7 @@ const nextConfig = {
   swcMinify: true,
   images: {
     domains: ['lh3.googleusercontent.com', 's.gravatar.com'],
+    formats: ['image/avif', 'image/webp'],
   },
   i18n,
   async headers() {

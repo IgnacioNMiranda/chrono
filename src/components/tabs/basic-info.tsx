@@ -69,7 +69,7 @@ export const BasicInfoContent = ({
         <BasicInfoInput
           id="backgroundImage"
           name="backgroundImage"
-          label={t('basicInfoContent.bgImageInputLabel')}
+          label={t('basicInfoContent.backgroundImageInputLabel')}
           defaultValue={userData.backgroundImageUrl}
           placeholder={t('basicInfoContent.imagesInputPlaceholder')}
         />

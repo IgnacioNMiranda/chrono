@@ -1,6 +1,10 @@
 {
   "basicInfoContent": {
     "yourBasicInfoLabel": "Your basic info",
+
+    "successfulUpdateLabel": "Your profile has been updated.",
+    "unsuccessfulUpdateLabel": "It occured an unexpected error. Try again later",
+
     "nameInputLabel": "Name",
     "nickInputLabel": "Nick",
 

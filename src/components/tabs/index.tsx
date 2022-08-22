@@ -4,6 +4,8 @@ import { ChronoUser } from '../../context'
 import { BasicInfoContent } from './basic-info'
 import { Auth0GoogleUser } from '../../types'
 import { updateUserData } from '../../services'
+import { useTranslation } from 'next-i18next'
+import { CheckIcon, CloseIcon } from '../icons'
 
 export type UserData = {
   name?: string
@@ -33,6 +35,9 @@ const tabLinks = [
 export const Tabs = ({ user }: { user?: ChronoUser }) => {
   const [selectedTabIndex, setSelectedTabIndex] = useState(0)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [successfulUpdate, setSuccessfulUpdate] = useState(false)
+  const [hasUpdateError, setHasUpdateError] = useState(false)
+  const { t } = useTranslation('profile')
 
   const onBasicInfoSubmit: FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault()
@@ -43,9 +48,26 @@ export const Tabs = ({ user }: { user?: ChronoUser }) => {
 
     try {
       setIsSubmitting(true)
-      await updateUserData({ name, nick, backgroundImage, thumbnailImage })
+      await updateUserData({
+        name,
+        nick,
+        backgroundImage,
+        email: user?.providerData?.email!,
+        id: user?.databaseData?._id!,
+        thumbnailImage,
+        provider: user?.databaseData?.provider!,
+      })
+      setIsSubmitting(false)
+      setSuccessfulUpdate(true)
+      setTimeout(() => {
+        setSuccessfulUpdate(false)
+      }, 3000)
     } catch (error: any) {
       setIsSubmitting(false)
+      setHasUpdateError(true)
+      setTimeout(() => {
+        setHasUpdateError(false)
+      }, 3000)
     }
   }
 
@@ -55,7 +77,7 @@ export const Tabs = ({ user }: { user?: ChronoUser }) => {
         user?.providerData && 'given_name' in user.providerData
           ? (user.providerData as Auth0GoogleUser).given_name
           : user?.providerData?.nickname ?? 'none',
-      picture: user?.providerData?.picture ?? '/images/no-image-available.avif',
+      picture: user?.providerData?.picture ?? '/images/no-image-available.png',
       nickname: user?.providerData?.nickname,
       email: user?.providerData?.email,
       timezone: user?.databaseData?.timezone,
@@ -102,6 +124,24 @@ export const Tabs = ({ user }: { user?: ChronoUser }) => {
         </ul>
       </div>
       <div className="w-full lg:w-9/12">
+        {successfulUpdate && (
+          <div className="bg-green-light p-4 border border-green-dark flex space-x-2 sm:items-center w-full mb-4">
+            <CheckIcon color="#76bc82" />
+            <span className="block font-medium text-gray-dark text-15 break-words">
+              {t('basicInfoContent.successfulUpdateLabel')}
+            </span>
+          </div>
+        )}
+
+        {hasUpdateError && (
+          <div className="bg-red-light p-4 border border-red-dark flex space-x-2 sm:items-center w-full mb-4">
+            <CloseIcon color="#B91C1C" />
+            <span className="block font-medium text-gray-dark text-15 break-words">
+              {t('basicInfoContent.unsuccessfulUpdateLabel')}
+            </span>
+          </div>
+        )}
+
         {!!(selectedTabIndex === 0) && (
           <BasicInfoContent
             onSubmit={onBasicInfoSubmit}

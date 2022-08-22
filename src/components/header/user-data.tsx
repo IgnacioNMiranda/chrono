@@ -15,7 +15,7 @@ export const UserData = () => {
         chronoUser?.providerData && 'given_name' in chronoUser.providerData
           ? (chronoUser.providerData as Auth0GoogleUser).given_name
           : chronoUser?.providerData?.nickname ?? 'none',
-      picture: chronoUser?.providerData?.picture ?? '/images/no-image-available.avif',
+      picture: chronoUser?.providerData?.picture ?? '/images/no-image-available.png',
       nickname: chronoUser?.providerData?.nickname,
       timezone: chronoUser?.databaseData?.timezone,
     }),

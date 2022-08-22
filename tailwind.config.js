@@ -27,6 +27,14 @@ module.exports = {
         secondary: {
           light: '#FFF8F1',
         },
+        green: {
+          light: '#daefdc',
+          dark: '#76bc82',
+        },
+        red: {
+          light: '#FCA5A5',
+          dark: '#B91C1C',
+        },
       },
       borderRadius: {
         base: '0.25rem',

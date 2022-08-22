@@ -6,6 +6,9 @@ export interface IUser {
   timezone: string
   provider: string
   records: HydratedDocument<IRecord>[]
+  backgroundImage?: string
+  thumbnailImage?: string
+  thumbnailImagePosition?: string
 }
 
 const UserSchema = new Schema<IUser>({
@@ -22,6 +25,9 @@ const UserSchema = new Schema<IUser>({
     ],
     required: true,
   },
+  backgroundImage: { type: String, required: false },
+  thumbnailImage: { type: String, required: false },
+  thumbnailImagePosition: { type: String, required: false },
 })
 
 export const User = (models.User as Model<IUser>) || model<IUser>('User', UserSchema)
