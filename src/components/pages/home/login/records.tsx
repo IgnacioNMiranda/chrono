@@ -68,7 +68,7 @@ export const Records = ({ chronoUser }: RecordsProps) => {
 
             return (
               <div
-                className="bg-secondary-light border-b border-b-gray-task-border flex justify-between sm:justify-"
+                className="bg-secondary-light border-b border-b-gray-divider-border flex justify-between sm:justify-"
                 key={`${task.title}-${idx}`}
               >
                 <div className="w-7/12 xl:w-9/12 p-4">

@@ -1,5 +1,9 @@
 {
   "trackTaskButton": {
     "label": "Track Task"
+  },
+  "userData": {
+    "nickLabel": "Nick",
+    "timezone": "Zone"
   }
 }

@@ -24,3 +24,33 @@ export const getUserData = async (
   }
   throw new Error('' + response.status)
 }
+
+export const updateUserData = async ({
+  name,
+  nick,
+  backgroundImage,
+  thumbnailImage,
+}: {
+  name: string
+  nick: string
+  backgroundImage: string
+  thumbnailImage: string
+}) => {
+  const uri = '/api/user/update'
+
+  const response = await fetch(uri, {
+    method: 'PATCH',
+    body: JSON.stringify({
+      name,
+      nick,
+      backgroundImage,
+      thumbnailImage,
+    }),
+  })
+
+  if (response.ok) {
+    const json = await response.json()
+    return json
+  }
+  throw new Error('' + response.status)
+}

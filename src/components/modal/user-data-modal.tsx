@@ -17,7 +17,8 @@ export const UserDataModal = ({
   timezone,
   className,
 }: UserDataModalProps & { className?: string }) => {
-  const { t } = useTranslation('header')
+  const { t: headerT } = useTranslation('header')
+  const { t: commonT } = useTranslation('common')
   const { locale } = useRouter()
 
   return (
@@ -33,16 +34,16 @@ export const UserDataModal = ({
         <div className="flex-col inline-flex gap-y-1 text-black">
           <span className="block font-medium text-sm">{name}</span>
           <span className="block text-gray-400 text-xxs truncate">
-            {t('userData.nickLabel')}: {nickname}
+            {commonT('userData.nickLabel')}: {nickname}
           </span>
           <span className="block text-gray-400 text-xxs truncate">
-            {t('userData.timezone')}: {timezone}
+            {commonT('userData.timezone')}: {timezone}
           </span>
         </div>
       </div>
       <Link href="/profile" locale={locale}>
         <a className="text-black hover:text-white px-4 w-full block py-1.5 mt-4 hover:bg-primary">
-          {t('userData.profileLink')}
+          {headerT('userData.profileLink')}
         </a>
       </Link>
       <hr className="my-2 border-gray-300" />
@@ -50,7 +51,7 @@ export const UserDataModal = ({
         href="/api/auth/logout"
         className="text-black hover:text-white px-4 w-full block py-1.5 hover:bg-primary"
       >
-        {t('userData.logoutLink')}
+        {headerT('userData.logoutLink')}
       </a>
     </div>
   )

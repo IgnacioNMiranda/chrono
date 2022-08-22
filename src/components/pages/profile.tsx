@@ -1,11 +1,13 @@
-import { useTranslation } from 'next-i18next'
+import { useContext } from 'react'
+import { ChronoUserContext } from '../../context'
+import { Tabs } from '../tabs'
 
 export const ProfilePage = () => {
-  const { t } = useTranslation('profile')
+  const chronoUser = useContext(ChronoUserContext)
 
   return (
-    <section className="container mx-auto my-auto flex justify-center items-center px-4 relative z-10">
-      Profile page
+    <section className="container mx-auto my-auto flex px-4">
+      <Tabs user={chronoUser} />
     </section>
   )
 }

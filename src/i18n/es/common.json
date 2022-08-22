@@ -1,5 +1,9 @@
 {
   "trackTaskButton": {
     "label": "Crear tarea"
+  },
+  "userData": {
+    "nickLabel": "Apodo",
+    "timezone": "Zona"
   }
 }

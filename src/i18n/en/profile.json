@@ -1,0 +1,14 @@
+{
+  "basicInfoContent": {
+    "yourBasicInfoLabel": "Your basic info",
+    "nameInputLabel": "Name",
+    "nickInputLabel": "Nick",
+
+    "backgroundImageInputLabel": "Background Image",
+    "thumbnailInputLabel": "Thumbnail Image",
+    "thumbnailPositionInputLabel": "Thumbnail Position",
+    "imagesInputPlaceholder": "Paste your URL",
+
+    "updateInfoButtonLabel": "Update info"
+  }
+}

@@ -10,10 +10,10 @@ module.exports = {
           DEFAULT: '#d92f2f',
           dark: '#be2923',
         },
-        primary: '#9f5fd4',
         primary: {
           DEFAULT: '#9f5fd4',
           light: '#b784e0',
+          lighter: '#ead7fa',
           dark: '#722cab',
         },
         gray: {
@@ -22,7 +22,7 @@ module.exports = {
           light: 'rgba(29,30,28,.07)',
           modal: 'rgba(29,30,28,.62)',
           border: 'rgba(29,30,28,.3)',
-          'task-border': '#bbb',
+          'divider-border': '#bbb',
         },
         secondary: {
           light: '#FFF8F1',
@@ -41,6 +41,7 @@ module.exports = {
         15: '0.938rem',
         17: '1.063rem',
         '2.5xl': '1.563rem' /* 25px */,
+        30: '1.875rem',
         gargantuar: '6rem',
       },
       margin: {
