@@ -1,4 +1,5 @@
-import { ReactNode } from 'react'
+import { ReactNode, useContext } from 'react'
+import { ChronoUserContext } from '../../context'
 import { Footer } from '../footer'
 import { Header } from '../header'
 
@@ -9,10 +10,26 @@ export const Layout = ({
   children: ReactNode
   mainClassName?: string
 }) => {
+  const chronoUser = useContext(ChronoUserContext)
+
   return (
-    <div className="bg-white flex flex-col min-h-screen">
+    <div className={`bg-white flex flex-col min-h-screen`}>
       <Header />
-      <main className={`flex-1 bg-secondary-light ${mainClassName}`}>{children}</main>
+      <main
+        style={
+          chronoUser?.databaseData?.backgroundImage
+            ? {
+                backgroundImage: `url(${chronoUser?.databaseData?.backgroundImage})`,
+                objectFit: 'cover',
+                backgroundRepeat: 'no-repeat',
+                backgroundSize: '100% 100%',
+              }
+            : undefined
+        }
+        className={`relative flex-1 bg-secondary-light ${mainClassName}`}
+      >
+        {children}
+      </main>
       <Footer />
     </div>
   )

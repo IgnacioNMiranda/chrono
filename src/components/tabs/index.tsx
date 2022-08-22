@@ -17,27 +17,30 @@ export type UserData = {
   thumbnailImageUrl?: string
 }
 
-const tabLinks = [
-  {
-    label: 'Basic Info',
-    id: 'basic-info',
-  },
-  {
-    label: 'Coming soon...',
-    id: 'coming-soon-1',
-  },
-  {
-    label: 'Coming soon...',
-    id: 'coming-soon-2',
-  },
-]
-
 export const Tabs = ({ user }: { user?: ChronoUser }) => {
   const [selectedTabIndex, setSelectedTabIndex] = useState(0)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [successfulUpdate, setSuccessfulUpdate] = useState(false)
   const [hasUpdateError, setHasUpdateError] = useState(false)
   const { t } = useTranslation('profile')
+
+  const tabLinks = useMemo(
+    () => [
+      {
+        label: t('basicInfoTabLabel'),
+        id: 'basic-info',
+      },
+      {
+        label: t('comingSoonTabLabel'),
+        id: 'coming-soon-1',
+      },
+      {
+        label: t('comingSoonTabLabel'),
+        id: 'coming-soon-2',
+      },
+    ],
+    [t],
+  )
 
   const onBasicInfoSubmit: FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault()
@@ -62,6 +65,7 @@ export const Tabs = ({ user }: { user?: ChronoUser }) => {
       setTimeout(() => {
         setSuccessfulUpdate(false)
       }, 3000)
+      await user?.refetch?.()
     } catch (error: any) {
       setIsSubmitting(false)
       setHasUpdateError(true)
@@ -81,6 +85,8 @@ export const Tabs = ({ user }: { user?: ChronoUser }) => {
       nickname: user?.providerData?.nickname,
       email: user?.providerData?.email,
       timezone: user?.databaseData?.timezone,
+      backgroundImageUrl: user?.databaseData?.backgroundImage,
+      thumbnailImageUrl: user?.databaseData?.thumbnailImage,
     }),
     [user],
   )

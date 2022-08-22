@@ -52,7 +52,19 @@ const Home: NextPage = () => {
             <AnimatedBackground />
           </>
         )}
-        {chronoUser?.isLoggedIn && <HomeLoginPage />}
+        {chronoUser?.isLoggedIn && (
+          <>
+            {chronoUser?.databaseData?.thumbnailImage && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                className="thumbnail-styling"
+                src={chronoUser.databaseData.thumbnailImage}
+                alt=""
+              />
+            )}
+            <HomeLoginPage />
+          </>
+        )}
       </Layout>
     </>
   )

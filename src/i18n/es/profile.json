@@ -1,0 +1,21 @@
+{
+  "basicInfoTabLabel": "Info. Básica",
+  "comingSoonTabLabel": "Pronto...",
+
+  "basicInfoContent": {
+    "yourBasicInfoLabel": "Información básica",
+
+    "successfulUpdateLabel": "Hemos actualizado tu perfil.",
+    "unsuccessfulUpdateLabel": "Ocurrió un error inesperado. Intenta más tarde",
+
+    "nameInputLabel": "Nombre",
+    "nickInputLabel": "Nick",
+
+    "backgroundImageInputLabel": "Imagen de fondo",
+    "thumbnailInputLabel": "Imagen miniatura",
+    "thumbnailPositionInputLabel": "Posición de miniatura",
+    "imagesInputPlaceholder": "Pega aquí la URL de la imagen",
+
+    "updateInfoButtonLabel": "Actualizar info"
+  }
+}

@@ -1,8 +1,6 @@
 import type { GetStaticPropsContext, NextPage } from 'next'
-import { useContext } from 'react'
 import { ProfilePage } from 'components'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
-import { ChronoUserContext } from '../context/chrono-user'
 import { Layout } from '../components/layout'
 
 export async function getStaticProps({ locale }: GetStaticPropsContext) {
@@ -15,8 +13,6 @@ export async function getStaticProps({ locale }: GetStaticPropsContext) {
 }
 
 const Profile: NextPage = () => {
-  const chronoUser = useContext(ChronoUserContext)
-
   return (
     <Layout>
       <ProfilePage />

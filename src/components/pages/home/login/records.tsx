@@ -47,7 +47,7 @@ export const Records = ({ chronoUser }: RecordsProps) => {
       <TrackTaskButton
         buttonRound={ButtonRound.LG}
         buttonClassName="w-full p-1.5 flex space-x-1"
-        className="mt-13 sm:hidden"
+        className="my-4 sm:hidden"
         onClick={() => {
           dispatch({
             type: TaskActionTypes.TOGGLE_MODAL,

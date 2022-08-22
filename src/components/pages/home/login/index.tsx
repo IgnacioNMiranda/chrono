@@ -3,6 +3,7 @@ import { useContext } from 'react'
 import { ChronoUserContext, TaskActionTypes, TaskContext } from 'context'
 import { Records } from './records'
 import { TrackTaskButton, PlusIcon, SpinnerIcon } from '../../..'
+import { getMainSectionClasses } from '../../../../utils'
 
 export const HomeLoginPage = () => {
   const chronoUser = useContext(ChronoUserContext)
@@ -11,7 +12,11 @@ export const HomeLoginPage = () => {
   const { t } = useTranslation('main')
 
   return (
-    <section className="container mx-auto flex flex-col justify-center py-8 px-4 relative z-10">
+    <section
+      className={`container mx-auto flex flex-col justify-center py-8 px-4 relative z-10 ${getMainSectionClasses(
+        chronoUser?.databaseData?.backgroundImage,
+      )}`}
+    >
       <div className="flex flex-row sm:space-x-4">
         {chronoUser?.databaseData && (
           <>
@@ -34,6 +39,7 @@ export const HomeLoginPage = () => {
           <p className="font-bold text-center sm:text-left">{t('login.errorMessage')}</p>
         )}
       </div>
+
       {!chronoUser?.databaseData && !chronoUser?.hasError && (
         <div className="flex justify-center items-center w-full">
           <SpinnerIcon width={120} height={120} color="#9f5fd4" />

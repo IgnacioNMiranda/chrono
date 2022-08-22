@@ -1,4 +1,7 @@
 {
+  "basicInfoTabLabel": "Basic Info",
+  "comingSoonTabLabel": "Coming soon...",
+
   "basicInfoContent": {
     "yourBasicInfoLabel": "Your basic info",
 

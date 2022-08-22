@@ -63,7 +63,7 @@
   position: absolute;
   list-style: none;
   display: block;
-  bottom: 0;
+  bottom: -100px;
   animation: icon-animation 5s infinite;
   transition-timing-function: linear;
 }

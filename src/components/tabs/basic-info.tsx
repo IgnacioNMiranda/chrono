@@ -49,7 +49,7 @@ export const BasicInfoContent = ({
   const { t } = useTranslation('profile')
   return (
     <div>
-      <h1 className="text-30 font-medium text-gray-dark leading-6">
+      <h1 className="text-30 font-medium text-gray-dark leading-8">
         {t('basicInfoContent.yourBasicInfoLabel')}
       </h1>
       <hr className="my-4 bg-gray-dark border-b" />

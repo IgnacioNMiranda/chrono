@@ -1,4 +1,5 @@
 const modalPlugin = require('./src/styles/plugins/modal.js')
+const thumbnailPlugin = require('./src/styles/plugins/thumbnail.js')
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
@@ -79,5 +80,5 @@ module.exports = {
       // => @media (min-width: 1216px) { ... }
     },
   },
-  plugins: [modalPlugin],
+  plugins: [modalPlugin, thumbnailPlugin],
 }
