@@ -26,7 +26,7 @@ export const Layout = ({
               }
             : undefined
         }
-        className={`relative flex-1 bg-secondary-light ${mainClassName}`}
+        className={`relative flex-1 bg-secondary-ligh bg-white ${mainClassName}`}
       >
         {children}
       </main>

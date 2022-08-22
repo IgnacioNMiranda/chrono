@@ -68,7 +68,7 @@ export const Records = ({ chronoUser }: RecordsProps) => {
 
             return (
               <div
-                className="bg-secondary-light border-b border-b-gray-divider-border flex justify-between sm:justify-"
+                className="bg-secondary-ligh bg-white border-b border-b-gray-divider-border flex justify-between sm:justify-"
                 key={`${task.title}-${idx}`}
               >
                 <div className="w-7/12 xl:w-9/12 p-4">
@@ -119,7 +119,7 @@ export const Records = ({ chronoUser }: RecordsProps) => {
               </div>
             )
           })}
-          <div className="bg-secondary-light flex mx-auto sm:mx-0 w-fit sm:w-full">
+          <div className="bg-secondary-ligh bg-white flex mx-auto sm:mx-0 w-fit sm:w-full">
             <div className="w-7/12 xl:w-9/12 p-4 flex justify-end">
               <span className="font-normal text-17 text-gray-dark leading-5.6">
                 {t('login.records.totalLabel')}:
