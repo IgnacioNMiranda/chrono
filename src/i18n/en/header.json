@@ -1,5 +1,6 @@
 {
   "homeLink": "Home",
+  "changelogLink": "Changelog",
   "userData": {
     "profileLink": "My profile",
     "logoutLink": "Logout"
