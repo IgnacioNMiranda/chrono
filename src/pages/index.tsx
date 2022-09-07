@@ -1,10 +1,8 @@
 import type { GetStaticPropsContext, NextPage } from 'next'
 import { useContext } from 'react'
-import { AnimatedBackground, TaskModal, HomeLoginPage, HomeNotLoginPage } from 'components'
+import { AnimatedBackground, Layout, TaskModal, HomeLoginPage, HomeNotLoginPage } from 'components'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
-import { TaskActionTypes, TaskContext } from 'context'
-import { ChronoUserContext } from '../context/chrono-user'
-import { Layout } from '../components/layout'
+import { TaskActionTypes, TaskContext, ChronoUserContext } from 'context'
 
 export async function getStaticProps({ locale }: GetStaticPropsContext) {
   return {

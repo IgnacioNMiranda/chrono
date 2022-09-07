@@ -2,7 +2,7 @@ import { useTranslation } from 'next-i18next'
 import { useContext } from 'react'
 import { ChronoUserContext, TaskActionTypes, TaskContext } from 'context'
 import { Records } from './records'
-import { TrackTaskButton, PlusIcon, SpinnerIcon } from '../../..'
+import { TrackTaskButton, PlusIcon } from '../../..'
 import { getMainSectionClasses } from '../../../../utils'
 
 export const HomeLoginPage = () => {
@@ -39,12 +39,6 @@ export const HomeLoginPage = () => {
           <p className="font-bold text-center sm:text-left">{t('login.errorMessage')}</p>
         )}
       </div>
-
-      {!chronoUser?.databaseData && !chronoUser?.hasError && (
-        <div className="flex justify-center items-center w-full">
-          <SpinnerIcon width={120} height={120} color="#9f5fd4" />
-        </div>
-      )}
     </section>
   )
 }

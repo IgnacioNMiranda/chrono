@@ -3,8 +3,8 @@ import { QueryObserverBaseResult, useQuery } from '@tanstack/react-query'
 import { HydratedDocument } from 'mongoose'
 import { useRouter } from 'next/router'
 import { createContext, ReactNode, useEffect, useMemo, useState } from 'react'
-import { IUser } from '../database/models'
-import { getUserData } from '../services'
+import { IUser } from 'database/models'
+import { getUserData } from 'services'
 
 export type ChronoUser = {
   isLoggedIn?: boolean
@@ -13,10 +13,13 @@ export type ChronoUser = {
   databaseData?: HydratedDocument<IUser>
   providerData?: UserProfile
   hasError?: boolean
+  isLoading?: boolean
 }
 
 /** Context */
-export const ChronoUserContext = createContext<ChronoUser | undefined>({})
+export const ChronoUserContext = createContext<ChronoUser | undefined>({
+  isLoading: true,
+})
 
 /** Provider */
 export const ChronoUserProvider = ({ children }: { children: ReactNode }) => {
@@ -48,9 +51,9 @@ export const ChronoUserProvider = ({ children }: { children: ReactNode }) => {
       ...prevUser,
       isLoggedIn: !isLoading && !!user,
       isNotLoggedIn: !isLoading && !user,
+      isLoading,
       providerData: user,
     }))
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, isLoading])
 
   useEffect(() => {
@@ -60,7 +63,6 @@ export const ChronoUserProvider = ({ children }: { children: ReactNode }) => {
         databaseData: data,
       }))
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data])
 
   const value = useMemo(
