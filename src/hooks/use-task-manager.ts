@@ -1,11 +1,11 @@
 import { Types, HydratedDocument } from 'mongoose'
 import { useRouter } from 'next/router'
-import { useState, useEffect, useContext, useMemo } from 'react'
+import { useState, useEffect, useContext } from 'react'
 import { TaskActionTypes, TaskContext } from '../context'
 import { TaskStatus } from '../database/enums'
 import { ITask } from '../database/models'
 import { toggleTaskStatus } from '../services'
-import { getDateData, getSecondsDiff } from '../utils'
+import { DateData, getDateData, getSecondsDiff, getWeekDateData } from '../utils'
 import { ChronoUser } from '../context/chrono-user'
 import { useOnMount } from './use-on-mount'
 
@@ -14,26 +14,28 @@ const INTERVAL_SECONDS = 1
 export const useTaskManager = (chronoUser: ChronoUser) => {
   const { locale } = useRouter()
 
-  const dateData = getDateData(locale ?? 'en', chronoUser.databaseData?.timezone)
-
+  const todayDateData = getDateData(locale ?? 'en', chronoUser.databaseData?.timezone)
+  const weekDateData = getWeekDateData(locale ?? 'en', chronoUser.databaseData?.timezone)
   const [runningTaskAccTimeSecs, setRunningTaskAccTimeSecs] = useState(0)
   const [intervalId, setIntervalId] = useState<NodeJS.Timer>()
   const [runningTaskId, setRunningTaskId] = useState<Types.ObjectId>()
   const { isMounted } = useOnMount()
   const [toggledTaskId, setToggledTaskId] = useState<Types.ObjectId>()
 
-  const todayRecord = useMemo(
-    () =>
-      chronoUser.databaseData?.records.find(
-        (record) =>
-          record.day === Number(dateData.day) &&
-          record.month === Number(dateData.month) &&
-          record.year === Number(dateData.year) &&
-          record.week === Number(dateData.week),
-      ),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [chronoUser],
-  )
+  const findRecord = (dateData: Pick<DateData, 'day' | 'week' | 'month' | 'year'>) => {
+    return chronoUser.databaseData?.records.find(
+      (record) =>
+        record.day === Number(dateData.day) &&
+        record.month === Number(dateData.month) &&
+        record.year === Number(dateData.year) &&
+        record.week === Number(dateData.week),
+    )
+  }
+
+  const [selectedRecord, setSelectedRecord] = useState(() => findRecord(todayDateData))
+
+  const handleSelectRecord = ({ day, week, month, year }: DateData) =>
+    setSelectedRecord(findRecord({ day, week, month, year }))
 
   const { state, dispatch } = useContext(TaskContext)
 
@@ -105,8 +107,8 @@ export const useTaskManager = (chronoUser: ChronoUser) => {
    * but a new task has been created and is running on server
    */
   useEffect(() => {
-    if (!state.isOpen && todayRecord?.hasTaskRunning && !runningTaskId && isMounted) {
-      const newRunningTask = todayRecord.tasks.find((task) => task.status === TaskStatus.RUNNING)
+    if (!state.isOpen && selectedRecord?.hasTaskRunning && !runningTaskId && isMounted) {
+      const newRunningTask = selectedRecord.tasks.find((task) => task.status === TaskStatus.RUNNING)
       createInterval(newRunningTask?.accTimeSecs!, newRunningTask?._id!)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -117,10 +119,10 @@ export const useTaskManager = (chronoUser: ChronoUser) => {
    * Set interval when page has been refreshed and some task is running
    */
   useEffect(() => {
-    const runningTask = todayRecord?.tasks.find((task) => task.status === TaskStatus.RUNNING)
+    const runningTask = selectedRecord?.tasks.find((task) => task.status === TaskStatus.RUNNING)
     if (runningTask && !intervalId && !runningTaskAccTimeSecs && isMounted) {
       createInterval(
-        runningTask.accTimeSecs + getSecondsDiff(dateData.date, runningTask.lastRun),
+        runningTask.accTimeSecs + getSecondsDiff(todayDateData.date, runningTask.lastRun),
         runningTask._id,
       )
     }
@@ -143,10 +145,13 @@ export const useTaskManager = (chronoUser: ChronoUser) => {
 
   return {
     onEditTask,
+    findRecord,
     onToggleTaskStatus,
     toggledTaskId,
-    dateData,
-    todayRecord,
+    todayDateData,
+    weekDateData,
+    selectedRecord,
+    handleSelectRecord,
     runningTaskAccTimeSecs,
     runningTaskId,
   }
