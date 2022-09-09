@@ -8,6 +8,7 @@
     "errorMessage": "Ocurrió un error inesperado 😥 Por favor intenta iniciar sesión nuevamente.",
     "records": {
       "todayLabel": "Hoy",
+      "weekTotalLabel": "Total Semana",
 
       "startButtonLabel": "Iniciar",
       "stopButtonLabel": "Stop",

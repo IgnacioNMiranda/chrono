@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react'
+import { memo, useContext, useEffect, useState } from 'react'
 import { ChronoUser, TaskActionTypes, TaskContext } from 'context'
 import { getAccTimeFromRecord, getHoursFromSecs, getSecsFromHours } from 'utils'
 import {
@@ -18,7 +18,7 @@ export type RecordsProps = {
   chronoUser: ChronoUser
 }
 
-export const Records = ({ chronoUser }: RecordsProps) => {
+export const Records = memo(({ chronoUser }: RecordsProps) => {
   const { dispatch } = useContext(TaskContext)
 
   const {
@@ -28,22 +28,38 @@ export const Records = ({ chronoUser }: RecordsProps) => {
     handleSelectRecord,
     todayDateData,
     weekDateData,
+    selectedWeekDayIndex,
+    setSelectedWeekDayIndex,
     selectedRecord,
     findRecord,
     runningTaskId,
     runningTaskAccTimeSecs,
   } = useTaskManager(chronoUser)
 
-  const [recordsAccHours] = useState(() =>
+  const [recordsAccHours, setRecordsAccHours] = useState(() =>
     weekDateData.map((weekDayDateData) => {
       const record = findRecord(weekDayDateData)
       return getAccTimeFromRecord(record, runningTaskId, runningTaskAccTimeSecs)
     }),
   )
 
-  const [selectedWeekIndex, setSelectedWeekDayIndex] = useState(
-    weekDateData.findIndex((weekDayDateDate) => weekDayDateDate.dayName === todayDateData.dayName),
-  )
+  useEffect(() => {
+    setRecordsAccHours(
+      weekDateData.map((weekDayDateData) => {
+        const record = findRecord(weekDayDateData)
+        return getAccTimeFromRecord(record, runningTaskId, runningTaskAccTimeSecs)
+      }),
+    )
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [runningTaskAccTimeSecs])
+
+  useEffect(() => {
+    dispatch({
+      type: TaskActionTypes.SET_SELECTED_DAY,
+      payload: todayDateData,
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const { t } = useTranslation('main')
   const { t: commonT } = useTranslation('common')
@@ -76,13 +92,7 @@ export const Records = ({ chronoUser }: RecordsProps) => {
         <div className="w-full flex justify-between items-center text-15 border-b border-b-gray-divider-border">
           <ul className="w-10/12 flex space-x-1">
             {weekDateData.map((weekDay, idx) => {
-              // const isSelected = isWeekDaySelected(weekDay, selectedRecord)
-              const isSelected = selectedWeekIndex === idx
-              console.log(weekDay.dayName, isSelected, idx)
-
-              // console.log(weekDay, isSelected)
-              // TODO: is not selecting records correctly because not all of them are
-              // created in BD for this use
+              const isSelected = selectedWeekDayIndex === idx
 
               return (
                 <li
@@ -93,13 +103,17 @@ export const Records = ({ chronoUser }: RecordsProps) => {
                       : isSelected
                       ? 'border-b-primary font-medium'
                       : 'text-gray-dark-opacity hover:text-gray-dark hover:font-medium border-b-transparent '
-                  } px-1 py-2 w-1/7 border-b-2 hover:border-b-2 hover:border-b-primary`}
+                  }  w-1/7 border-b-2 hover:border-b-2 hover:border-b-primary `}
                 >
                   <button
-                    className="flex flex-col w-full"
+                    className="flex flex-col w-full px-1 py-2 focus:outline-none"
                     onClick={() => {
                       setSelectedWeekDayIndex(idx)
                       handleSelectRecord(weekDay)
+                      dispatch({
+                        type: TaskActionTypes.SET_SELECTED_DAY,
+                        payload: weekDay,
+                      })
                     }}
                   >
                     <span>{weekDay.shortDayName}</span>
@@ -113,7 +127,7 @@ export const Records = ({ chronoUser }: RecordsProps) => {
             })}
           </ul>
           <div className="flex flex-col items-end">
-            <span>Week Total</span>
+            <span>{t('login.records.weekTotalLabel')}</span>
             <span className="text-13">
               {getHoursFromSecs(
                 recordsAccHours.reduce(
@@ -208,4 +222,6 @@ export const Records = ({ chronoUser }: RecordsProps) => {
       </div>
     </div>
   )
-}
+})
+
+Records.displayName = 'Records'

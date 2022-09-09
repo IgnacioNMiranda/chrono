@@ -3,10 +3,7 @@ import { HydratedDocument } from 'mongoose'
 import { UpdateUserDto } from '../database/dtos'
 import { IUser } from '../database/models'
 
-export const getUserData = async (
-  user?: UserProfile,
-  locale?: string,
-): Promise<HydratedDocument<IUser>> => {
+export const getUserData = async (user?: UserProfile): Promise<HydratedDocument<IUser>> => {
   const invalidDataError = new Error('Invalid Data')
 
   if (!user) throw invalidDataError
@@ -15,7 +12,7 @@ export const getUserData = async (
 
   const provider = sub?.split('|')[0]
 
-  const uri = `/api/user/fetch-data?email=${email}&provider=${provider}&locale=${locale}`
+  const uri = `/api/user/fetch-data?email=${email}&provider=${provider}`
 
   const response = await fetch(uri)
 

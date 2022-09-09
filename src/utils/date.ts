@@ -1,5 +1,6 @@
 import { HydratedDocument, Types } from 'mongoose'
 import { IRecord } from '../database/models'
+import { capitalizeFirstLetter } from './capitalize'
 
 export type DateData = {
   year: number
@@ -44,7 +45,7 @@ export const getDateData = (locale: string, timeZone?: string, existingDate?: Da
   const day = ('0' + date.getDate()).slice(-2)
 
   const dayName = date.toLocaleString(locale, { weekday: 'long' })
-  const shortDayName = date.toLocaleString(locale, { weekday: 'short' })
+  const shortDayName = capitalizeFirstLetter(date.toLocaleString(locale, { weekday: 'short' }))
 
   return { year, month, monthName, week, day, dayName, shortDayName, date }
 }

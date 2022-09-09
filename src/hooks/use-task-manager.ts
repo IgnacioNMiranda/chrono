@@ -22,6 +22,10 @@ export const useTaskManager = (chronoUser: ChronoUser) => {
   const { isMounted } = useOnMount()
   const [toggledTaskId, setToggledTaskId] = useState<Types.ObjectId>()
 
+  const [selectedWeekDayIndex, setSelectedWeekDayIndex] = useState(
+    weekDateData.findIndex((weekDayDateDate) => weekDayDateDate.dayName === todayDateData.dayName),
+  )
+
   const findRecord = (dateData: Pick<DateData, 'day' | 'week' | 'month' | 'year'>) => {
     return chronoUser.databaseData?.records.find(
       (record) =>
@@ -59,6 +63,7 @@ export const useTaskManager = (chronoUser: ChronoUser) => {
       isRunning,
       userId: chronoUser.databaseData?._id!,
       taskId: task._id,
+      selectedDay: state.selectedDay!,
       locale: locale ?? 'en',
     })
 
@@ -89,6 +94,16 @@ export const useTaskManager = (chronoUser: ChronoUser) => {
 
   /**
    * 1. Effect
+   * When task get updated (created, started, or stopped)
+   * update selected record to reflect new tasks times.
+   */
+  useEffect(() => {
+    handleSelectRecord(weekDateData[selectedWeekDayIndex])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [chronoUser])
+
+  /**
+   * 2. Effect
    * Clear interval when task that was running has been deleted
    */
   useEffect(() => {
@@ -102,27 +117,39 @@ export const useTaskManager = (chronoUser: ChronoUser) => {
   }, [state.editedTask])
 
   /**
-   * 2. Effect
+   * 3. Effect
    * Set interval if the modal has been closed, there is no task running on client
    * but a new task has been created and is running on server
    */
+
   useEffect(() => {
-    if (!state.isOpen && selectedRecord?.hasTaskRunning && !runningTaskId && isMounted) {
-      const newRunningTask = selectedRecord.tasks.find((task) => task.status === TaskStatus.RUNNING)
+    const recordWithTaskRunning = chronoUser.databaseData?.records.find(
+      (record) => record.hasTaskRunning,
+    )
+    if (!state.isOpen && recordWithTaskRunning && !runningTaskId && isMounted) {
+      const newRunningTask = recordWithTaskRunning.tasks.find(
+        (task) => task.status === TaskStatus.RUNNING,
+      )
       createInterval(newRunningTask?.accTimeSecs!, newRunningTask?._id!)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.isOpen])
 
   /**
-   * 3. Effect
+   * 4. Effect
    * Set interval when page has been refreshed and some task is running
    */
   useEffect(() => {
-    const runningTask = selectedRecord?.tasks.find((task) => task.status === TaskStatus.RUNNING)
+    const recordWithTaskRunning = chronoUser.databaseData?.records.find(
+      (record) => record.hasTaskRunning,
+    )
+    const runningTask = recordWithTaskRunning?.tasks.find(
+      (task) => task.status === TaskStatus.RUNNING,
+    )
     if (runningTask && !intervalId && !runningTaskAccTimeSecs && isMounted) {
+      const selectedWeekDayDate = weekDateData[selectedWeekDayIndex].date
       createInterval(
-        runningTask.accTimeSecs + getSecondsDiff(todayDateData.date, runningTask.lastRun),
+        runningTask.accTimeSecs + getSecondsDiff(selectedWeekDayDate, runningTask.lastRun),
         runningTask._id,
       )
     }
@@ -132,7 +159,7 @@ export const useTaskManager = (chronoUser: ChronoUser) => {
   }, [isMounted])
 
   /**
-   * 4. Effect
+   * 5. Effect
    * Update dynamic seconds when runningTaskAccTimeSecs has been updated
    * on each interval execution
    */
@@ -150,6 +177,8 @@ export const useTaskManager = (chronoUser: ChronoUser) => {
     toggledTaskId,
     todayDateData,
     weekDateData,
+    selectedWeekDayIndex,
+    setSelectedWeekDayIndex,
     selectedRecord,
     handleSelectRecord,
     runningTaskAccTimeSecs,

@@ -1,4 +1,5 @@
 import { Types } from 'mongoose'
+import { DateData } from 'utils'
 
 export type NewTaskDto = {
   title: string
@@ -6,6 +7,7 @@ export type NewTaskDto = {
   time: string
   userId: Types.ObjectId
   locale: string
+  selectedDay: DateData
 }
 
 export type EditTaskDto = {
@@ -26,4 +28,5 @@ export type ToggleTaskStatusDto = {
   userId: Types.ObjectId
   isRunning: boolean
   locale: string
+  selectedDay: DateData
 }
