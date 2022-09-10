@@ -29,6 +29,7 @@ module.exports = {
         gray: {
           'dark-opacity': '#1d1e1cb3',
           dark: '#1d1e1c',
+          medium: '#4a4b49',
           light: 'rgba(29,30,28,.07)',
           modal: 'rgba(29,30,28,.62)',
           border: 'rgba(29,30,28,.3)',

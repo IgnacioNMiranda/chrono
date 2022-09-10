@@ -1,6 +1,6 @@
 import { SVGProps } from 'react'
 
-export const CloseIcon = ({ color, ...props }: SVGProps<SVGSVGElement>) => {
+export const HamburgerIcon = ({ color, ...props }: SVGProps<SVGSVGElement>) => {
   return (
     <svg
       width="16"
@@ -11,11 +11,12 @@ export const CloseIcon = ({ color, ...props }: SVGProps<SVGSVGElement>) => {
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
-      aria-label="X icon"
       {...props}
     >
-      <path color={color} d="M14.25 3.75L3.75 14.25"></path>
-      <path color={color} d="M3.75 3.75L14.25 14.25"></path>
+      <path color={color} d="M12.8889 7H2"></path>
+      <path color={color} d="M16 3H2"></path>
+      <path color={color} d="M16 11H2"></path>
+      <path color={color} d="M12.8889 15H2"></path>
     </svg>
   )
 }
