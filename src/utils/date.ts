@@ -1,4 +1,5 @@
 import { HydratedDocument, Types } from 'mongoose'
+import { ChronoUser } from '../context'
 import { IRecord } from '../database/models'
 import { capitalizeFirstLetter } from './capitalize'
 
@@ -131,3 +132,9 @@ export const getAccTimeFromRecord = (
   )
   return getHoursFromSecs(hours * 3600 + minutes * 60)
 }
+
+export const getRunningRecord = (user: ChronoUser) =>
+  user.databaseData?.records.find((record) => record.hasTaskRunning)
+
+export const isRecordRunning = (user: ChronoUser, recordDay: string) =>
+  getRunningRecord(user)?.day === Number(recordDay)

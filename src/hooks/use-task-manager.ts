@@ -3,9 +3,16 @@ import { useRouter } from 'next/router'
 import { useState, useEffect, useContext } from 'react'
 import { TaskActionTypes, TaskContext } from '../context'
 import { TaskStatus } from '../database/enums'
-import { ITask } from '../database/models'
+import { IRecord, ITask } from '../database/models'
 import { toggleTaskStatus } from '../services'
-import { DateData, getDateData, getSecondsDiff, getWeekDateData } from '../utils'
+import {
+  DateData,
+  getDateData,
+  getRunningRecord,
+  getSecondsDiff,
+  getWeekDateData,
+  isRecordRunning,
+} from '../utils'
 import { ChronoUser } from '../context/chrono-user'
 import { useOnMount } from './use-on-mount'
 
@@ -21,6 +28,8 @@ export const useTaskManager = (chronoUser: ChronoUser) => {
   const [runningTaskId, setRunningTaskId] = useState<Types.ObjectId>()
   const { isMounted } = useOnMount()
   const [toggledTaskId, setToggledTaskId] = useState<Types.ObjectId>()
+  const [isTodayRunning, setIsTodayRunning] = useState(false)
+  const [runningRecord, setRunningRecord] = useState<HydratedDocument<IRecord>>()
 
   const [selectedWeekDayIndex, setSelectedWeekDayIndex] = useState(
     weekDateData.findIndex((weekDayDateDate) => weekDayDateDate.dayName === todayDateData.dayName),
@@ -92,6 +101,17 @@ export const useTaskManager = (chronoUser: ChronoUser) => {
     })
   }
 
+  useEffect(() => {
+    if (runningTaskId) {
+      setIsTodayRunning(isRecordRunning(chronoUser, todayDateData.day))
+      setRunningRecord(getRunningRecord(chronoUser))
+    } else {
+      setRunningRecord(undefined)
+      setIsTodayRunning(false)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [runningTaskId])
+
   /**
    * 1. Effect
    * When task get updated (created, started, or stopped)
@@ -100,7 +120,7 @@ export const useTaskManager = (chronoUser: ChronoUser) => {
   useEffect(() => {
     handleSelectRecord(weekDateData[selectedWeekDayIndex])
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [chronoUser])
+  }, [chronoUser, runningTaskId])
 
   /**
    * 2. Effect
@@ -183,5 +203,7 @@ export const useTaskManager = (chronoUser: ChronoUser) => {
     handleSelectRecord,
     runningTaskAccTimeSecs,
     runningTaskId,
+    isTodayRunning,
+    runningRecord,
   }
 }

@@ -1,6 +1,12 @@
 import { memo, useContext, useEffect, useState } from 'react'
 import { ChronoUser, TaskActionTypes, TaskContext } from 'context'
-import { DateData, getAccTimeFromRecord, getHoursFromSecs, getSecsFromHours } from 'utils'
+import {
+  DateData,
+  getAccTimeFromRecord,
+  getHoursFromSecs,
+  getSecsFromHours,
+  isRecordRunning,
+} from 'utils'
 import {
   TrackTaskButton,
   ClockAnimated,
@@ -10,9 +16,12 @@ import {
   Button,
   ButtonRound,
   ButtonVariant,
+  WarningIcon,
+  InfoButton,
 } from '../../..'
 import { useTranslation } from 'next-i18next'
 import { useTaskManager } from 'hooks'
+import { IRecord } from '../../../../database/models'
 
 export type RecordsProps = {
   chronoUser: ChronoUser
@@ -34,6 +43,8 @@ export const Records = memo(({ chronoUser }: RecordsProps) => {
     findRecord,
     runningTaskId,
     runningTaskAccTimeSecs,
+    isTodayRunning,
+    runningRecord,
   } = useTaskManager(chronoUser)
 
   const [recordsAccHours, setRecordsAccHours] = useState(() =>
@@ -58,6 +69,7 @@ export const Records = memo(({ chronoUser }: RecordsProps) => {
       type: TaskActionTypes.SET_SELECTED_DAY,
       payload: todayDateData,
     })
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -70,11 +82,37 @@ export const Records = memo(({ chronoUser }: RecordsProps) => {
     })
   }
 
+  const handleSelectDay = (dayDateData?: DateData | IRecord) => {
+    const dayIndex = weekDateData.findIndex(
+      (weekDayDateData) => Number(weekDayDateData.day) === Number(dayDateData?.day),
+    )
+
+    handleSelectWeekDay(dayIndex, weekDateData[dayIndex])
+  }
+
   const { t } = useTranslation('main')
   const { t: commonT } = useTranslation('common')
 
   return (
     <div className="flex flex-col sm:space-y-4 w-full">
+      {!isTodayRunning && runningTaskId && (
+        <div className="p-4 mb-4 sm:mb-0 block sm:flex items-center sm:space-x-2 bg-alert-light border border-alert">
+          <WarningIcon color="#d99c22" width={20} height={20} />
+          <span className="text-gray-dark text-15 leading-5.6 break-words">
+            {runningRecord?.day === selectedRecord?.day ? (
+              'A timer is running for this day in the past.'
+            ) : (
+              <>
+                <span className="mr-2">You have a timer running in the past.</span>
+                <InfoButton
+                  onClick={() => handleSelectDay(runningRecord)}
+                  label="Travel back in time to edit it"
+                />
+              </>
+            )}
+          </span>
+        </div>
+      )}
       <section className="flex flex-col sm:flex-row items-start sm:items-center space-y-1 sm:space-y-0 sm:space-x-2">
         <h1 className="font-medium text-3xl">
           {weekDateData[selectedWeekDayIndex].day === todayDateData.day
@@ -86,17 +124,10 @@ export const Records = memo(({ chronoUser }: RecordsProps) => {
           </span>
         </h1>
         {weekDateData[selectedWeekDayIndex].day !== todayDateData.day && (
-          <button
-            onClick={() => {
-              const todayIndex = weekDateData.findIndex(
-                (weekDayDateData) => weekDayDateData.day === todayDateData.day,
-              )
-              handleSelectWeekDay(todayIndex, weekDateData[todayIndex])
-            }}
-            className="text-info hover:text-primary-dark transition-colors underline text-15 font-normal leading-5.6"
-          >
-            {t('login.records.returnToTodayLabel')}
-          </button>
+          <InfoButton
+            onClick={() => handleSelectDay(todayDateData)}
+            label={t('login.records.returnToTodayLabel')}
+          />
         )}
       </section>
       <TrackTaskButton
@@ -138,6 +169,11 @@ export const Records = memo(({ chronoUser }: RecordsProps) => {
                     <div className="flex items-center space-x-1">
                       <span className="text-13">{recordsAccHours[idx]}</span>
                       <ClockIcon width={12} height={12} />
+                      {todayDateData.day !== weekDay?.day &&
+                        runningTaskId &&
+                        isRecordRunning(chronoUser, weekDay.day) && (
+                          <WarningIcon width={12} height={12} />
+                        )}
                     </div>
                   </button>
                 </li>

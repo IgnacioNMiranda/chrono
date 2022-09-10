@@ -15,6 +15,11 @@ module.exports = {
         info: {
           DEFAULT: '#2a59c1',
         },
+        alert: {
+          DEFAULT: '#ffc33c',
+          light: '#fff1cd',
+          dark: '#d99c22',
+        },
         primary: {
           DEFAULT: '#9f5fd4',
           light: '#b784e0',
