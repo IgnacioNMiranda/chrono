@@ -7,8 +7,13 @@
   "login": {
     "errorMessage": "It occured an unexpected error 😥 Please try logging in again.",
     "records": {
+      "taskRunningOnSelectedDay": "A timer is running for this day in the past.",
+      "taskNotRunningOnSelectedDay": "You have a timer running in the past.",
+      "travelToRunningDay": "Travel back in time to edit it",
+
       "todayLabel": "Today",
       "returnToTodayLabel": "Return to today",
+
       "weekTotalLabel": "Week Total",
 
       "startButtonLabel": "Start",

@@ -45,7 +45,7 @@ export const getDateData = (locale: string, timeZone?: string, existingDate?: Da
   // date as (DD) format
   const day = ('0' + date.getDate()).slice(-2)
 
-  const dayName = date.toLocaleString(locale, { weekday: 'long' })
+  const dayName = capitalizeFirstLetter(date.toLocaleString(locale, { weekday: 'long' }))
   const shortDayName = capitalizeFirstLetter(date.toLocaleString(locale, { weekday: 'short' }))
 
   return { year, month, monthName, week, day, dayName, shortDayName, date }

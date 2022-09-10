@@ -100,13 +100,13 @@ export const Records = memo(({ chronoUser }: RecordsProps) => {
           <WarningIcon color="#d99c22" width={20} height={20} />
           <span className="text-gray-dark text-15 leading-5.6 break-words">
             {runningRecord?.day === selectedRecord?.day ? (
-              'A timer is running for this day in the past.'
+              t('login.records.taskRunningOnSelectedDay')
             ) : (
               <>
-                <span className="mr-2">You have a timer running in the past.</span>
+                <span className="mr-2">{t('login.records.taskNotRunningOnSelectedDay')}</span>
                 <InfoButton
                   onClick={() => handleSelectDay(runningRecord)}
-                  label="Travel back in time to edit it"
+                  label={t('login.records.travelToRunningDay')}
                 />
               </>
             )}
