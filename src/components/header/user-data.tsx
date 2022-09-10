@@ -37,13 +37,15 @@ export const UserData = () => {
         onClick={() => setShowUserModal(!showUserModal)}
       >
         {chronoUser?.providerData?.picture && (
-          <Image
-            width={28}
-            height={28}
-            className="rounded-3xl"
-            src={chronoUser?.providerData?.picture}
-            alt={chronoUser?.providerData?.nickname ?? 'user profile photo'}
-          />
+          <div className="hidden sm:flex">
+            <Image
+              width={28}
+              height={28}
+              className="rounded-3xl"
+              src={chronoUser?.providerData?.picture}
+              alt={chronoUser?.providerData?.nickname ?? 'user profile photo'}
+            />
+          </div>
         )}
         <span className="block">{userData.name}</span>
       </button>

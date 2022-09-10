@@ -1,4 +1,5 @@
 const modalPlugin = require('./src/styles/plugins/modal.js')
+const scrollbarHidePlugin = require('./src/styles/plugins/scrollbar-hide.js')
 const thumbnailPlugin = require('./src/styles/plugins/thumbnail.js')
 
 /** @type {import('tailwindcss').Config} */
@@ -10,6 +11,9 @@ module.exports = {
         warning: {
           DEFAULT: '#d92f2f',
           dark: '#be2923',
+        },
+        info: {
+          DEFAULT: '#2a59c1',
         },
         primary: {
           DEFAULT: '#9f5fd4',
@@ -81,5 +85,5 @@ module.exports = {
       // => @media (min-width: 1216px) { ... }
     },
   },
-  plugins: [modalPlugin, thumbnailPlugin],
+  plugins: [modalPlugin, scrollbarHidePlugin, thumbnailPlugin],
 }

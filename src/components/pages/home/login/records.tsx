@@ -93,7 +93,7 @@ export const Records = memo(({ chronoUser }: RecordsProps) => {
               )
               handleSelectWeekDay(todayIndex, weekDateData[todayIndex])
             }}
-            className="text-primary hover:text-primary-dark transition-colors underline text-15 font-normal leading-5.6"
+            className="text-info hover:text-primary-dark transition-colors underline text-15 font-normal leading-5.6"
           >
             {t('login.records.returnToTodayLabel')}
           </button>
@@ -115,7 +115,7 @@ export const Records = memo(({ chronoUser }: RecordsProps) => {
       </TrackTaskButton>
       <div>
         <div className="w-full flex justify-between items-center text-15 border-b border-b-gray-divider-border">
-          <ul className="w-10/12 flex space-x-1">
+          <ul className="w-10/12 flex space-x-1 overflow-x-auto scrollbar-hide pr-2">
             {weekDateData.map((weekDay, idx) => {
               const isSelected = selectedWeekDayIndex === idx
 
@@ -128,7 +128,7 @@ export const Records = memo(({ chronoUser }: RecordsProps) => {
                       : isSelected
                       ? 'border-b-primary font-medium'
                       : 'text-gray-dark-opacity hover:text-gray-dark hover:font-medium border-b-transparent '
-                  }  w-1/7 border-b-2 hover:border-b-2 hover:border-b-primary `}
+                  } sm:w-1/7 border-b-2 hover:border-b-2 hover:border-b-primary `}
                 >
                   <button
                     className="flex flex-col w-full px-1 py-2 focus:outline-none"
@@ -144,8 +144,10 @@ export const Records = memo(({ chronoUser }: RecordsProps) => {
               )
             })}
           </ul>
-          <div className="flex flex-col items-end">
-            <span>{t('login.records.weekTotalLabel')}</span>
+          <div className="flex flex-col items-center sm:items-end">
+            <span className="text-xs sm:text-15 text-center">
+              {t('login.records.weekTotalLabel')}
+            </span>
             <span className="text-13">
               {getHoursFromSecs(
                 recordsAccHours.reduce(
