@@ -1,6 +1,6 @@
 import { memo, useContext, useEffect, useState } from 'react'
 import { ChronoUser, TaskActionTypes, TaskContext } from 'context'
-import { getAccTimeFromRecord, getHoursFromSecs, getSecsFromHours } from 'utils'
+import { DateData, getAccTimeFromRecord, getHoursFromSecs, getSecsFromHours } from 'utils'
 import {
   TrackTaskButton,
   ClockAnimated,
@@ -61,18 +61,43 @@ export const Records = memo(({ chronoUser }: RecordsProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  const handleSelectWeekDay = (weekDayIndex: number, weekDay: DateData) => {
+    setSelectedWeekDayIndex(weekDayIndex)
+    handleSelectRecord(weekDay)
+    dispatch({
+      type: TaskActionTypes.SET_SELECTED_DAY,
+      payload: weekDay,
+    })
+  }
+
   const { t } = useTranslation('main')
   const { t: commonT } = useTranslation('common')
 
   return (
     <div className="flex flex-col sm:space-y-4 w-full">
-      <section>
+      <section className="flex flex-col sm:flex-row items-start sm:items-center space-y-1 sm:space-y-0 sm:space-x-2">
         <h1 className="font-medium text-3xl">
-          {t('login.records.todayLabel')}:{' '}
+          {weekDateData[selectedWeekDayIndex].day === todayDateData.day
+            ? `${t('login.records.todayLabel')}: `
+            : ''}
           <span className="font-normal">
-            {todayDateData.dayName}, {todayDateData.day} {todayDateData.monthName}
+            {weekDateData[selectedWeekDayIndex].dayName}, {weekDateData[selectedWeekDayIndex].day}{' '}
+            {weekDateData[selectedWeekDayIndex].monthName}
           </span>
         </h1>
+        {weekDateData[selectedWeekDayIndex].day !== todayDateData.day && (
+          <button
+            onClick={() => {
+              const todayIndex = weekDateData.findIndex(
+                (weekDayDateData) => weekDayDateData.day === todayDateData.day,
+              )
+              handleSelectWeekDay(todayIndex, weekDateData[todayIndex])
+            }}
+            className="text-primary hover:text-primary-dark transition-colors underline text-15 font-normal leading-5.6"
+          >
+            {t('login.records.returnToTodayLabel')}
+          </button>
+        )}
       </section>
       <TrackTaskButton
         buttonRound={ButtonRound.LG}
@@ -107,14 +132,7 @@ export const Records = memo(({ chronoUser }: RecordsProps) => {
                 >
                   <button
                     className="flex flex-col w-full px-1 py-2 focus:outline-none"
-                    onClick={() => {
-                      setSelectedWeekDayIndex(idx)
-                      handleSelectRecord(weekDay)
-                      dispatch({
-                        type: TaskActionTypes.SET_SELECTED_DAY,
-                        payload: weekDay,
-                      })
-                    }}
+                    onClick={() => handleSelectWeekDay(idx, weekDay)}
                   >
                     <span>{weekDay.shortDayName}</span>
                     <div className="flex items-center space-x-1">

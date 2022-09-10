@@ -8,6 +8,7 @@
     "errorMessage": "It occured an unexpected error 😥 Please try logging in again.",
     "records": {
       "todayLabel": "Today",
+      "returnToTodayLabel": "Return to today",
       "weekTotalLabel": "Week Total",
 
       "startButtonLabel": "Start",
