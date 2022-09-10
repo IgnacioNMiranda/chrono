@@ -9,26 +9,29 @@
   "02-aug-2022-descriptionValue": "Nacimiento de Chrono 🎉",
 
   "03-aug-2022-dateValue": "03/08/2022",
-  "03-aug-2022-descriptionValue": "Nuevo: Página de Inicio sin registro de sesión.",
+  "03-aug-2022-descriptionValue": "Página de Inicio sin registro de sesión.",
 
   "06-aug-2022-dateValue": "06/08/2022",
-  "06-aug-2022-descriptionValue": "Nuevo: Autenticación y página de Inicio con registro de sesión.",
+  "06-aug-2022-descriptionValue": "Autenticación y página de Inicio con registro de sesión.",
 
   "07-aug-2022-dateValue": "07/08/2022",
-  "07-aug-2022-descriptionValue": "Nuevo: Los usuarios ahora pueden crear nuevas tareas.",
+  "07-aug-2022-descriptionValue": "Los usuarios ahora pueden crear nuevas tareas.",
 
   "10-aug-2022-dateValue": "10/08/2022",
-  "10-aug-2022-descriptionValue": "Nuevo: Los usuarios ahora pueden editar y eliminar sus tareas.",
+  "10-aug-2022-descriptionValue": "Los usuarios ahora pueden editar y eliminar sus tareas.",
 
   "12-aug-2022-dateValue": "12/08/2022",
-  "12-aug-2022-descriptionValue": "Nuevo: Se añadió soporte para localización.",
+  "12-aug-2022-descriptionValue": "Se añadió soporte para localización.",
 
   "14-aug-2022-dateValue": "14/08/2022",
-  "14-aug-2022-descriptionValue": "Parche: Las horas se configuran correctamente en base a la zona horaria.",
+  "14-aug-2022-descriptionValue": "Las horas se configuran correctamente en base a la zona horaria.",
 
   "22-aug-2022-dateValue": "22/08/2022",
-  "22-aug-2022-descriptionValue": "Nuevo: Los usuarios pueden agregar una URL para imagen de fondo y de miniatura.",
+  "22-aug-2022-descriptionValue": "Los usuarios pueden agregar una URL para imagen de fondo y de miniatura.",
 
   "05-sept-2022-dateValue": "05/09/2022",
-  "05-sept-2022-descriptionValue": "Nuevo: Se añade sección de registro de cambios."
+  "05-sept-2022-descriptionValue": "Se añade sección de registro de cambios.",
+
+  "10-sept-2022-dateValue": "10/09/2022",
+  "10-sept-2022-descriptionValue": "Los usuarios ahora tienen una vista semanal de sus tareas."
 }

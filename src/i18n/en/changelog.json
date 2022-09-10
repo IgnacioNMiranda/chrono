@@ -9,26 +9,29 @@
   "02-aug-2022-descriptionValue": "Chrono's birth 🎉",
 
   "03-aug-2022-dateValue": "08/03/2022",
-  "03-aug-2022-descriptionValue": "Feat: Not Logged In Home Page.",
+  "03-aug-2022-descriptionValue": "Not Logged In Home Page.",
 
   "06-aug-2022-dateValue": "08/06/2022",
-  "06-aug-2022-descriptionValue": "Feat: Authentication and Logged In Home Page.",
+  "06-aug-2022-descriptionValue": "Authentication and Logged In Home Page.",
 
   "07-aug-2022-dateValue": "08/07/2022",
-  "07-aug-2022-descriptionValue": "Feat: Users are able to create new tasks.",
+  "07-aug-2022-descriptionValue": "Users are able to create new tasks.",
 
   "10-aug-2022-dateValue": "08/10/2022",
-  "10-aug-2022-descriptionValue": "Feat: Users are able to edit and delete their tasks.",
+  "10-aug-2022-descriptionValue": "Users are able to edit and delete their tasks.",
 
   "12-aug-2022-dateValue": "08/12/2022",
-  "12-aug-2022-descriptionValue": "Feat: Add localization support.",
+  "12-aug-2022-descriptionValue": "Add localization support.",
 
   "14-aug-2022-dateValue": "08/14/2022",
-  "14-aug-2022-descriptionValue": "Fix: Hours are correctly configured based on timezone.",
+  "14-aug-2022-descriptionValue": "Hours are correctly configured based on timezone.",
 
   "22-aug-2022-dateValue": "08/22/2022",
-  "22-aug-2022-descriptionValue": "Feat: Users can add background and thumbnail url images to their profile.",
+  "22-aug-2022-descriptionValue": "Users can add background and thumbnail url images to their profile.",
 
   "05-sept-2022-dateValue": "09/05/2022",
-  "05-sept-2022-descriptionValue": "Feat: Changelog section added."
+  "05-sept-2022-descriptionValue": "Changelog section added.",
+
+  "10-sept-2022-dateValue": "09/10/2022",
+  "10-sept-2022-descriptionValue": "Users now have a week overview."
 }

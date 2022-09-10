@@ -10,6 +10,10 @@ export const ChangeLogPage = () => {
   const rows = useMemo(
     () => [
       {
+        date: t('10-sept-2022-dateValue'),
+        description: t('10-sept-2022-descriptionValue'),
+      },
+      {
         date: t('05-sept-2022-dateValue'),
         description: t('05-sept-2022-descriptionValue'),
       },
@@ -51,7 +55,7 @@ export const ChangeLogPage = () => {
 
   return (
     <section
-      className={`container mx-auto my-auto flex px-4 py-8 pt-10 ${getMainSectionClasses(
+      className={`container mx-auto flex px-4 py-8 pt-10 ${getMainSectionClasses(
         chronoUser?.databaseData?.backgroundImage,
       )}`}
     >
