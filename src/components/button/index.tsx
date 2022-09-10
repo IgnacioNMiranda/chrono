@@ -1,5 +1,6 @@
 import { ButtonHTMLAttributes, MouseEventHandler } from 'react'
 
+export * from './info-button'
 export * from './track-task-button'
 
 export enum ButtonVariant {

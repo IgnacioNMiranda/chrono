@@ -8,7 +8,7 @@ export const ProfilePage = () => {
 
   return (
     <section
-      className={`container mx-auto my-auto flex px-4 ${getMainSectionClasses(
+      className={`container mx-auto flex px-4 ${getMainSectionClasses(
         chronoUser?.databaseData?.backgroundImage,
       )}`}
     >

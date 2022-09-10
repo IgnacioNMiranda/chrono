@@ -1,6 +1,7 @@
 import { HydratedDocument } from 'mongoose'
 import { createContext, Dispatch, ReactNode, useMemo, useReducer } from 'react'
 import { ITask } from '../database/models'
+import { DateData } from '../utils'
 
 const INITIAL_TASK_MODAL_STATE: TaskState = {
   isOpen: false,
@@ -11,6 +12,7 @@ type TaskState = {
   isOpen: boolean
   editedTask?: HydratedDocument<ITask>
   dynamicAccTimeSecs?: number
+  selectedDay?: DateData
 }
 
 /* Action */
@@ -18,10 +20,11 @@ export enum TaskActionTypes {
   TOGGLE_MODAL = '@toggle-modal',
   SET_EDITED_TASK = '@set-edited-task',
   SET_DYNAMIC_ACC_TIME_SECS = '@set-dynamic-acc-time-secs',
+  SET_SELECTED_DAY = '@set-selected-day',
 }
 export interface TaskAction {
   type: TaskActionTypes
-  payload: boolean | number | HydratedDocument<ITask> | undefined
+  payload: boolean | number | HydratedDocument<ITask> | DateData | undefined
 }
 
 /** Reducer */
@@ -53,6 +56,11 @@ const TaskReducer: (state: TaskState, action: TaskAction) => TaskState = (
         dynamicAccTimeSecs: action.payload as number,
       }
     }
+    case TaskActionTypes.SET_SELECTED_DAY:
+      return {
+        ...state,
+        selectedDay: action.payload as DateData,
+      }
     default:
       return state
   }

@@ -2,8 +2,8 @@ import { useTranslation } from 'next-i18next'
 import { useContext } from 'react'
 import { ChronoUserContext, TaskActionTypes, TaskContext } from 'context'
 import { Records } from './records'
-import { TrackTaskButton, PlusIcon } from '../../..'
-import { getMainSectionClasses } from '../../../../utils'
+import { TrackTaskButton, PlusIcon } from 'components'
+import { getMainSectionClasses } from 'utils'
 
 export const HomeLoginPage = () => {
   const chronoUser = useContext(ChronoUserContext)

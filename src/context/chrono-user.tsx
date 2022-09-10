@@ -29,7 +29,7 @@ export const ChronoUserProvider = ({ children }: { children: ReactNode }) => {
   const [hasError, setHasError] = useState(false)
   const { data, refetch } = useQuery<HydratedDocument<IUser>>(
     ['userData'],
-    () => getUserData(user, locale),
+    () => getUserData(user),
     {
       enabled: !!user && !!locale,
       onError: (err) => {

@@ -1,9 +1,10 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { connectToDatabase } from '../../../database/connection'
-import { Task, User } from '../../../database/models'
-import { TaskStatus } from '../../../database/enums'
-import { Record } from '../../../database/models'
-import { getDateData, isValidTime } from '../../../utils'
+import { connectToDatabase } from 'database/connection'
+import { Task, User } from 'database/models'
+import { TaskStatus } from 'database/enums'
+import { Record } from 'database/models'
+import { getDateData, isValidTime } from 'utils'
+import { NewTaskDto } from 'database/dtos'
 
 const createTask = async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method !== 'POST') return res.status(400).end('Bad request')
@@ -14,14 +15,15 @@ const createTask = async (req: NextApiRequest, res: NextApiResponse) => {
 
   if (
     !body.title ||
+    !body.selectedDay ||
     (body.time !== '' && !isValidTime(body.time)) ||
-    !body.userId ||
-    !body.locale
+    !body.locale ||
+    !body.userId
   ) {
     return res.status(400).end('Bad request. Some parameters are missing or bad formatted')
   }
 
-  const { title, time, notes, userId, locale } = body
+  const { title, time, notes, userId, selectedDay, locale }: NewTaskDto = body
 
   const user = await User.findById(userId)
     .populate({
@@ -35,17 +37,29 @@ const createTask = async (req: NextApiRequest, res: NextApiResponse) => {
   if (!user) return res.status(401).end('Forbidden. You have no credentials to perform this action')
 
   const serverTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone
-  const { month, week, day, year, date: todayDate } = getDateData(locale, serverTimezone)
+  const { date } = getDateData(locale, serverTimezone)
 
-  const todayRecord = await Record.findOne({
-    month,
-    week,
-    day,
-    year,
+  let selectedDayRecord = await Record.findOne({
+    day: selectedDay.day,
+    week: selectedDay.week,
+    month: selectedDay.month,
+    year: selectedDay.year,
     user: userId,
   }).exec()
 
-  if (!todayRecord) return res.status(400).end('Bad request. Cannot find today record')
+  if (!selectedDayRecord) {
+    selectedDayRecord = new Record({
+      day: selectedDay.day,
+      week: selectedDay.week,
+      month: selectedDay.month,
+      year: selectedDay.year,
+      tasks: [],
+      user: userId,
+    })
+    await selectedDayRecord.save()
+    user.records.push(selectedDayRecord.id)
+    await user.save()
+  }
 
   const normTime = time || '0:00'
   const [hours, minutes] = normTime.split(':')
@@ -58,17 +72,18 @@ const createTask = async (req: NextApiRequest, res: NextApiResponse) => {
   const newTask = new Task({
     title,
     notes: notes ?? '',
-    lastRun: taskAlreadyRunning ? null : todayDate,
+    lastRun: taskAlreadyRunning ? null : date,
     accTimeSecs,
-    record: todayRecord._id,
+    record: selectedDayRecord._id,
     status: taskAlreadyRunning ? TaskStatus.IDLE : TaskStatus.RUNNING,
   })
 
   const hasTaskRunningQuery = taskAlreadyRunning ? {} : { $set: { hasTaskRunning: true } }
 
   await newTask.save()
-  await todayRecord.updateOne({ ...hasTaskRunningQuery, $push: { tasks: newTask._id } }).exec()
-
+  await selectedDayRecord
+    .updateOne({ ...hasTaskRunningQuery, $push: { tasks: newTask._id } })
+    .exec()
   return res.status(200).json(newTask)
 }
 

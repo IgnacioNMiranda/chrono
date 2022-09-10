@@ -7,7 +7,14 @@
   "login": {
     "errorMessage": "Ocurrió un error inesperado 😥 Por favor intenta iniciar sesión nuevamente.",
     "records": {
+      "taskRunningOnSelectedDay": "Un temporizador está corriendo para este día en el pasado.",
+      "taskNotRunningOnSelectedDay": "Tienes un temporizador corriendo en el pasado.",
+      "travelToRunningDay": "Ir al pasado para editarlo",
+
       "todayLabel": "Hoy",
+      "returnToTodayLabel": "Volver al hoy",
+
+      "weekTotalLabel": "Total Semana",
 
       "startButtonLabel": "Iniciar",
       "stopButtonLabel": "Stop",

@@ -1,11 +1,11 @@
 import { useTranslation } from 'next-i18next'
-import { useRouter } from 'next/router'
 import { FocusEventHandler, FormEventHandler, useContext, useEffect, useRef, useState } from 'react'
 import { ChronoUserContext, TaskContext } from 'context'
 import { TaskStatus } from 'database/enums'
 import { createNewTask, deleteTask, editTask } from 'services'
 import { capitalizeFirstLetter, getHoursFromSecs, isValidTime } from 'utils'
 import { Button, ButtonRound, ButtonVariant, SpinnerIcon, Input } from '..'
+import { useRouter } from 'next/router'
 
 export type TaskFormProps = {
   onClose: () => void
@@ -33,12 +33,13 @@ export const TaskForm = ({ isCreatingEntry = false, onClose }: TaskFormProps) =>
   const [timeVisited, setTimeVisited] = useState(false)
   const [submitError, setSubmitError] = useState('')
 
+  const { locale } = useRouter()
+
   const [waitingDeleteTaskConfirmation, setWaitingDeleteConfirmation] = useState(false)
 
   const [isSubmittingAction, setIsSubmittingAction] = useState(false)
 
   const { state } = useContext(TaskContext)
-  const { locale } = useRouter()
   const chronoUser = useContext(ChronoUserContext)
 
   const { t } = useTranslation('task-form')
@@ -94,10 +95,11 @@ export const TaskForm = ({ isCreatingEntry = false, onClose }: TaskFormProps) =>
       } else {
         await createNewTask({
           title,
+          locale: locale ?? 'en',
           notes,
           time,
           userId: chronoUser?.databaseData?._id!,
-          locale: locale ?? 'en',
+          selectedDay: state.selectedDay!,
         })
       }
       await chronoUser?.refetch?.()
