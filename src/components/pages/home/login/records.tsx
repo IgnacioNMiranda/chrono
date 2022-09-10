@@ -1,4 +1,4 @@
-import { memo, useContext, useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { ChronoUser, TaskActionTypes, TaskContext } from 'context'
 import {
   DateData,
@@ -18,16 +18,17 @@ import {
   ButtonVariant,
   WarningIcon,
   InfoButton,
-} from '../../..'
+} from 'components'
 import { useTranslation } from 'next-i18next'
 import { useTaskManager } from 'hooks'
-import { IRecord } from '../../../../database/models'
+import { IRecord } from 'database/models'
+import { NavigationButton } from '../../../button/navigation-button'
 
 export type RecordsProps = {
   chronoUser: ChronoUser
 }
 
-export const Records = memo(({ chronoUser }: RecordsProps) => {
+export const Records = ({ chronoUser }: RecordsProps) => {
   const { dispatch } = useContext(TaskContext)
 
   const {
@@ -95,6 +96,7 @@ export const Records = memo(({ chronoUser }: RecordsProps) => {
 
   return (
     <div className="flex flex-col sm:space-y-4 w-full">
+      {/* Timer Alert */}
       {!isTodayRunning && runningTaskId && (
         <div className="p-4 mb-4 sm:mb-0 block sm:flex items-center sm:space-x-2 bg-alert-light border border-alert">
           <WarningIcon color="#d99c22" width={20} height={20} />
@@ -113,7 +115,13 @@ export const Records = memo(({ chronoUser }: RecordsProps) => {
           </span>
         </div>
       )}
+
+      {/* Day Title and Navigation */}
       <section className="flex flex-col sm:flex-row items-start sm:items-center space-y-1 sm:space-y-0 sm:space-x-2">
+        <nav>
+          <NavigationButton iconPosition="left" />
+          <NavigationButton iconPosition="right" />
+        </nav>
         <h1 className="font-medium text-3xl">
           {weekDateData[selectedWeekDayIndex].day === todayDateData.day
             ? `${t('login.records.todayLabel')}: `
@@ -130,6 +138,8 @@ export const Records = memo(({ chronoUser }: RecordsProps) => {
           />
         )}
       </section>
+
+      {/* Mobile Track Task Button */}
       <TrackTaskButton
         buttonRound={ButtonRound.LG}
         buttonClassName="w-full p-1.5 flex space-x-1"
@@ -144,6 +154,8 @@ export const Records = memo(({ chronoUser }: RecordsProps) => {
         <PlusIcon color="white" width={16} height={16} className="font-bold" />
         <span className="text-white font-medium text-15">{commonT('trackTaskButton.label')}</span>
       </TrackTaskButton>
+
+      {/* Main Tasks Section */}
       <div>
         <div className="w-full flex justify-between items-center text-15 border-b border-b-gray-divider-border">
           <ul className="w-10/12 flex space-x-1 overflow-x-auto scrollbar-hide pr-2">
@@ -278,6 +290,4 @@ export const Records = memo(({ chronoUser }: RecordsProps) => {
       </div>
     </div>
   )
-})
-
-Records.displayName = 'Records'
+}
