@@ -14,20 +14,7 @@ export type DateData = {
   date: Date
 }
 
-export const getDateData = (locale: string, timeZone?: string, existingDate?: Date): DateData => {
-  let datetime_str = existingDate
-    ? new Date(existingDate).toLocaleString(locale, { timeZone })
-    : new Date().toLocaleString(locale, { timeZone })
-
-  if (!locale.startsWith('en')) {
-    const [dates, time] = datetime_str.split(' ')
-    const splittedDates = dates.split('/')
-    const aux = splittedDates[0]
-    splittedDates[0] = splittedDates[1]
-    splittedDates[1] = aux
-    datetime_str = [splittedDates.join('/'), time].join(',')
-  }
-
+export const getDateAttributes = (datetime_str: string, locale: string) => {
   // create new Date object
   const date = new Date(datetime_str)
 
@@ -51,8 +38,33 @@ export const getDateData = (locale: string, timeZone?: string, existingDate?: Da
   return { year, month, monthName, week, day, dayName, shortDayName, date }
 }
 
-export const getWeekDateData = (locale: string, timeZone?: string) => {
-  let datetime_str = new Date().toLocaleString(locale, { timeZone })
+export const getDateData = (locale: string, timeZone?: string, existingDate?: Date): DateData => {
+  let datetime_str = existingDate
+    ? new Date(existingDate).toLocaleString(locale, { timeZone })
+    : new Date().toLocaleString(locale, { timeZone })
+
+  if (!locale.startsWith('en')) {
+    const [dates, time] = datetime_str.split(' ')
+    const splittedDates = dates.split('/')
+    const aux = splittedDates[0]
+    splittedDates[0] = splittedDates[1]
+    splittedDates[1] = aux
+    datetime_str = [splittedDates.join('/'), time].join(',')
+  }
+
+  const { year, month, monthName, week, day, dayName, shortDayName, date } = getDateAttributes(
+    datetime_str,
+    locale,
+  )
+
+  return { year, month, monthName, week, day, dayName, shortDayName, date }
+}
+
+export const getWeekDateData = (locale: string, timeZone?: string, baseDay?: Date) => {
+  // If it's undefined, base day would be today
+  let datetime_str = baseDay
+    ? new Date(baseDay).toLocaleString(locale, { timeZone })
+    : new Date().toLocaleString(locale, { timeZone })
 
   if (!locale.startsWith('en')) {
     const [dates, time] = datetime_str.split(' ')
@@ -64,17 +76,17 @@ export const getWeekDateData = (locale: string, timeZone?: string) => {
   }
 
   // create new Date object
-  const todayDate = new Date(datetime_str)
+  const baseDayDate = new Date(datetime_str)
 
-  const dayAsNumber = todayDate.getDay()
-  const diff = todayDate.getDate() - dayAsNumber + (dayAsNumber === 0 ? -6 : 1)
-  const mondayDate = new Date(todayDate).setDate(diff)
-  const tuesdayDate = new Date(todayDate).setDate(diff + 1)
-  const wednesdayDate = new Date(todayDate).setDate(diff + 2)
-  const thursdayDate = new Date(todayDate).setDate(diff + 3)
-  const fridayDate = new Date(todayDate).setDate(diff + 4)
-  const saturdayDate = new Date(todayDate).setDate(diff + 5)
-  const sundayDate = new Date(todayDate).setDate(diff + 6)
+  const dayAsNumber = baseDayDate.getDay()
+  const diff = baseDayDate.getDate() - dayAsNumber + (dayAsNumber === 0 ? -6 : 1)
+  const mondayDate = new Date(baseDayDate).setDate(diff)
+  const tuesdayDate = new Date(baseDayDate).setDate(diff + 1)
+  const wednesdayDate = new Date(baseDayDate).setDate(diff + 2)
+  const thursdayDate = new Date(baseDayDate).setDate(diff + 3)
+  const fridayDate = new Date(baseDayDate).setDate(diff + 4)
+  const saturdayDate = new Date(baseDayDate).setDate(diff + 5)
+  const sundayDate = new Date(baseDayDate).setDate(diff + 6)
 
   return [
     getDateData(locale, timeZone, new Date(mondayDate)),
@@ -136,5 +148,29 @@ export const getAccTimeFromRecord = (
 export const getRunningRecord = (user: ChronoUser) =>
   user.databaseData?.records.find((record) => record.hasTaskRunning)
 
+export const recordToDateData = (locale: string, record?: IRecord, timeZone?: string) => {
+  if (!record) return undefined
+  const date = new Date(new Date().toLocaleString(locale, { timeZone }))
+  date.setDate(record.day)
+  date.setMonth(record.month - 1)
+  date.setFullYear(record.year)
+
+  return getDateData(locale, timeZone, date)
+}
+
 export const isRecordRunning = (user: ChronoUser, recordDay: string) =>
   getRunningRecord(user)?.day === Number(recordDay)
+
+export const dateDataAreEquals = (firstDateData: DateData | IRecord, secondDateData: DateData) => {
+  return (
+    Number(firstDateData.day) === Number(secondDateData.day) &&
+    Number(firstDateData.month) === Number(secondDateData.month) &&
+    Number(firstDateData.week) === Number(secondDateData.week) &&
+    Number(firstDateData.year) === Number(secondDateData.year)
+  )
+}
+
+export const isRecordRunningInThePast = (
+  todayDateData: DateData,
+  runningRecordDateData: DateData,
+) => runningRecordDateData.date < todayDateData.date

@@ -2,10 +2,12 @@ import { useContext, useEffect, useState } from 'react'
 import { ChronoUser, TaskActionTypes, TaskContext } from 'context'
 import {
   DateData,
+  dateDataAreEquals,
   getAccTimeFromRecord,
   getHoursFromSecs,
   getSecsFromHours,
   isRecordRunning,
+  isRecordRunningInThePast,
 } from 'utils'
 import {
   TrackTaskButton,
@@ -18,11 +20,11 @@ import {
   ButtonVariant,
   WarningIcon,
   InfoButton,
+  NavigationButton,
 } from 'components'
 import { useTranslation } from 'next-i18next'
 import { useTaskManager } from 'hooks'
 import { IRecord } from 'database/models'
-import { NavigationButton } from '../../../button/navigation-button'
 
 export type RecordsProps = {
   chronoUser: ChronoUser
@@ -37,6 +39,7 @@ export const Records = ({ chronoUser }: RecordsProps) => {
     toggledTaskId,
     handleSelectRecord,
     todayDateData,
+    currentWeekDateData,
     weekDateData,
     selectedWeekDayIndex,
     setSelectedWeekDayIndex,
@@ -46,14 +49,19 @@ export const Records = ({ chronoUser }: RecordsProps) => {
     runningTaskAccTimeSecs,
     isTodayRunning,
     runningRecord,
+    defineWeekDateData,
+    setWeekDateData,
+    defineDateData,
+    runningRecordDateData,
   } = useTaskManager(chronoUser)
 
-  const [recordsAccHours, setRecordsAccHours] = useState(() =>
-    weekDateData.map((weekDayDateData) => {
+  const getRecordsAccHours = (customWeekDateData?: DateData[]) =>
+    (customWeekDateData ?? weekDateData).map((weekDayDateData) => {
       const record = findRecord(weekDayDateData)
       return getAccTimeFromRecord(record, runningTaskId, runningTaskAccTimeSecs)
-    }),
-  )
+    })
+
+  const [recordsAccHours, setRecordsAccHours] = useState(getRecordsAccHours)
 
   useEffect(() => {
     setRecordsAccHours(
@@ -83,12 +91,37 @@ export const Records = ({ chronoUser }: RecordsProps) => {
     })
   }
 
-  const handleSelectDay = (dayDateData?: DateData | IRecord) => {
-    const dayIndex = weekDateData.findIndex(
-      (weekDayDateData) => Number(weekDayDateData.day) === Number(dayDateData?.day),
+  const handleSelectDay = (dayDateData: DateData | IRecord, customWeekDateData?: DateData[]) => {
+    const dayIndex = (customWeekDateData ?? weekDateData).findIndex((weekDayDateData) =>
+      dateDataAreEquals(dayDateData, weekDayDateData),
     )
 
-    handleSelectWeekDay(dayIndex, weekDateData[dayIndex])
+    handleSelectWeekDay(dayIndex, (customWeekDateData ?? weekDateData)[dayIndex])
+  }
+
+  const navigateWeek = (direction: 'left' | 'right') => {
+    const previousDayDate = new Date(weekDateData[selectedWeekDayIndex].date)
+    previousDayDate.setDate(previousDayDate.getDate() - (direction === 'left' ? 1 : -1))
+
+    const newWeekDateData = defineWeekDateData(previousDayDate)
+
+    setWeekDateData(newWeekDateData)
+    handleSelectDay(defineDateData(previousDayDate), newWeekDateData)
+    setRecordsAccHours(getRecordsAccHours(newWeekDateData))
+  }
+
+  const returnToToday = () => {
+    handleSelectDay(todayDateData, currentWeekDateData)
+    setWeekDateData(currentWeekDateData)
+    setRecordsAccHours(getRecordsAccHours(currentWeekDateData))
+  }
+
+  const returnToRunningDay = () => {
+    const runningWeekDateData = defineWeekDateData(runningRecordDateData?.date)
+
+    handleSelectDay(runningRecord!, runningWeekDateData)
+    setWeekDateData(runningWeekDateData)
+    setRecordsAccHours(getRecordsAccHours(runningWeekDateData))
   }
 
   const { t } = useTranslation('main')
@@ -101,17 +134,37 @@ export const Records = ({ chronoUser }: RecordsProps) => {
         <div className="p-4 mb-4 sm:mb-0 block sm:flex items-center sm:space-x-2 bg-alert-light border border-alert">
           <WarningIcon color="#d99c22" width={20} height={20} />
           <span className="text-gray-dark text-15 leading-5.6 break-words">
-            {runningRecord?.day === selectedRecord?.day ? (
-              t('login.records.taskRunningOnSelectedDay')
-            ) : (
-              <>
-                <span className="mr-2">{t('login.records.taskNotRunningOnSelectedDay')}</span>
-                <InfoButton
-                  onClick={() => handleSelectDay(runningRecord)}
-                  label={t('login.records.travelToRunningDay')}
-                />
-              </>
-            )}
+            {(() => {
+              if (!runningRecordDateData) return null
+              const isRunningRecordSelected = runningRecord?.day === selectedRecord?.day
+              const isRunningRecordInThePast = isRecordRunningInThePast(
+                todayDateData,
+                runningRecordDateData,
+              )
+
+              if (isRunningRecordSelected) {
+                if (isRunningRecordInThePast) return t('login.records.taskRunningOnSelectedPastDay')
+                else return t('login.records.taskRunningOnSelectedFutureDay')
+              }
+
+              return (
+                <>
+                  <span className="mr-2">
+                    {isRunningRecordInThePast
+                      ? t('login.records.taskRunningInThePast')
+                      : t('login.records.taskRunningInTheFuture')}
+                  </span>
+                  <InfoButton
+                    onClick={returnToRunningDay}
+                    label={
+                      isRunningRecordInThePast
+                        ? t('login.records.travelToRunningPastDay')
+                        : t('login.records.travelToRunningFutureDay')
+                    }
+                  />
+                </>
+              )
+            })()}
           </span>
         </div>
       )}
@@ -119,8 +172,8 @@ export const Records = ({ chronoUser }: RecordsProps) => {
       {/* Day Title and Navigation */}
       <section className="flex flex-col sm:flex-row items-start sm:items-center space-y-1 sm:space-y-0 sm:space-x-2">
         <nav>
-          <NavigationButton iconPosition="left" />
-          <NavigationButton iconPosition="right" />
+          <NavigationButton iconPosition="left" onClick={() => navigateWeek('left')} />
+          <NavigationButton iconPosition="right" onClick={() => navigateWeek('right')} />
         </nav>
         <h1 className="font-medium text-3xl">
           {weekDateData[selectedWeekDayIndex].day === todayDateData.day
@@ -132,10 +185,7 @@ export const Records = ({ chronoUser }: RecordsProps) => {
           </span>
         </h1>
         {weekDateData[selectedWeekDayIndex].day !== todayDateData.day && (
-          <InfoButton
-            onClick={() => handleSelectDay(todayDateData)}
-            label={t('login.records.returnToTodayLabel')}
-          />
+          <InfoButton onClick={returnToToday} label={t('login.records.returnToTodayLabel')} />
         )}
       </section>
 
@@ -166,7 +216,7 @@ export const Records = ({ chronoUser }: RecordsProps) => {
                 <li
                   key={`${weekDay.day}-${idx}`}
                   className={`${
-                    weekDay.shortDayName === todayDateData.shortDayName && !isSelected
+                    dateDataAreEquals(weekDay, todayDateData) && !isSelected
                       ? 'text-primary font-bold border-b-transparent'
                       : isSelected
                       ? 'border-b-primary font-medium'
