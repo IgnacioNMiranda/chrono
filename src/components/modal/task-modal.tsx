@@ -1,8 +1,9 @@
 import { useTranslation } from 'next-i18next'
 import { useRouter } from 'next/router'
-import { useMemo } from 'react'
+import { useContext, useMemo } from 'react'
 import { getDateData } from 'utils'
 import { TaskForm } from '../form'
+import { TaskContext } from 'context'
 
 export type TaskModalProps = {
   timezone: string
@@ -18,7 +19,11 @@ export const TaskModal = ({
   className = '',
 }: TaskModalProps) => {
   const { locale } = useRouter()
-  const dateData = useMemo(() => getDateData(locale ?? 'en', timezone), [locale, timezone])
+  const { state } = useContext(TaskContext)
+  const dateData = useMemo(
+    () => getDateData(locale ?? 'en', timezone, state.selectedDay?.date),
+    [locale, timezone, state.selectedDay],
+  )
   const { t } = useTranslation('task-modal')
 
   return (
