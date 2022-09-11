@@ -10,6 +10,10 @@ export const ChangeLogPage = () => {
   const rows = useMemo(
     () => [
       {
+        date: t('11-sept-2022-dateValue'),
+        description: t('11-sept-2022-descriptionValue'),
+      },
+      {
         date: t('10-sept-2022-dateValue'),
         description: t('10-sept-2022-descriptionValue'),
       },
