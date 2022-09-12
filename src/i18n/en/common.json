@@ -5,5 +5,9 @@
   "userData": {
     "nickLabel": "Nick",
     "timezone": "Zone"
+  },
+
+  "navigationModal": {
+    "closeMenuLabel": "Close menu"
   }
 }

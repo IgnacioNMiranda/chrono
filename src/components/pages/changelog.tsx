@@ -10,8 +10,8 @@ export const ChangeLogPage = () => {
   const rows = useMemo(
     () => [
       {
-        date: t('11-sept-2022-dateValue'),
-        description: t('11-sept-2022-descriptionValue'),
+        date: t('12-sept-2022-dateValue'),
+        description: t('12-sept-2022-descriptionValue'),
       },
       {
         date: t('10-sept-2022-dateValue'),
@@ -64,7 +64,7 @@ export const ChangeLogPage = () => {
       )}`}
     >
       <div className="flex flex-col space-y-4 w-full">
-        <h1 className="font-medium text-3xl text-primary-dark leading-6 tracking-wide">
+        <h1 className="font-medium text-3xl text-primary-dark leading-8 tracking-wide">
           {t('title')}
         </h1>
         <p className="block text-base tracking-wide">{t('description')}</p>

@@ -11,9 +11,9 @@
       "taskRunningInThePast": "Tienes un temporizador corriendo en el pasado.",
       "travelToRunningPastDay": "Ir al pasado para editarlo",
 
-      "taskRunningOnSelectedFutureDay": "A timer is running for this day in the future.",
-      "taskRunningInTheFuture": "You have a timer running in the future.",
-      "travelToRunningFutureDay": "Travel into the future to edit it",
+      "taskRunningOnSelectedFutureDay": "Un temporizador está corriendo para este día en el futuro.",
+      "taskRunningInTheFuture": "Tienes un temporizador corriendo en el futuro.",
+      "travelToRunningFutureDay": "Ir al futuro para editarlo",
 
       "todayLabel": "Hoy",
       "returnToTodayLabel": "Volver al hoy",
