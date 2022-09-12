@@ -1,7 +1,8 @@
 import { useUser } from '@auth0/nextjs-auth0'
+import { useTranslation } from 'next-i18next'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { useHeaderLinks } from '../../hooks'
+import { useHeaderLinks } from 'hooks'
 import { CloseIcon } from '../icons'
 
 export const NavigationModal = ({
@@ -14,6 +15,7 @@ export const NavigationModal = ({
   const { HEADER_LINKS } = useHeaderLinks()
   const { user } = useUser()
   const { locale, pathname } = useRouter()
+  const { t } = useTranslation('common')
 
   return (
     <div
@@ -26,7 +28,7 @@ export const NavigationModal = ({
         className="text-white w-fit flex space-x-1 p-2 items-center rounded-base bg-gray-medium"
       >
         <CloseIcon width={16} height={16} color="currentColor" className="font-medium text-15" />
-        <span className="text-15 font-medium">Close menu</span>
+        <span className="text-15 font-medium">{t('navigationModal.closeMenuLabel')}</span>
       </button>
       <ul className="flex flex-col text-white">
         {!!user &&

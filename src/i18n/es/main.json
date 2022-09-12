@@ -7,9 +7,13 @@
   "login": {
     "errorMessage": "Ocurrió un error inesperado 😥 Por favor intenta iniciar sesión nuevamente.",
     "records": {
-      "taskRunningOnSelectedDay": "Un temporizador está corriendo para este día en el pasado.",
-      "taskNotRunningOnSelectedDay": "Tienes un temporizador corriendo en el pasado.",
-      "travelToRunningDay": "Ir al pasado para editarlo",
+      "taskRunningOnSelectedPastDay": "Un temporizador está corriendo para este día en el pasado.",
+      "taskRunningInThePast": "Tienes un temporizador corriendo en el pasado.",
+      "travelToRunningPastDay": "Ir al pasado para editarlo",
+
+      "taskRunningOnSelectedFutureDay": "Un temporizador está corriendo para este día en el futuro.",
+      "taskRunningInTheFuture": "Tienes un temporizador corriendo en el futuro.",
+      "travelToRunningFutureDay": "Ir al futuro para editarlo",
 
       "todayLabel": "Hoy",
       "returnToTodayLabel": "Volver al hoy",

@@ -1,6 +1,6 @@
 import { Types, HydratedDocument } from 'mongoose'
 import { useRouter } from 'next/router'
-import { useState, useEffect, useContext } from 'react'
+import { useState, useEffect, useContext, useMemo } from 'react'
 import { TaskActionTypes, TaskContext } from '../context'
 import { TaskStatus } from '../database/enums'
 import { IRecord, ITask } from '../database/models'
@@ -12,6 +12,7 @@ import {
   getSecondsDiff,
   getWeekDateData,
   isRecordRunning,
+  recordToDateData,
 } from '../utils'
 import { ChronoUser } from '../context/chrono-user'
 import { useOnMount } from './use-on-mount'
@@ -21,8 +22,19 @@ const INTERVAL_SECONDS = 1
 export const useTaskManager = (chronoUser: ChronoUser) => {
   const { locale } = useRouter()
 
-  const todayDateData = getDateData(locale ?? 'en', chronoUser.databaseData?.timezone)
-  const weekDateData = getWeekDateData(locale ?? 'en', chronoUser.databaseData?.timezone)
+  const LOCALE = useMemo(() => locale ?? 'en', [locale])
+  const TIMEZONE = useMemo(
+    () => chronoUser.databaseData?.timezone,
+    [chronoUser.databaseData?.timezone],
+  )
+
+  const defineWeekDateData = (baseDate?: Date) => getWeekDateData(LOCALE, TIMEZONE, baseDate)
+
+  const defineDateData = (baseDate?: Date) => getDateData(LOCALE, TIMEZONE, baseDate)
+
+  const todayDateData = defineDateData()
+  const currentWeekDateData = defineWeekDateData()
+  const [weekDateData, setWeekDateData] = useState(defineWeekDateData)
   const [runningTaskAccTimeSecs, setRunningTaskAccTimeSecs] = useState(0)
   const [intervalId, setIntervalId] = useState<NodeJS.Timer>()
   const [runningTaskId, setRunningTaskId] = useState<Types.ObjectId>()
@@ -30,6 +42,7 @@ export const useTaskManager = (chronoUser: ChronoUser) => {
   const [toggledTaskId, setToggledTaskId] = useState<Types.ObjectId>()
   const [isTodayRunning, setIsTodayRunning] = useState(false)
   const [runningRecord, setRunningRecord] = useState<HydratedDocument<IRecord>>()
+  const runningRecordDateData = recordToDateData(LOCALE, runningRecord, TIMEZONE)
 
   const [selectedWeekDayIndex, setSelectedWeekDayIndex] = useState(
     weekDateData.findIndex((weekDayDateDate) => weekDayDateDate.dayName === todayDateData.dayName),
@@ -196,7 +209,11 @@ export const useTaskManager = (chronoUser: ChronoUser) => {
     onToggleTaskStatus,
     toggledTaskId,
     todayDateData,
+    currentWeekDateData,
     weekDateData,
+    defineWeekDateData,
+    setWeekDateData,
+    defineDateData,
     selectedWeekDayIndex,
     setSelectedWeekDayIndex,
     selectedRecord,
@@ -205,5 +222,6 @@ export const useTaskManager = (chronoUser: ChronoUser) => {
     runningTaskId,
     isTodayRunning,
     runningRecord,
+    runningRecordDateData,
   }
 }
