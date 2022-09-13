@@ -1,4 +1,5 @@
 {
   "headerMessage": "Proyecto / Tarea",
-  "newTimeEntryLabel": "Nueva entrada para"
+  "newTimeEntryLabel": "Nueva entrada para",
+  "editTimeEntryLabel": "Editar entrada para"
 }
