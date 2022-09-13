@@ -70,8 +70,14 @@ export const Records = ({ chronoUser }: RecordsProps) => {
         return getAccTimeFromRecord(record, runningTaskId, runningTaskAccTimeSecs)
       }),
     )
+
+    /**
+     * Update records accumulate hours when:
+     * runningTaskAccTimeSecs: running time secs get updated
+     * chronoUser: User gets updated (via edit task, delete task or create task)
+     */
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [runningTaskAccTimeSecs])
+  }, [runningTaskAccTimeSecs, chronoUser])
 
   useEffect(() => {
     dispatch({

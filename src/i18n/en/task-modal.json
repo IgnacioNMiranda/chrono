@@ -1,4 +1,5 @@
 {
   "headerMessage": "Project / Task",
-  "newTimeEntryLabel": "New time entry for"
+  "newTimeEntryLabel": "New time entry for",
+  "editTimeEntryLabel": "Edit time entry for"
 }

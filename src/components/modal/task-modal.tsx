@@ -41,7 +41,8 @@ export const TaskModal = ({
             className="text-center py-2 font-medium text-gray-dark text-15 leading-5.6"
             style={{ lineHeight: 1.4 }}
           >
-            {t('newTimeEntryLabel')} {dateData.dayName}, {dateData.day} {dateData.monthName}
+            {isCreatingEntry ? t('newTimeEntryLabel') : t('editTimeEntryLabel')}
+            {dateData.dayName}, {dateData.day} {dateData.monthName}
           </p>
         </div>
         <div className="p-4 sm:p-6">
