@@ -13,10 +13,10 @@ export const HamburgerIcon = ({ color, ...props }: SVGProps<SVGSVGElement>) => {
       strokeLinejoin="round"
       {...props}
     >
-      <path color={color} d="M12.8889 7H2"></path>
-      <path color={color} d="M16 3H2"></path>
-      <path color={color} d="M16 11H2"></path>
-      <path color={color} d="M12.8889 15H2"></path>
+      <path fill={color} d="M12.8889 7H2"></path>
+      <path fill={color} d="M16 3H2"></path>
+      <path fill={color} d="M16 11H2"></path>
+      <path fill={color} d="M12.8889 15H2"></path>
     </svg>
   )
 }

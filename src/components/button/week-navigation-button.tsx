@@ -1,12 +1,12 @@
 import { ButtonHTMLAttributes } from 'react'
-import { ArrowIcon } from '../icons/arrow-icon'
+import { ArrowIcon } from '../icons/arrow'
 
-export interface NavigationButtonProps
+export interface WeekNavigationButtonProps
   extends Pick<ButtonHTMLAttributes<HTMLButtonElement>, 'onClick'> {
   iconPosition: 'left' | 'right'
 }
 
-export const NavigationButton = ({ onClick, iconPosition }: NavigationButtonProps) => {
+export const WeekNavigationButton = ({ onClick, iconPosition }: WeekNavigationButtonProps) => {
   return (
     <button
       className={`border border-gray-border hover:border-gray-modal p-2 ${

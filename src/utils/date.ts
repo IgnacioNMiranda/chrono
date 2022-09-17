@@ -6,6 +6,7 @@ import { capitalizeFirstLetter } from './capitalize'
 export type DateData = {
   year: number
   month: string
+  shortMonthName: string
   monthName: string
   week: number
   day: string
@@ -25,7 +26,8 @@ export const getDateAttributes = (datetime_str: string, locale: string) => {
 
   // month as (MM) format
   const month = ('0' + (date.getMonth() + 1)).slice(-2)
-  const monthName = date.toLocaleString(locale, { month: 'short' })
+  const shortMonthName = date.toLocaleString(locale, { month: 'short' })
+  const monthName = date.toLocaleString(locale, { month: 'long' })
 
   const week = Math.ceil((date.getDate() - 1 - date.getDay()) / 7)
 
@@ -35,7 +37,7 @@ export const getDateAttributes = (datetime_str: string, locale: string) => {
   const dayName = capitalizeFirstLetter(date.toLocaleString(locale, { weekday: 'long' }))
   const shortDayName = capitalizeFirstLetter(date.toLocaleString(locale, { weekday: 'short' }))
 
-  return { year, month, monthName, week, day, dayName, shortDayName, date }
+  return { year, month, shortMonthName, monthName, week, day, dayName, shortDayName, date }
 }
 
 export const getDateData = (locale: string, timeZone?: string, existingDate?: Date): DateData => {
@@ -52,12 +54,10 @@ export const getDateData = (locale: string, timeZone?: string, existingDate?: Da
     datetime_str = [splittedDates.join('/'), time].join(',')
   }
 
-  const { year, month, monthName, week, day, dayName, shortDayName, date } = getDateAttributes(
-    datetime_str,
-    locale,
-  )
+  const { year, month, monthName, shortMonthName, week, day, dayName, shortDayName, date } =
+    getDateAttributes(datetime_str, locale)
 
-  return { year, month, monthName, week, day, dayName, shortDayName, date }
+  return { year, month, shortMonthName, monthName, week, day, dayName, shortDayName, date }
 }
 
 export const getWeekDateData = (locale: string, timeZone?: string, baseDay?: Date) => {
@@ -174,3 +174,7 @@ export const isRecordRunningInThePast = (
   todayDateData: DateData,
   runningRecordDateData: DateData,
 ) => runningRecordDateData.date < todayDateData.date
+
+export const dayBelongsToMonth = (dayDate: Date, monthDate: Date) => {
+  return dayDate.getMonth() === monthDate.getMonth()
+}

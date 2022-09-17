@@ -19,8 +19,8 @@ export const ArrowIcon = ({
       className={iconPosition === 'left' ? 'rotate-180' : ''}
       {...props}
     >
-      <line x1="5" y1="12" x2="19" y2="12" color={color}></line>
-      <polyline points="12 5 19 12 12 19" color={color}></polyline>
+      <line x1="5" y1="12" x2="19" y2="12" fill={color}></line>
+      <polyline points="12 5 19 12 12 19" fill={color}></polyline>
     </svg>
   )
 }

@@ -20,7 +20,8 @@ import {
   ButtonVariant,
   WarningIcon,
   InfoButton,
-  NavigationButton,
+  WeekNavigationButton,
+  CalendarButton,
 } from 'components'
 import { useTranslation } from 'next-i18next'
 import { useTaskManager } from 'hooks'
@@ -53,6 +54,8 @@ export const Records = ({ chronoUser }: RecordsProps) => {
     setWeekDateData,
     defineDateData,
     runningRecordDateData,
+    LOCALE,
+    TIMEZONE,
   } = useTaskManager(chronoUser)
 
   const getRecordsAccHours = (customWeekDateData?: DateData[]) =>
@@ -106,13 +109,13 @@ export const Records = ({ chronoUser }: RecordsProps) => {
   }
 
   const navigateWeek = (direction: 'left' | 'right') => {
-    const previousDayDate = new Date(weekDateData[selectedWeekDayIndex].date)
-    previousDayDate.setDate(previousDayDate.getDate() - (direction === 'left' ? 1 : -1))
+    const selectedDayDate = new Date(weekDateData[selectedWeekDayIndex].date)
+    selectedDayDate.setDate(selectedDayDate.getDate() - (direction === 'left' ? 1 : -1))
 
-    const newWeekDateData = defineWeekDateData(previousDayDate)
+    const newWeekDateData = defineWeekDateData(selectedDayDate)
 
     setWeekDateData(newWeekDateData)
-    handleSelectDay(defineDateData(previousDayDate), newWeekDateData)
+    handleSelectDay(defineDateData(selectedDayDate), newWeekDateData)
     setRecordsAccHours(getRecordsAccHours(newWeekDateData))
   }
 
@@ -176,23 +179,39 @@ export const Records = ({ chronoUser }: RecordsProps) => {
       )}
 
       {/* Day Title and Navigation */}
-      <section className="flex flex-col sm:flex-row items-start sm:items-center space-y-1 sm:space-y-0 sm:space-x-2">
-        <nav>
-          <NavigationButton iconPosition="left" onClick={() => navigateWeek('left')} />
-          <NavigationButton iconPosition="right" onClick={() => navigateWeek('right')} />
-        </nav>
-        <h1 className="font-medium text-3xl">
-          {weekDateData[selectedWeekDayIndex].day === todayDateData.day
-            ? `${t('login.records.todayLabel')}: `
-            : ''}
-          <span className="font-normal">
-            {weekDateData[selectedWeekDayIndex].dayName}, {weekDateData[selectedWeekDayIndex].day}{' '}
-            {weekDateData[selectedWeekDayIndex].monthName}
-          </span>
-        </h1>
-        {weekDateData[selectedWeekDayIndex].day !== todayDateData.day && (
-          <InfoButton onClick={returnToToday} label={t('login.records.returnToTodayLabel')} />
-        )}
+      <section className="flex flex-col sm:flex-row items-start sm:items-center space-y-1 justify-between">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-1 sm:space-y-0 sm:space-x-2">
+          <nav>
+            <WeekNavigationButton iconPosition="left" onClick={() => navigateWeek('left')} />
+            <WeekNavigationButton iconPosition="right" onClick={() => navigateWeek('right')} />
+          </nav>
+          <h1 className="font-medium text-3xl">
+            {weekDateData[selectedWeekDayIndex].day === todayDateData.day
+              ? `${t('login.records.todayLabel')}: `
+              : ''}
+            <span className="font-normal">
+              {weekDateData[selectedWeekDayIndex].dayName}, {weekDateData[selectedWeekDayIndex].day}{' '}
+              {weekDateData[selectedWeekDayIndex].shortMonthName}
+            </span>
+          </h1>
+          {weekDateData[selectedWeekDayIndex].day !== todayDateData.day && (
+            <InfoButton onClick={returnToToday} label={t('login.records.returnToTodayLabel')} />
+          )}
+        </div>
+        <CalendarButton
+          handleSelectDay={(selectedDayDate: DateData) => {
+            const newWeekDateData = defineWeekDateData(selectedDayDate.date)
+
+            setWeekDateData(newWeekDateData)
+            handleSelectDay(defineDateData(selectedDayDate.date), newWeekDateData)
+            setRecordsAccHours(getRecordsAccHours(newWeekDateData))
+          }}
+          locale={LOCALE}
+          timezone={TIMEZONE}
+          className="justify-self-end"
+          selectedDayDateData={weekDateData[selectedWeekDayIndex]}
+          todayDateData={todayDateData}
+        />
       </section>
 
       {/* Mobile Track Task Button */}
