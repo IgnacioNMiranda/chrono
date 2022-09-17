@@ -104,7 +104,7 @@ export const CalendarButton = ({
                     !dateDataAreEquals(selectedDayDateData, todayDateData) &&
                     dateDataAreEquals(selectedDayDateData, weekDay)
                       ? 'border-gray-dark'
-                      : ''
+                      : 'border-transparent'
 
                   const belongsToSelectedMonthClasses =
                     weekDay.date.getMonth() === selectedMonthDate.date.getMonth()
@@ -114,7 +114,7 @@ export const CalendarButton = ({
                   return (
                     <button
                       key={`${weekDay.day}-${weekDay.week}-${idx}`}
-                      className={`w-full rounded-base border border-transparent hover:bg-gray-dark hover:border-transparent hover:text-white ${isTodayClasses} ${isSelectedAndNotTodayClasses} ${belongsToSelectedMonthClasses}`}
+                      className={`w-full rounded-base border hover:bg-gray-dark hover:border-transparent hover:text-white ${isTodayClasses} ${isSelectedAndNotTodayClasses} ${belongsToSelectedMonthClasses}`}
                       onClick={() => onDayButtonClick(weekDay)}
                     >
                       <span>{Number(weekDay.day)}</span>
