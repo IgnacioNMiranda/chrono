@@ -14,8 +14,8 @@ export const CloseIcon = ({ color, ...props }: SVGProps<SVGSVGElement>) => {
       aria-label="X icon"
       {...props}
     >
-      <path color={color} d="M14.25 3.75L3.75 14.25"></path>
-      <path color={color} d="M3.75 3.75L14.25 14.25"></path>
+      <path fill={color} d="M14.25 3.75L3.75 14.25"></path>
+      <path fill={color} d="M3.75 3.75L14.25 14.25"></path>
     </svg>
   )
 }

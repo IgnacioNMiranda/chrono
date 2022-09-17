@@ -223,5 +223,7 @@ export const useTaskManager = (chronoUser: ChronoUser) => {
     isTodayRunning,
     runningRecord,
     runningRecordDateData,
+    LOCALE,
+    TIMEZONE,
   }
 }
