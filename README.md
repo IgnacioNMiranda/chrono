@@ -1,34 +1,43 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Chrono
+
+Pseudo [Harvest](https://www.getharvest.com/) clone. This project was made with learning purposes.
+
+It tries to replicate the main features of Harvest and also adds some extra ones that I considered interesting and amusing ;) like selecting a background image and a thumbnail image.
 
 ## Getting Started
 
-First, run the development server:
+This project uses [Auth0](https://auth0.com/) in order to handle both user authentication and profile editing. It also uses [MongoDB](https://www.mongodb.com/) as the persistence layer.
+Make sure you have defined every needed environment variable. You can find an example in this file `.env.example`.
+
+You should run `yarn prepare` command in order to enable [husky](https://www.npmjs.com/package/husky).
+
+Then, run the development server:
 
 ```bash
-npm run dev
-# or
 yarn dev
+```
+
+If you prefer to run MongoDB in the terminal, open a background console
+
+```bash
+mongod
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+## Main Features and Characteristics
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+- Allows to CRUD tasks with a title and a description, persisting them in a non-relational database as MongoDB.
+- i18n (en, es).
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+## Considerations
 
-## Learn More
+1. The whole backend logic that we can found in the pages/api folder should be isolated in a separate service/api in order to follow the separation of concern principle. For the sake of simplicity, this project groups everything in the same app (:
 
-To learn more about Next.js, take a look at the following resources:
+## Author
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+[Ignacio Miranda Figueroa](https://www.linkedin.com/in/ignacio-miranda-figueroa/)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+## License
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+[MIT](LICENSE)

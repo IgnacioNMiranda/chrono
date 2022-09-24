@@ -1,8 +1,14 @@
 import { label, Middleware } from 'next-api-middleware'
+import { environment } from '../../config/environment'
 
 const history: Record<string, Record<'date' | 'times', number>> = {}
 
 const canMakeRequest: Middleware = async (req, res, next) => {
+  if (environment.env !== 'production') {
+    res.status(200)
+    return res.json({})
+  }
+
   const clientIp =
     (((req.headers['x-real-ip'] as string) || '').split(',').pop() || '').trim() ||
     req.socket.remoteAddress
