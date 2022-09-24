@@ -1,15 +1,46 @@
-import { NextApiRequest } from 'next'
+import { label, Middleware } from 'next-api-middleware'
+import { environment } from '../../config/environment'
 
-const history: Record<string, number> = {}
+const history: Record<string, Record<'date' | 'times', number>> = {}
 
-export const canMakeRequest = async (req: NextApiRequest) => {
-  const clientIp = req.headers['client-ip'] as string
-  // If last call arrived later than "now - 10 minutes", rate-limit user
-  if (history[clientIp] > Date.now() - 10 * 60 * 1000) {
-    return true
+const canMakeRequest: Middleware = async (req, res, next) => {
+  if (environment.env !== 'production') {
+    res.status(200)
+    return res.json({})
   }
 
-  history[clientIp] = Date.now()
+  const clientIp =
+    (((req.headers['x-real-ip'] as string) || '').split(',').pop() || '').trim() ||
+    req.socket.remoteAddress
 
-  return false
+  if (!clientIp) {
+    res.status(500)
+    return res.json({ error: 'Unexpected error' })
+  }
+
+  // If last call arrived later than "now - 10 minutes", rate-limit user
+  if (
+    history[clientIp] &&
+    history[clientIp].times >= 10 &&
+    history[clientIp].date > Date.now() - 10 * 60 * 1000
+  ) {
+    res.status(429)
+    return res.json({ error: 'Too many requests' })
+  }
+
+  if (
+    typeof history[clientIp] === 'undefined' ||
+    history[clientIp].date < Date.now() - 10 * 60 * 1000
+  ) {
+    history[clientIp] = {
+      date: Date.now(),
+      times: 1,
+    }
+  } else history[clientIp].times += 1
+
+  await next()
 }
+
+export const withMiddleware = label({
+  canMakeRequest,
+})

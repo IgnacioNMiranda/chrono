@@ -4,8 +4,9 @@ import { Task, User } from 'database/models'
 import { TaskStatus } from 'database/enums'
 import { ToggleTaskStatusDto } from 'database/dtos'
 import { getDateData, getSecondsDiff } from 'utils'
+import { withMiddleware } from '../_utils'
 
-const stopTask = async (req: NextApiRequest, res: NextApiResponse) => {
+const startTask = async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method !== 'PUT') return res.status(400).end('Bad request')
 
   await connectToDatabase()
@@ -69,4 +70,4 @@ const stopTask = async (req: NextApiRequest, res: NextApiResponse) => {
   return res.status(200).json(task)
 }
 
-export default stopTask
+export default withMiddleware('canMakeRequest')(startTask)

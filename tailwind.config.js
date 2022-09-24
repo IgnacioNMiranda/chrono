@@ -9,6 +9,7 @@ module.exports = {
     extend: {
       colors: {
         warning: {
+          light: 'rgb(254 202 202)',
           DEFAULT: '#d92f2f',
           dark: '#be2923',
         },

@@ -79,18 +79,32 @@ export const useTaskManager = (chronoUser: ChronoUser) => {
     setIntervalId(undefined)
   }
 
-  const onToggleTaskStatus = async (isRunning: boolean, task: HydratedDocument<ITask>) => {
+  const onToggleTaskStatus = async (
+    isRunning: boolean,
+    task: HydratedDocument<ITask>,
+  ): Promise<{
+    isError: boolean
+    message: string
+  }> => {
     setToggledTaskId(task._id)
-    await toggleTaskStatus({
-      isRunning,
-      userId: chronoUser.databaseData?._id!,
-      taskId: task._id,
-      selectedDay: state.selectedDay!,
-      locale: locale ?? 'en',
-    })
+    try {
+      await toggleTaskStatus({
+        isRunning,
+        userId: chronoUser.databaseData?._id!,
+        taskId: task._id,
+        selectedDay: state.selectedDay!,
+        locale: locale ?? 'en',
+      })
 
-    await chronoUser.refetch?.()
-    setToggledTaskId(undefined)
+      await chronoUser.refetch?.()
+    } catch (error) {
+      return {
+        isError: true,
+        message: (error as Error).message,
+      }
+    } finally {
+      setToggledTaskId(undefined)
+    }
     if (intervalId && runningTaskId) {
       // When a task has been started and another one is already running
       handleClearInterval()
@@ -100,6 +114,10 @@ export const useTaskManager = (chronoUser: ChronoUser) => {
     } else {
       handleClearInterval()
       setRunningTaskId(undefined)
+    }
+    return {
+      isError: false,
+      message: '',
     }
   }
 

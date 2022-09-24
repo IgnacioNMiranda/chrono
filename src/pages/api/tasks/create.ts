@@ -5,6 +5,7 @@ import { TaskStatus } from 'database/enums'
 import { Record } from 'database/models'
 import { getDateData, isValidTime } from 'utils'
 import { NewTaskDto } from 'database/dtos'
+import { withMiddleware } from '../_utils'
 
 const createTask = async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method !== 'POST') return res.status(400).end('Bad request')
@@ -87,4 +88,4 @@ const createTask = async (req: NextApiRequest, res: NextApiResponse) => {
   return res.status(200).json(newTask)
 }
 
-export default createTask
+export default withMiddleware('canMakeRequest')(createTask)

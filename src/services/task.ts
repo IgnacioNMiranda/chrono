@@ -26,7 +26,7 @@ export const createNewTask = async ({
     const json = await response.json()
     return json
   }
-  throw new Error('Task could not be created. Try again')
+  throw new Error('Task could not be created. Try again later')
 }
 
 export const editTask = async ({ title, notes, taskId, time, userId }: EditTaskDto) => {
@@ -47,7 +47,7 @@ export const editTask = async ({ title, notes, taskId, time, userId }: EditTaskD
     const json = await response.json()
     return json
   }
-  throw new Error('Task could not be edited. Try again')
+  throw new Error('Task could not be edited. Try again later')
 }
 
 export const deleteTask = async ({ taskId, userId }: DeleteTaskDto) => {
@@ -90,5 +90,5 @@ export const toggleTaskStatus = async ({
     const json = await response.json()
     return json
   }
-  throw new Error('Task could not be updated. Try again')
+  throw new Error('Task could not be updated. Try again later')
 }
