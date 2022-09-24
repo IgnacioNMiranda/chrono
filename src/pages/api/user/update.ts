@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import { User } from '../../../database/models'
 import { connectToDatabase } from '../../../database/connection'
 import { environment } from '../../../config/environment'
+import { withMiddleware } from '../_utils'
 
 const updateUser = async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method !== 'PATCH') return res.status(400).end('Bad request')
@@ -86,4 +87,4 @@ const updateUser = async (req: NextApiRequest, res: NextApiResponse) => {
   return res.status(200).json(dbUser)
 }
 
-export default updateUser
+export default withMiddleware('canMakeRequest')(updateUser)

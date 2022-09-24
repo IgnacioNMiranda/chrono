@@ -1,7 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { connectToDatabase } from '../../../database/connection'
-import { Task, User } from '../../../database/models'
-import { isValidTime } from '../../../utils'
+import { connectToDatabase } from 'database/connection'
+import { Task, User } from 'database/models'
+import { isValidTime } from 'utils'
+import { withMiddleware } from '../_utils'
 
 const editTask = async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method !== 'PUT') return res.status(400).end('Bad request')
@@ -48,4 +49,4 @@ const editTask = async (req: NextApiRequest, res: NextApiResponse) => {
   return res.status(200).json(task)
 }
 
-export default editTask
+export default withMiddleware('canMakeRequest')(editTask)

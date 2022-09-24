@@ -25,13 +25,15 @@ import {
 } from 'components'
 import { useTranslation } from 'next-i18next'
 import { useTaskManager } from 'hooks'
-import { IRecord } from 'database/models'
+import { IRecord, ITask } from 'database/models'
+import { HydratedDocument } from 'mongoose'
 
 export type RecordsProps = {
   chronoUser: ChronoUser
 }
 
 export const Records = ({ chronoUser }: RecordsProps) => {
+  const [error, setError] = useState('')
   const { dispatch } = useContext(TaskContext)
 
   const {
@@ -48,7 +50,6 @@ export const Records = ({ chronoUser }: RecordsProps) => {
     findRecord,
     runningTaskId,
     runningTaskAccTimeSecs,
-    isTodayRunning,
     runningRecord,
     defineWeekDateData,
     setWeekDateData,
@@ -133,13 +134,31 @@ export const Records = ({ chronoUser }: RecordsProps) => {
     setRecordsAccHours(getRecordsAccHours(runningWeekDateData))
   }
 
+  const handleToggleTask = async (isRunning: boolean, task: HydratedDocument<ITask>) => {
+    const response = await onToggleTaskStatus(isRunning, task)
+    if (response.isError) {
+      setError(response.message)
+      setTimeout(() => {
+        setError('')
+      }, 3000)
+    }
+  }
+
   const { t } = useTranslation('main')
   const { t: commonT } = useTranslation('common')
 
   return (
     <div className="flex flex-col sm:space-y-4 w-full">
+      {/* Error Alert */}
+      {!!error && (
+        <div className="p-4 mb-4 sm:mb-0 block sm:flex items-center sm:space-x-2 bg-warning-light border border-warning">
+          <WarningIcon color="#d99c22" width={20} height={20} />
+          <span className="text-gray-dark text-15 leading-5.6 break-words">{error}</span>
+        </div>
+      )}
       {/* Timer Alert */}
-      {!isTodayRunning && runningTaskId && (
+      {/* If today is not running and a task is running */}
+      {!isRecordRunning(chronoUser, todayDateData.day) && runningTaskId && (
         <div className="p-4 mb-4 sm:mb-0 block sm:flex items-center sm:space-x-2 bg-alert-light border border-alert">
           <WarningIcon color="#d99c22" width={20} height={20} />
           <span className="text-gray-dark text-15 leading-5.6 break-words">
@@ -310,7 +329,7 @@ export const Records = ({ chronoUser }: RecordsProps) => {
                   <div className="w-auto sm:w-4/12 lg:w-3/12 xl:w-2/12 py-4 pr-4 flex flex-col sm:flex-row space-y-2 sm:space-y-0 justify-center items-center space-x-0 sm:space-x-2">
                     <Button
                       variant={isRunning ? ButtonVariant.GRAY_DARK : ButtonVariant.WHITE}
-                      onClick={() => onToggleTaskStatus(isRunning, task)}
+                      onClick={() => handleToggleTask(isRunning, task)}
                       round={ButtonRound.LGXL}
                       disabled={!!toggledTaskId}
                       className="px-2 md:px-4 w-full sm:w-auto py-2 md:py-1"

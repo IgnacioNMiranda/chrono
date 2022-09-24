@@ -59,5 +59,3 @@ const stopTask = async (req: NextApiRequest, res: NextApiResponse) => {
 }
 
 export default stopTask
-
-// Handle case when task has been stopped and day has already passed

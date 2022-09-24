@@ -1,9 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { connectToDatabase } from '../../../database/connection'
-import { TaskStatus } from '../../../database/enums'
-import { Task, User } from '../../../database/models'
+import { connectToDatabase } from 'database/connection'
+import { TaskStatus } from 'database/enums'
+import { Task, User } from 'database/models'
 
-const editTask = async (req: NextApiRequest, res: NextApiResponse) => {
+const deleteTask = async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method !== 'POST') return res.status(400).end('Bad request')
 
   await connectToDatabase()
@@ -40,4 +40,4 @@ const editTask = async (req: NextApiRequest, res: NextApiResponse) => {
   return res.status(204).end()
 }
 
-export default editTask
+export default deleteTask
